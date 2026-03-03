@@ -63,10 +63,12 @@ function PhaseController({
   const spinTimeSnapshotRef = useRef(0);
   const spinSpeedSnapshotRef = useRef(0);
   const settleStartRef = useRef<number | null>(null);
+  const settledAtRef = useRef<number | null>(null);
   const transitionedRef = useRef(false);
 
   useEffect(() => {
     transitionedRef.current = false;
+    settledAtRef.current = null;
   }, [phase]);
 
   useFrame(({ clock, camera }, delta) => {
@@ -129,9 +131,17 @@ function PhaseController({
       }
 
       if (allSettled || settleElapsed > 10) {
-        settleStartRef.current = null;
-        transitionedRef.current = true;
-        setPhase("selecting");
+        if (settledAtRef.current === null) {
+          settledAtRef.current = now;
+        }
+        if (now - settledAtRef.current >= 0.5) {
+          settleStartRef.current = null;
+          settledAtRef.current = null;
+          transitionedRef.current = true;
+          setPhase("selecting");
+        }
+      } else {
+        settledAtRef.current = null;
       }
     }
 
