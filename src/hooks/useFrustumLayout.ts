@@ -89,7 +89,7 @@ export function computeFrustumLayout(
     lastBallPosition: [ballX, ballY, LAST_BALL_Z],
     lastBallScale,
     lastBallQuaternion,
-    spherePosition: [0, sphereY, SPHERE_Z],
+    spherePosition: [camX, sphereY, SPHERE_Z],
   };
 }
 
