@@ -1,8 +1,11 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useBingoGameState } from "../useBingoGameState";
 
 describe("useBingoGameState", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
   it("initializes with 75 active balls and idle phase", () => {
     const { result } = renderHook(() => useBingoGameState());
     expect(result.current.phase).toBe("idle");

@@ -152,7 +152,7 @@ export function HoloLogo({
  */
 export function OrbitingLookAtTarget({
   center = [0, 2, 7],
-  radius = 2.5,
+  radius = 6,
   speed = 0.4,
   targetRef,
 }: {

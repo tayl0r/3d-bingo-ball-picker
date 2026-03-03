@@ -334,6 +334,7 @@ export function BingoScene(props: BingoSceneProps) {
   return (
     <Canvas
       camera={{ position: [0, 2, 8], fov: 50 }}
+      resize={{ offsetSize: true }}
       style={{ touchAction: "none", cursor: isDragging ? "grabbing" : "grab" }}
       {...pointerHandlers}
     >

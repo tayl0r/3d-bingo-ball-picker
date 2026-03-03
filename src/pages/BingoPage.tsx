@@ -27,6 +27,7 @@ export function BingoPage() {
       position: "relative",
       transform: `scale(${scale})`,
       transformOrigin: "center center",
+      flexShrink: 0,
     }}>
       {/* 3D Scene */}
       <BingoScene
@@ -45,17 +46,28 @@ export function BingoPage() {
         spinSpeed={spinSpeed}
       />
 
-      {/* Bottom-right: debug + drawn balls board */}
+      {/* Bottom-right: drawn balls board */}
       <div
         style={{
           position: "absolute",
           bottom: 30,
           right: 30,
           zIndex: 10,
-          display: "flex",
-          alignItems: "flex-end",
-          gap: 8,
           pointerEvents: "none",
+        }}
+      >
+        <DrawnBallsList balls={game.drawnBalls} />
+      </div>
+
+      {/* Bottom-center: debug controls */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 40,
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 10,
+          pointerEvents: "auto",
         }}
       >
         <SpinControls
@@ -64,39 +76,36 @@ export function BingoPage() {
           spinSpeed={spinSpeed}
           setSpinSpeed={setSpinSpeed}
         />
-        <DrawnBallsList balls={game.drawnBalls} />
       </div>
 
-      {/* Bottom control bar */}
+      {/* Left controls: GET A BALL at ~33% up, secondary buttons at bottom */}
       <div
         style={{
           position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
+          bottom: 360,
+          left: 40,
           zIndex: 10,
-          display: "flex",
-          alignItems: "flex-end",
-          justifyContent: "space-between",
-          padding: "0 40px 40px",
-          pointerEvents: "none",
+          pointerEvents: "auto",
         }}
       >
-        {/* Left: GET A BALL + secondary buttons stacked */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 16,
-            pointerEvents: "auto",
-          }}
-        >
-          <GetABallButton
-            onClick={game.startDraw}
-            disabled={game.phase !== "idle" || game.activeBallNumbers.length === 0}
-            phase={game.phase}
-          />
-          <div style={{ display: "flex", gap: 14 }}>
+        <GetABallButton
+          onClick={game.startDraw}
+          disabled={game.phase !== "idle" || game.activeBallNumbers.length === 0}
+          phase={game.phase}
+        />
+      </div>
+
+      {/* Bottom-left secondary buttons */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 40,
+          left: 40,
+          zIndex: 10,
+          pointerEvents: "auto",
+        }}
+      >
+        <div style={{ display: "flex", gap: 14 }}>
             <button
               onClick={game.newGame}
               disabled={game.phase !== "idle"}
@@ -141,10 +150,6 @@ export function BingoPage() {
               History
             </button>
           </div>
-        </div>
-
-        {/* Spacer */}
-        <div />
       </div>
 
       {/* Game History Modal */}

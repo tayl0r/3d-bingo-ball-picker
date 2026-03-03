@@ -26,9 +26,9 @@ export function DrawnBallsList({ balls }: { balls: number[] }) {
           WebkitBackdropFilter: "blur(8px)",
           borderRadius: 16,
           border: "1px solid var(--border)",
-          padding: "16px 12px",
+          padding: "24px 20px",
           display: "flex",
-          gap: 4,
+          gap: 8,
           pointerEvents: "auto",
         }}
       >
@@ -39,17 +39,17 @@ export function DrawnBallsList({ balls }: { balls: number[] }) {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              gap: 2,
+              gap: 4,
             }}
           >
             {/* Column header */}
             <div
               style={{
                 fontFamily: "var(--font-display)",
-                fontSize: 22,
+                fontSize: 30,
                 color: col.color,
                 lineHeight: 1,
-                marginBottom: 6,
+                marginBottom: 10,
                 textShadow: `0 0 8px ${col.color}55`,
               }}
             >
@@ -63,17 +63,17 @@ export function DrawnBallsList({ balls }: { balls: number[] }) {
                 <div
                   key={num}
                   style={{
-                    width: 44,
-                    height: 32,
+                    width: 60,
+                    height: 42,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: 18,
+                    fontSize: 22,
                     fontFamily: "var(--font-mono)",
                     fontWeight: isDrawn ? 700 : 400,
                     color: isDrawn ? "#000" : "var(--text-dim)",
                     background: isDrawn ? col.color : "transparent",
-                    borderRadius: 6,
+                    borderRadius: 8,
                     transition: "all 0.3s ease",
                     opacity: isDrawn ? 1 : 0.4,
                   }}
@@ -91,7 +91,7 @@ export function DrawnBallsList({ balls }: { balls: number[] }) {
         style={{
           textAlign: "center",
           fontFamily: "var(--font-mono)",
-          fontSize: 18,
+          fontSize: 22,
           color: "var(--text-muted)",
           letterSpacing: 1,
         }}

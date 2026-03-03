@@ -1,6 +1,13 @@
 import { useState, useCallback, useRef } from "react";
 import type { RapierRigidBody } from "@react-three/rapier";
 import type * as THREE from "three";
+import {
+  getOrCreateActiveGame,
+  createGame,
+  updateGame,
+  setActiveGameId,
+  type SavedGame,
+} from "../utils/gameStorage";
 
 export type GamePhase = "idle" | "mixing" | "settling" | "selecting" | "animating";
 
@@ -10,13 +17,20 @@ export interface SelectedBall {
   startRotation: [number, number, number, number]; // quaternion xyzw
 }
 
+function ballsFromDrawn(drawn: number[]): number[] {
+  const drawnSet = new Set(drawn);
+  return Array.from({ length: 75 }, (_, i) => i + 1).filter((n) => !drawnSet.has(n));
+}
+
 export function useBingoGameState() {
+  const initialGameRef = useRef(getOrCreateActiveGame());
+  const [currentGameId, setCurrentGameId] = useState<string>(initialGameRef.current.id);
   const [phase, setPhase] = useState<GamePhase>("idle");
   const phaseRef = useRef<GamePhase>("idle");
-  const [activeBallNumbers, setActiveBallNumbers] = useState<number[]>(
-    () => Array.from({ length: 75 }, (_, i) => i + 1)
+  const [activeBallNumbers, setActiveBallNumbers] = useState<number[]>(() =>
+    ballsFromDrawn(initialGameRef.current.drawnBalls),
   );
-  const [drawnBalls, setDrawnBalls] = useState<number[]>([]);
+  const [drawnBalls, setDrawnBalls] = useState<number[]>(initialGameRef.current.drawnBalls);
   const [selectedBall, setSelectedBall] = useState<SelectedBall | null>(null);
   const selectedBallRef = useRef<SelectedBall | null>(null);
   const ballBodiesRef = useRef<Map<number, RapierRigidBody>>(new Map());
@@ -61,11 +75,30 @@ export function useBingoGameState() {
     const current = selectedBallRef.current;
     if (current) {
       setDrawnBalls((prev) => [...prev, current.number]);
+      // Persist outside the state updater to avoid double-writes in StrictMode
+      const nextDrawn = [...drawnBalls, current.number];
+      updateGame(currentGameId, nextDrawn);
     }
     selectedBallRef.current = null;
     setSelectedBall(null);
     setPhaseTracked("idle");
-  }, [setPhaseTracked]);
+  }, [setPhaseTracked, currentGameId, drawnBalls]);
+
+  const newGame = useCallback(() => {
+    if (phase !== "idle") return;
+    const game = createGame();
+    setCurrentGameId(game.id);
+    setDrawnBalls([]);
+    setActiveBallNumbers(Array.from({ length: 75 }, (_, i) => i + 1));
+  }, [phase]);
+
+  const loadGame = useCallback((game: SavedGame) => {
+    if (phase !== "idle") return;
+    setActiveGameId(game.id);
+    setCurrentGameId(game.id);
+    setDrawnBalls(game.drawnBalls);
+    setActiveBallNumbers(ballsFromDrawn(game.drawnBalls));
+  }, [phase]);
 
   return {
     phase,
@@ -80,5 +113,8 @@ export function useBingoGameState() {
     startDraw,
     selectBall,
     onAnimationComplete,
+    newGame,
+    loadGame,
+    currentGameId,
   };
 }
