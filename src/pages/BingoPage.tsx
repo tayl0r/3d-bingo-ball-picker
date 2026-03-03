@@ -7,6 +7,7 @@ import { DrawnBallsList } from "../components/bingo/DrawnBallsList";
 import { SpinControls } from "../components/bingo/SpinControls";
 import { GameHistoryModal } from "../components/bingo/GameHistoryModal";
 import { disposeBallTextures } from "../utils/ballTexture";
+import { purgeEmptyGames } from "../utils/gameStorage";
 
 export function BingoPage() {
   const game = useBingoGameState();
@@ -28,6 +29,7 @@ export function BingoPage() {
       transform: `scale(${scale})`,
       transformOrigin: "center center",
       flexShrink: 0,
+      border: "2px solid orange",
     }}>
       {/* 3D Scene */}
       <BingoScene
@@ -129,7 +131,7 @@ export function BingoPage() {
               New Game
             </button>
             <button
-              onClick={() => setShowHistory(true)}
+              onClick={() => { purgeEmptyGames(); setShowHistory(true); }}
               style={{
                 padding: "14px 32px",
                 fontSize: 20,

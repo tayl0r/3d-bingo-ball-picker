@@ -9,7 +9,7 @@ and PORTS.LOCAL.md.
 
 ## Tech Stack
 
-Vite + React + TypeScript + Three.js (via React Three Fiber)
+Vite + React 19 + TypeScript + Three.js (React Three Fiber + Rapier physics) + react-router + vitest
 
 ## Commands
 
@@ -18,13 +18,44 @@ pnpm install        # Install dependencies
 pnpm run dev        # Start dev server
 pnpm run build      # Type-check and build for production
 pnpm run lint       # ESLint
+pnpm run test       # Run tests (vitest, jsdom)
+pnpm run test:watch # Run tests in watch mode
 ```
 
 In Catalyst Agent, use `./start.local.sh` instead of `pnpm run dev`.
 
 ## Structure
 
-- `src/main.tsx` — App entry point
-- `src/App.tsx` — Root component, renders Canvas
-- `src/components/Scene.tsx` — Three.js scene with primitives
-- `src/components/RotatingMesh.tsx` — Reusable animated mesh component
+- `src/main.tsx` — App entry point (BrowserRouter setup)
+- `src/App.tsx` — Routes: `/` → BingoPage (lazy-loaded), `/test` → Scene
+- `src/pages/BingoPage.tsx` — Main bingo game page with Canvas, UI overlay, and game state
+- `src/components/bingo/` — Bingo game components:
+  - `BingoScene.tsx` — 3D scene with bingo machine, last ball display, frustum layout
+  - `BingoMachine.tsx` — Rotating sphere container with physics balls (Rapier)
+  - `BingoBall.tsx` — Single 3D bingo ball with numbered texture
+  - `BingoBallAnimated.tsx` — Ball with animated position/scale/quaternion transitions
+  - `LastBall3D.tsx` — Displays the most recently drawn ball
+  - `HoloLogo.tsx` — Holographic logo display
+  - `DrawnBallsList.tsx` — HTML overlay listing drawn balls
+  - `GetABallButton.tsx` — Button to draw next ball
+  - `SpinControls.tsx` — Machine spin speed controls
+  - `GameHistoryModal.tsx` — Past game history modal
+- `src/components/Scene.tsx` — Original test scene with rotating primitives
+- `src/hooks/` — Custom hooks:
+  - `useBingoGameState.ts` — Game state management (draw, reset, history)
+  - `useFrustumLayout.ts` — Camera frustum-based responsive positioning
+  - `useViewportScale.ts` — Viewport-aware scaling
+  - `useSphereRotation.ts` — Sphere rotation animation
+- `src/utils/` — Utilities:
+  - `ballTexture.ts` — Canvas-based ball number texture generation
+  - `sphereContainerGeometry.ts` — Sphere container mesh geometry
+  - `gameStorage.ts` — localStorage persistence for game state
+
+## Key Patterns
+
+- **Base path**: Vite `base` is `/3d-bingo-ball-picker/` — all assets deploy under this prefix
+- **Lazy loading**: BingoPage is lazy-loaded via `React.lazy` + `Suspense`
+- **Frustum layout**: `useFrustumLayout` computes 3D positions from camera frustum for responsive element placement
+- **Physics**: `@react-three/rapier` handles ball physics inside the bingo machine
+- **Test setup**: vitest + jsdom + `vitest-canvas-mock`; setup file at `src/test/setup.ts`
+- **Tests**: Co-located in `__tests__/` directories next to source files

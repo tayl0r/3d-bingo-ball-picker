@@ -11,9 +11,12 @@ export function SpinControls({ spinTime, setSpinTime, spinSpeed, setSpinSpeed }:
   const [open, setOpen] = useState(false);
 
   return (
-    <div style={{ pointerEvents: "auto" }}>
+    <div style={{ pointerEvents: "auto", position: "relative" }}>
       {open && (
         <div style={{
+          position: "absolute",
+          bottom: "100%",
+          right: 0,
           marginBottom: 8,
           padding: "20px 24px",
           background: "rgba(10, 10, 20, 0.9)",

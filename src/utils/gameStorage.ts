@@ -75,6 +75,12 @@ export function clearActiveGameId(): void {
   localStorage.removeItem(ACTIVE_GAME_KEY);
 }
 
+export function purgeEmptyGames(): void {
+  const activeId = getActiveGameId();
+  const games = getAllGames().filter((g) => g.drawnBalls.length > 0 || g.id === activeId);
+  saveAllGames(games);
+}
+
 export function getOrCreateActiveGame(): SavedGame {
   const activeId = getActiveGameId();
   if (activeId) {
