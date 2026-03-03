@@ -13,6 +13,7 @@ interface BingoBallAnimatedProps {
 const TARGET = new THREE.Vector3(0, 1, 5);
 const FLY_DURATION = 1.5;
 const HOLD_DURATION = 1.0;
+const _targetQuat = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, -Math.PI / 2, 0));
 
 export function BingoBallAnimated({ number, startPosition, onComplete }: BingoBallAnimatedProps) {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -44,6 +45,7 @@ export function BingoBallAnimated({ number, startPosition, onComplete }: BingoBa
       meshRef.current.position.lerpVectors(startRef.current, TARGET, eased);
       const scale = 1 + 1.5 * eased; // scale 1x -> 2.5x
       meshRef.current.scale.setScalar(scale);
+      meshRef.current.quaternion.slerp(_targetQuat, eased);
     }
   });
 

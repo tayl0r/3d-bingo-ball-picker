@@ -22,8 +22,7 @@ export function GetABallButton({ onClick, disabled, phase }: GetABallButtonProps
       style={{
         position: "absolute",
         bottom: 40,
-        left: "50%",
-        transform: "translateX(-50%)",
+        left: 40,
         padding: "16px 48px",
         fontSize: 24,
         fontWeight: "bold",
