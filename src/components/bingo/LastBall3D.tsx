@@ -4,18 +4,6 @@ import * as THREE from "three";
 import { createBallTexture } from "../../utils/ballTexture";
 import { BALL_RADIUS } from "./BingoBall";
 
-// Shared constants for the "last ball" display position (right side of viewport)
-export const LAST_BALL_REST_POS = new THREE.Vector3(2.25, 2.35, 5);
-export const LAST_BALL_SCALE = 0.96;
-
-// Quaternion that faces the camera from the rest position, then rotated a quarter turn right
-const _camPos = new THREE.Vector3(0, 2, 8);
-const _dir = _camPos.clone().sub(LAST_BALL_REST_POS).normalize();
-const _quarterRight = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), -Math.PI / 2);
-export const LAST_BALL_QUAT = new THREE.Quaternion()
-  .setFromUnitVectors(new THREE.Vector3(0, 0, 1), _dir)
-  .premultiply(_quarterRight);
-
 interface LastBallRestingProps {
   number: number;
   position: [number, number, number];
