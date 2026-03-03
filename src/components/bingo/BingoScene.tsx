@@ -6,6 +6,7 @@ import { BingoMachine } from "./BingoMachine";
 import { BingoBall } from "./BingoBall";
 import { BingoBallAnimated } from "./BingoBallAnimated";
 import type { GamePhase, SelectedBall } from "../../hooks/useBingoGameState";
+import { useSphereRotation } from "../../hooks/useSphereRotation";
 
 function generateBallPositions(count: number, maxRadius: number): [number, number, number][] {
   const positions: [number, number, number][] = [];
@@ -182,6 +183,8 @@ export function BingoScene({
   selectBall,
   onAnimationComplete,
 }: BingoSceneProps) {
+  const { quaternionRef, pointerHandlers, isDragging } = useSphereRotation();
+
   const ballPositionMap = useMemo(() => {
     const map = new Map<number, [number, number, number]>();
     for (let i = 0; i < 75; i++) {
@@ -191,7 +194,11 @@ export function BingoScene({
   }, []);
 
   return (
-    <Canvas camera={{ position: [0, 2, 8], fov: 50 }}>
+    <Canvas
+      camera={{ position: [0, 2, 8], fov: 50 }}
+      style={{ touchAction: "none", cursor: isDragging ? "grabbing" : "grab" }}
+      {...pointerHandlers}
+    >
       {/* Lights outside Suspense so BingoBallAnimated is always lit */}
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 5, 5]} intensity={1} />
@@ -204,7 +211,7 @@ export function BingoScene({
             ballBodiesRef={ballBodiesRef}
             selectBall={selectBall}
           />
-          <BingoMachine />
+          <BingoMachine quaternionRef={quaternionRef} />
           {activeBallNumbers.map((num) => (
             <BingoBall
               key={num}

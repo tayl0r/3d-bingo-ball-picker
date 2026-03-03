@@ -1,26 +1,38 @@
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { RigidBody, MeshCollider } from "@react-three/rapier";
+import type { RapierRigidBody } from "@react-three/rapier";
+import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { createInvertedSphereGeometry } from "../../utils/sphereContainerGeometry";
 
 const CONTAINER_RADIUS = 3;
 
-export function BingoMachine() {
+interface BingoMachineProps {
+  quaternionRef: React.RefObject<THREE.Quaternion>;
+}
+
+export function BingoMachine({ quaternionRef }: BingoMachineProps) {
+  const bodyRef = useRef<RapierRigidBody>(null);
   const invertedGeo = useMemo(
     () => createInvertedSphereGeometry(CONTAINER_RADIUS, 3),
     []
   );
 
+  useFrame(() => {
+    if (bodyRef.current && quaternionRef.current) {
+      const q = quaternionRef.current;
+      bodyRef.current.setNextKinematicRotation({ x: q.x, y: q.y, z: q.z, w: q.w });
+    }
+  });
+
   return (
-    <>
-      {/* Physics collider - inverted trimesh, invisible */}
-      <RigidBody type="fixed" colliders={false}>
-        <MeshCollider type="trimesh">
-          <mesh geometry={invertedGeo}>
-            <meshBasicMaterial visible={false} />
-          </mesh>
-        </MeshCollider>
-      </RigidBody>
+    <RigidBody ref={bodyRef} type="kinematicPosition" colliders={false}>
+      {/* Physics collider - inverted trimesh */}
+      <MeshCollider type="trimesh">
+        <mesh geometry={invertedGeo}>
+          <meshBasicMaterial visible={false} />
+        </mesh>
+      </MeshCollider>
 
       {/* Visible wireframe */}
       <mesh>
@@ -43,7 +55,7 @@ export function BingoMachine() {
           side={THREE.BackSide}
         />
       </mesh>
-    </>
+    </RigidBody>
   );
 }
 
