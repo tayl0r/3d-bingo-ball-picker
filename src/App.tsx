@@ -13,19 +13,19 @@ export default function App() {
       <Route
         path="/"
         element={
+          <Suspense fallback={<div style={{ width: "100vw", height: "100vh", background: "#1a1a2e" }} />}>
+            <BingoPage />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/test"
+        element={
           <div style={{ width: "100vw", height: "100vh", background: "#111" }}>
             <Canvas camera={{ position: [0, 0, 6], fov: 50 }}>
               <Scene />
             </Canvas>
           </div>
-        }
-      />
-      <Route
-        path="/bingo"
-        element={
-          <Suspense fallback={<div style={{ width: "100vw", height: "100vh", background: "#1a1a2e" }} />}>
-            <BingoPage />
-          </Suspense>
         }
       />
     </Routes>
