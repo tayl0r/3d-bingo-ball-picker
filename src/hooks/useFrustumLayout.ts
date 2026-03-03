@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
-// Z-depths for each element (distance in front of camera along view axis)
+// World-space Z coordinates for each element's depth plane
 const LOGO_Z = -1;
 const LAST_BALL_Z = 5;
 const SPHERE_Z = 0;
@@ -14,7 +14,7 @@ const PADDING = 0.05;
 const LOGO_ASPECT = 744 / 267;
 const LOGO_BASE_HEIGHT = 1.8;
 
-// Ball radius for inset calculation
+// Ball radius for inset calculation (must match BingoBall.BALL_RADIUS)
 const BALL_DISPLAY_RADIUS = 0.25;
 
 export interface FrustumLayout {
@@ -38,12 +38,13 @@ export function computeFrustumLayout(
   const [camX, camY, camZ] = cameraPosition;
   const fovRad = (fovDeg * Math.PI) / 180;
 
-  // Helper: visible rect at a given Z world-coordinate
+  // Helper: visible rect at a given world-space Z coordinate
   function visibleAt(z: number) {
-    const dist = Math.abs(camZ - z);
+    const dist = camZ - z; // positive when element is in front of camera
+    if (dist <= 0) return { w: 0, h: 0 };
     const h = 2 * Math.tan(fovRad / 2) * dist;
     const w = h * aspect;
-    return { w, h, dist };
+    return { w, h };
   }
 
   // --- Logo (top-left at LOGO_Z) ---

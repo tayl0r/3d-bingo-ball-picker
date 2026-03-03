@@ -20,7 +20,10 @@ describe("computeFrustumLayout", () => {
   });
 
   it("sphere position is centered on camera X", () => {
-    expect(layout.spherePosition[0]).toBe(0);
+    expect(layout.spherePosition[0]).toBe(CAM_POS[0]);
+    // Verify with off-center camera too
+    const offCenter = computeFrustumLayout([3, 2, 8], FOV, ASPECT);
+    expect(offCenter.spherePosition[0]).toBe(3);
   });
 
   it("logo and lastBall are both docked to top of their frustum slice", () => {
