@@ -2,9 +2,11 @@ import { Suspense, useMemo, useRef, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import type { RapierRigidBody } from "@react-three/rapier";
+import * as THREE from "three";
 import { BingoMachine } from "./BingoMachine";
 import { BingoBall } from "./BingoBall";
 import { BingoBallAnimated } from "./BingoBallAnimated";
+import { HoloLogo, OrbitingLookAtTarget } from "./HoloLogo";
 import type { GamePhase, SelectedBall } from "../../hooks/useBingoGameState";
 import { useSphereRotation } from "../../hooks/useSphereRotation";
 
@@ -34,6 +36,9 @@ interface PhaseControllerProps {
   activeBallNumbers: number[];
   ballBodiesRef: React.MutableRefObject<Map<number, RapierRigidBody>>;
   selectBall: (num: number, position: [number, number, number]) => void;
+  quaternionRef: React.MutableRefObject<THREE.Quaternion>;
+  spinTime: number;
+  spinSpeed: number;
 }
 
 function PhaseController({
@@ -42,6 +47,9 @@ function PhaseController({
   activeBallNumbers,
   ballBodiesRef,
   selectBall,
+  quaternionRef: _quaternionRef,
+  spinTime: _spinTime,
+  spinSpeed: _spinSpeed,
 }: PhaseControllerProps) {
   const mixStartRef = useRef<number | null>(null);
   const lastImpulseRef = useRef<number | null>(null);
@@ -171,6 +179,8 @@ interface BingoSceneProps {
   registerBody: (num: number, body: RapierRigidBody | null) => void;
   selectBall: (num: number, position: [number, number, number]) => void;
   onAnimationComplete: () => void;
+  spinTime: number;
+  spinSpeed: number;
 }
 
 export function BingoScene({
@@ -182,8 +192,11 @@ export function BingoScene({
   registerBody,
   selectBall,
   onAnimationComplete,
+  spinTime,
+  spinSpeed,
 }: BingoSceneProps) {
   const { quaternionRef, pointerHandlers, isDragging } = useSphereRotation();
+  const lookAtTargetRef = useRef<THREE.Object3D>(null!);
 
   const ballPositionMap = useMemo(() => {
     const map = new Map<number, [number, number, number]>();
@@ -202,6 +215,11 @@ export function BingoScene({
       {/* Lights outside Suspense so BingoBallAnimated is always lit */}
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 5, 5]} intensity={1} />
+      <OrbitingLookAtTarget targetRef={lookAtTargetRef} />
+      <Suspense fallback={null}>
+        <HoloLogo position={[-4.5, 2.8, -2]} scale={0.7} targetRef={lookAtTargetRef} />
+        <HoloLogo position={[4.5, 2.8, -2]} scale={0.7} targetRef={lookAtTargetRef} />
+      </Suspense>
       <Suspense fallback={null}>
         <Physics gravity={[0, -9.81, 0]}>
           <PhaseController
@@ -210,6 +228,9 @@ export function BingoScene({
             activeBallNumbers={activeBallNumbers}
             ballBodiesRef={ballBodiesRef}
             selectBall={selectBall}
+            quaternionRef={quaternionRef}
+            spinTime={spinTime}
+            spinSpeed={spinSpeed}
           />
           <BingoMachine quaternionRef={quaternionRef} />
           {activeBallNumbers.map((num) => (

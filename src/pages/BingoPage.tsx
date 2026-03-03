@@ -23,6 +23,8 @@ export function BingoPage() {
         registerBody={game.registerBody}
         selectBall={game.selectBall}
         onAnimationComplete={game.onAnimationComplete}
+        spinTime={5}
+        spinSpeed={3}
       />
       <GetABallButton
         onClick={game.startDraw}
