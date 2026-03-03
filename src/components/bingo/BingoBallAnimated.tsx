@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { createBallTexture } from "../../utils/ballTexture";
@@ -8,17 +8,17 @@ interface BingoBallAnimatedProps {
   number: number;
   startPosition: [number, number, number];
   startRotation: [number, number, number, number];
+  targetPosition: [number, number, number];
+  targetScale: number;
+  targetQuaternion: THREE.Quaternion;
   onComplete: () => void;
 }
 
-const TARGET = new THREE.Vector3(0, 1.5, 6);
-const DIP_Y = -2; // how far below the midpoint the curve dips
-const FLY_DURATION = 2.0;
-const HOLD_DURATION = 1.0;
-const _targetQuat = new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 16, -Math.PI / 2, 0));
+const DIP_Y = -1.5;
+const FLY_DURATION = 1.5;
+const HOLD_DURATION = 0.3;
 const _bezierTemp = new THREE.Vector3();
 
-// Quadratic bezier: P(t) = (1-t)²·P0 + 2(1-t)t·P1 + t²·P2
 function quadraticBezier(out: THREE.Vector3, p0: THREE.Vector3, p1: THREE.Vector3, p2: THREE.Vector3, t: number) {
   const inv = 1 - t;
   out.set(
@@ -30,7 +30,6 @@ function quadraticBezier(out: THREE.Vector3, p0: THREE.Vector3, p1: THREE.Vector
 }
 
 function computeControl(start: THREE.Vector3, target: THREE.Vector3): THREE.Vector3 {
-  // Control point at the midpoint x/z, dipping below in y
   return new THREE.Vector3(
     (start.x + target.x) / 2,
     Math.min(start.y, target.y) + DIP_Y,
@@ -38,13 +37,14 @@ function computeControl(start: THREE.Vector3, target: THREE.Vector3): THREE.Vect
   );
 }
 
-export function BingoBallAnimated({ number, startPosition, startRotation, onComplete }: BingoBallAnimatedProps) {
+export function BingoBallAnimated({ number, startPosition, startRotation, targetPosition, targetScale, targetQuaternion, onComplete }: BingoBallAnimatedProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const progressRef = useRef(0);
+  const targetPos = useMemo(() => new THREE.Vector3(...targetPosition), [targetPosition]);
   const startRef = useRef(new THREE.Vector3(...startPosition));
-  const controlRef = useRef(computeControl(new THREE.Vector3(...startPosition), TARGET));
+  const controlRef = useRef(computeControl(new THREE.Vector3(...startPosition), targetPos));
   const startQuatRef = useRef(new THREE.Quaternion(...startRotation));
-  const texture = createBallTexture(number);
+  const texture = useMemo(() => createBallTexture(number), [number]);
   const completedRef = useRef(false);
   const onCompleteRef = useRef(onComplete);
 
@@ -67,11 +67,11 @@ export function BingoBallAnimated({ number, startPosition, startRotation, onComp
     if (progressRef.current < FLY_DURATION) {
       const t = progressRef.current / FLY_DURATION;
       const eased = 1 - Math.pow(1 - t, 3); // cubic ease-out
-      quadraticBezier(_bezierTemp, startRef.current, controlRef.current, TARGET, eased);
+      quadraticBezier(_bezierTemp, startRef.current, controlRef.current, targetPos, eased);
       meshRef.current.position.copy(_bezierTemp);
-      const scale = 1 + 1.5 * eased; // scale 1x -> 2.5x
+      const scale = 1 + (targetScale - 1) * eased; // scale 1x -> targetScale
       meshRef.current.scale.setScalar(scale);
-      meshRef.current.quaternion.slerpQuaternions(startQuatRef.current, _targetQuat, eased);
+      meshRef.current.quaternion.slerpQuaternions(startQuatRef.current, targetQuaternion, eased);
     }
   });
 
