@@ -28,6 +28,9 @@ function generateBallPositions(count: number, maxRadius: number): [number, numbe
 
 const INITIAL_POSITIONS = generateBallPositions(75, 2.0);
 
+const _spinAxis = new THREE.Vector3(1, 0, 1).normalize();
+const _spinQuat = new THREE.Quaternion();
+
 // -- PhaseController: drives game loop inside Physics --
 
 interface PhaseControllerProps {
@@ -47,12 +50,11 @@ function PhaseController({
   activeBallNumbers,
   ballBodiesRef,
   selectBall,
-  quaternionRef: _quaternionRef,
-  spinTime: _spinTime,
-  spinSpeed: _spinSpeed,
+  quaternionRef,
+  spinTime,
+  spinSpeed,
 }: PhaseControllerProps) {
   const mixStartRef = useRef<number | null>(null);
-  const lastImpulseRef = useRef<number | null>(null);
   const settleStartRef = useRef<number | null>(null);
   // Guard: prevents firing phase transitions multiple frames before React re-renders
   const transitionedRef = useRef(false);
@@ -62,55 +64,43 @@ function PhaseController({
     transitionedRef.current = false;
   }, [phase]);
 
-  useFrame(({ clock }) => {
+  useFrame(({ clock }, delta) => {
     if (transitionedRef.current) return;
 
     const now = clock.elapsedTime;
     const bodies = ballBodiesRef.current;
 
     if (phase === "mixing") {
-      // Initialize on first frame of mixing
       if (mixStartRef.current === null) {
         mixStartRef.current = now;
-        lastImpulseRef.current = null;
       }
 
       const elapsed = now - mixStartRef.current;
+      const t = elapsed / spinTime;
 
-      // Apply impulses every 0.25s
-      if (lastImpulseRef.current === null || now - lastImpulseRef.current >= 0.25) {
-        lastImpulseRef.current = now;
-        const nums = [...activeBallNumbers];
-        for (let i = 0; i < Math.min(5, nums.length); i++) {
-          const idx = Math.floor(Math.random() * nums.length);
-          const num = nums.splice(idx, 1)[0];
-          const body = bodies.get(num);
-          if (body) {
-            const strength = 15 + Math.random() * 10;
-            const dir = {
-              x: (Math.random() - 0.5) * 2,
-              y: (Math.random() - 0.5) * 2,
-              z: (Math.random() - 0.5) * 2,
-            };
-            const len = Math.sqrt(dir.x ** 2 + dir.y ** 2 + dir.z ** 2) || 1;
-            body.applyImpulse(
-              {
-                x: (dir.x / len) * strength,
-                y: (dir.y / len) * strength,
-                z: (dir.z / len) * strength,
-              },
-              true
-            );
-          }
-        }
-      }
-
-      // After 5 seconds, move to settling
-      if (elapsed >= 5) {
+      if (t >= 1) {
         mixStartRef.current = null;
         transitionedRef.current = true;
         setPhase("settling");
+        return;
       }
+
+      // Eased angular velocity: ease-in first 20%, full 20-80%, ease-out last 20%
+      let factor: number;
+      if (t < 0.2) {
+        const s = t / 0.2;
+        factor = s * s * s; // cubic ease-in
+      } else if (t < 0.8) {
+        factor = 1;
+      } else {
+        const s = 1 - (t - 0.8) / 0.2;
+        factor = s * s * s; // cubic ease-out
+      }
+
+      const baseSpeed = 3; // rad/s base
+      const angle = factor * baseSpeed * spinSpeed * delta;
+      _spinQuat.setFromAxisAngle(_spinAxis, angle);
+      quaternionRef.current.premultiply(_spinQuat);
     }
 
     if (phase === "settling") {
