@@ -2,8 +2,45 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BINGO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Righteous&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <style>
+      *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; }
+      #root { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+      body {
+        font-family: 'DM Mono', monospace;
+        background: #0a0a14;
+        color: #e8e6e3;
+        -webkit-font-smoothing: antialiased;
+      }
+      :root {
+        --bg-deep: #0a0a14;
+        --bg-surface: #12121e;
+        --bg-elevated: #1a1a2e;
+        --amber: #f59e0b;
+        --amber-glow: rgba(245, 158, 11, 0.4);
+        --amber-dim: #b27308;
+        --cyan: #06b6d4;
+        --cyan-glow: rgba(6, 182, 212, 0.35);
+        --red: #ef4444;
+        --text: #e8e6e3;
+        --text-muted: #6b7280;
+        --text-dim: #3f3f50;
+        --border: rgba(255, 255, 255, 0.08);
+        --border-light: rgba(255, 255, 255, 0.15);
+        --font-display: 'Righteous', cursive;
+        --font-mono: 'DM Mono', monospace;
+      }
+      /* Scrollbar styling */
+      ::-webkit-scrollbar { width: 4px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: var(--text-dim); border-radius: 2px; }
+      ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+    </style>
   </head>
   <body>
     <div id="root"></div>
