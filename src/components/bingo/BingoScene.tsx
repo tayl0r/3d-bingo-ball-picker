@@ -6,10 +6,11 @@ import * as THREE from "three";
 import { BingoMachine } from "./BingoMachine";
 import { BingoBall } from "./BingoBall";
 import { BingoBallAnimated } from "./BingoBallAnimated";
-import { LastBallResting, LastBallDeparting, LAST_BALL_REST_POS, LAST_BALL_SCALE, LAST_BALL_QUAT } from "./LastBall3D";
+import { LastBallResting, LastBallDeparting } from "./LastBall3D";
 import { HoloLogo, OrbitingLookAtTarget } from "./HoloLogo";
 import type { GamePhase, SelectedBall } from "../../hooks/useBingoGameState";
 import { useSphereRotation } from "../../hooks/useSphereRotation";
+import { useFrustumLayout } from "../../hooks/useFrustumLayout";
 
 function generateBallPositions(count: number, maxRadius: number): [number, number, number][] {
   const positions: [number, number, number][] = [];
@@ -188,7 +189,11 @@ interface BingoSceneProps {
   spinSpeed: number;
 }
 
-export function BingoScene({
+interface SceneContentProps extends BingoSceneProps {
+  quaternionRef: React.MutableRefObject<THREE.Quaternion>;
+}
+
+function SceneContent({
   phase,
   setPhase,
   activeBallNumbers,
@@ -202,8 +207,9 @@ export function BingoScene({
   onAnimationComplete,
   spinTime,
   spinSpeed,
-}: BingoSceneProps) {
-  const { quaternionRef, pointerHandlers, isDragging } = useSphereRotation();
+  quaternionRef,
+}: SceneContentProps) {
+  const layout = useFrustumLayout();
   const lookAtTargetRef = useRef<THREE.Object3D>(null!);
 
   // Last ball state: resting (static display) and departing (flying off screen)
@@ -246,21 +252,20 @@ export function BingoScene({
   }, []);
 
   return (
-    <Canvas
-      camera={{ position: [0, 2, 8], fov: 50 }}
-      style={{ touchAction: "none", cursor: isDragging ? "grabbing" : "grab" }}
-      {...pointerHandlers}
-    >
+    <>
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 5, 5]} intensity={1} />
       <OrbitingLookAtTarget targetRef={lookAtTargetRef} />
       <Suspense fallback={null}>
-        {/* Single logo docked to top-left */}
-        <HoloLogo position={[-5.8, 3.2, -1]} scale={0.55} targetRef={lookAtTargetRef} />
+        <HoloLogo
+          position={layout.logoPosition}
+          scale={layout.logoScale}
+          targetRef={lookAtTargetRef}
+        />
       </Suspense>
       <Suspense fallback={null}>
         <Physics gravity={[0, -9.81, 0]}>
-          <group position={[0, 0.5, 0]}>
+          <group position={layout.spherePosition}>
             <PhaseController
               phase={phase}
               setPhase={setPhase}
@@ -288,12 +293,23 @@ export function BingoScene({
 
       {/* Resting "last ball" 3D display */}
       {restingBallNumber !== null && (
-        <LastBallResting number={restingBallNumber} position={LAST_BALL_REST_POS.toArray() as [number, number, number]} scale={LAST_BALL_SCALE} quaternion={LAST_BALL_QUAT} />
+        <LastBallResting
+          number={restingBallNumber}
+          position={layout.lastBallPosition}
+          scale={layout.lastBallScale}
+          quaternion={layout.lastBallQuaternion}
+        />
       )}
 
       {/* Departing old ball flying off screen */}
       {departingBallNumber !== null && (
-        <LastBallDeparting number={departingBallNumber} position={LAST_BALL_REST_POS.toArray() as [number, number, number]} scale={LAST_BALL_SCALE} quaternion={LAST_BALL_QUAT} onComplete={handleDepartComplete} />
+        <LastBallDeparting
+          number={departingBallNumber}
+          position={layout.lastBallPosition}
+          scale={layout.lastBallScale}
+          quaternion={layout.lastBallQuaternion}
+          onComplete={handleDepartComplete}
+        />
       )}
 
       {/* New ball flying to rest position */}
@@ -302,9 +318,26 @@ export function BingoScene({
           number={selectedBall.number}
           startPosition={selectedBall.startPosition}
           startRotation={selectedBall.startRotation}
+          targetPosition={layout.lastBallPosition}
+          targetScale={layout.lastBallScale}
+          targetQuaternion={layout.lastBallQuaternion}
           onComplete={handleAnimationComplete}
         />
       )}
+    </>
+  );
+}
+
+export function BingoScene(props: BingoSceneProps) {
+  const { quaternionRef, pointerHandlers, isDragging } = useSphereRotation();
+
+  return (
+    <Canvas
+      camera={{ position: [0, 2, 8], fov: 50 }}
+      style={{ touchAction: "none", cursor: isDragging ? "grabbing" : "grab" }}
+      {...pointerHandlers}
+    >
+      <SceneContent {...props} quaternionRef={quaternionRef} />
     </Canvas>
   );
 }
