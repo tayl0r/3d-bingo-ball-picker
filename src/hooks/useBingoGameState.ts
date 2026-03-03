@@ -1,11 +1,13 @@
 import { useState, useCallback, useRef } from "react";
 import type { RapierRigidBody } from "@react-three/rapier";
+import type * as THREE from "three";
 
 export type GamePhase = "idle" | "mixing" | "settling" | "selecting" | "animating";
 
 export interface SelectedBall {
   number: number;
   startPosition: [number, number, number];
+  startRotation: [number, number, number, number]; // quaternion xyzw
 }
 
 export function useBingoGameState() {
@@ -18,6 +20,7 @@ export function useBingoGameState() {
   const [selectedBall, setSelectedBall] = useState<SelectedBall | null>(null);
   const selectedBallRef = useRef<SelectedBall | null>(null);
   const ballBodiesRef = useRef<Map<number, RapierRigidBody>>(new Map());
+  const ballMeshesRef = useRef<Map<number, THREE.Mesh>>(new Map());
 
   const setPhaseTracked = useCallback((p: GamePhase) => {
     phaseRef.current = p;
@@ -32,14 +35,22 @@ export function useBingoGameState() {
     }
   }, []);
 
+  const registerMesh = useCallback((num: number, mesh: THREE.Mesh | null) => {
+    if (mesh) {
+      ballMeshesRef.current.set(num, mesh);
+    } else {
+      ballMeshesRef.current.delete(num);
+    }
+  }, []);
+
   const startDraw = useCallback(() => {
     if (phase !== "idle" || activeBallNumbers.length === 0) return;
     setPhaseTracked("mixing");
   }, [phase, activeBallNumbers.length, setPhaseTracked]);
 
-  const selectBall = useCallback((num: number, position: [number, number, number]) => {
+  const selectBall = useCallback((num: number, position: [number, number, number], rotation: [number, number, number, number]) => {
     if (phaseRef.current !== "mixing" && phaseRef.current !== "settling" && phaseRef.current !== "selecting") return;
-    const ball = { number: num, startPosition: position };
+    const ball = { number: num, startPosition: position, startRotation: rotation };
     selectedBallRef.current = ball;
     setSelectedBall(ball);
     setActiveBallNumbers((prev) => prev.filter((n) => n !== num));
@@ -63,7 +74,9 @@ export function useBingoGameState() {
     drawnBalls,
     selectedBall,
     ballBodiesRef,
+    ballMeshesRef,
     registerBody,
+    registerMesh,
     startDraw,
     selectBall,
     onAnimationComplete,

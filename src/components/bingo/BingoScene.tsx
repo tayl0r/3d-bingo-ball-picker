@@ -28,8 +28,8 @@ function generateBallPositions(count: number, maxRadius: number): [number, numbe
 
 const INITIAL_POSITIONS = generateBallPositions(75, 2.0);
 
-const _spinAxis = new THREE.Vector3(1, 0, 1).normalize();
-const _spinQuat = new THREE.Quaternion();
+const SPIN_AXIS = Object.freeze(new THREE.Vector3(1, 0, 1).normalize());
+const _worldPos = new THREE.Vector3();
 
 // -- PhaseController: drives game loop inside Physics --
 
@@ -38,7 +38,8 @@ interface PhaseControllerProps {
   setPhase: (p: GamePhase) => void;
   activeBallNumbers: number[];
   ballBodiesRef: React.MutableRefObject<Map<number, RapierRigidBody>>;
-  selectBall: (num: number, position: [number, number, number]) => void;
+  ballMeshesRef: React.MutableRefObject<Map<number, THREE.Mesh>>;
+  selectBall: (num: number, position: [number, number, number], rotation: [number, number, number, number]) => void;
   quaternionRef: React.MutableRefObject<THREE.Quaternion>;
   spinTime: number;
   spinSpeed: number;
@@ -49,12 +50,16 @@ function PhaseController({
   setPhase,
   activeBallNumbers,
   ballBodiesRef,
+  ballMeshesRef,
   selectBall,
   quaternionRef,
   spinTime,
   spinSpeed,
 }: PhaseControllerProps) {
   const mixStartRef = useRef<number | null>(null);
+  const spinQuatRef = useRef(new THREE.Quaternion());
+  const spinTimeSnapshotRef = useRef(0);
+  const spinSpeedSnapshotRef = useRef(0);
   const settleStartRef = useRef<number | null>(null);
   // Guard: prevents firing phase transitions multiple frames before React re-renders
   const transitionedRef = useRef(false);
@@ -64,7 +69,7 @@ function PhaseController({
     transitionedRef.current = false;
   }, [phase]);
 
-  useFrame(({ clock }, delta) => {
+  useFrame(({ clock, camera }, delta) => {
     if (transitionedRef.current) return;
 
     const now = clock.elapsedTime;
@@ -73,10 +78,12 @@ function PhaseController({
     if (phase === "mixing") {
       if (mixStartRef.current === null) {
         mixStartRef.current = now;
+        spinTimeSnapshotRef.current = spinTime;
+        spinSpeedSnapshotRef.current = spinSpeed;
       }
 
       const elapsed = now - mixStartRef.current;
-      const t = elapsed / spinTime;
+      const t = elapsed / spinTimeSnapshotRef.current;
 
       if (t >= 1) {
         mixStartRef.current = null;
@@ -98,9 +105,9 @@ function PhaseController({
       }
 
       const baseSpeed = 3; // rad/s base
-      const angle = factor * baseSpeed * spinSpeed * delta;
-      _spinQuat.setFromAxisAngle(_spinAxis, angle);
-      quaternionRef.current.premultiply(_spinQuat);
+      const angle = factor * baseSpeed * spinSpeedSnapshotRef.current * delta;
+      spinQuatRef.current.setFromAxisAngle(SPIN_AXIS, angle);
+      quaternionRef.current.premultiply(spinQuatRef.current);
     }
 
     if (phase === "settling") {
@@ -130,25 +137,32 @@ function PhaseController({
     }
 
     if (phase === "selecting") {
-      let lowestY = Infinity;
-      let lowestNum = -1;
-      let lowestPos: [number, number, number] = [0, 0, 0];
+      const camPos = camera.position;
+      const meshes = ballMeshesRef.current;
+      let closestDist = Infinity;
+      let closestNum = -1;
+      let closestPos: [number, number, number] = [0, 0, 0];
+      let closestMesh: THREE.Mesh | null = null;
 
       for (const num of activeBallNumbers) {
-        const body = bodies.get(num);
-        if (body) {
-          const pos = body.translation();
-          if (pos.y < lowestY) {
-            lowestY = pos.y;
-            lowestNum = num;
-            lowestPos = [pos.x, pos.y, pos.z];
+        const mesh = meshes.get(num);
+        if (mesh) {
+          mesh.getWorldPosition(_worldPos);
+          const dx = _worldPos.x - camPos.x, dy = _worldPos.y - camPos.y, dz = _worldPos.z - camPos.z;
+          const dist = dx * dx + dy * dy + dz * dz;
+          if (dist < closestDist) {
+            closestDist = dist;
+            closestNum = num;
+            closestPos = [_worldPos.x, _worldPos.y, _worldPos.z];
+            closestMesh = mesh;
           }
         }
       }
 
       transitionedRef.current = true;
-      if (lowestNum !== -1) {
-        selectBall(lowestNum, lowestPos);
+      if (closestNum !== -1 && closestMesh) {
+        const wq = closestMesh.getWorldQuaternion(new THREE.Quaternion());
+        selectBall(closestNum, closestPos, [wq.x, wq.y, wq.z, wq.w]);
       } else {
         setPhase("idle");
       }
@@ -166,8 +180,10 @@ interface BingoSceneProps {
   activeBallNumbers: number[];
   selectedBall: SelectedBall | null;
   ballBodiesRef: React.MutableRefObject<Map<number, RapierRigidBody>>;
+  ballMeshesRef: React.MutableRefObject<Map<number, THREE.Mesh>>;
   registerBody: (num: number, body: RapierRigidBody | null) => void;
-  selectBall: (num: number, position: [number, number, number]) => void;
+  registerMesh: (num: number, mesh: THREE.Mesh | null) => void;
+  selectBall: (num: number, position: [number, number, number], rotation: [number, number, number, number]) => void;
   onAnimationComplete: () => void;
   spinTime: number;
   spinSpeed: number;
@@ -179,7 +195,9 @@ export function BingoScene({
   activeBallNumbers,
   selectedBall,
   ballBodiesRef,
+  ballMeshesRef,
   registerBody,
+  registerMesh,
   selectBall,
   onAnimationComplete,
   spinTime,
@@ -212,31 +230,36 @@ export function BingoScene({
       </Suspense>
       <Suspense fallback={null}>
         <Physics gravity={[0, -9.81, 0]}>
-          <PhaseController
-            phase={phase}
-            setPhase={setPhase}
-            activeBallNumbers={activeBallNumbers}
-            ballBodiesRef={ballBodiesRef}
-            selectBall={selectBall}
-            quaternionRef={quaternionRef}
-            spinTime={spinTime}
-            spinSpeed={spinSpeed}
-          />
-          <BingoMachine quaternionRef={quaternionRef} />
-          {activeBallNumbers.map((num) => (
-            <BingoBall
-              key={num}
-              number={num}
-              initialPosition={ballPositionMap.get(num)!}
-              registerBody={registerBody}
+          <group position={[0, 0.5, 0]}>
+            <PhaseController
+              phase={phase}
+              setPhase={setPhase}
+              activeBallNumbers={activeBallNumbers}
+              ballBodiesRef={ballBodiesRef}
+              ballMeshesRef={ballMeshesRef}
+              selectBall={selectBall}
+              quaternionRef={quaternionRef}
+              spinTime={spinTime}
+              spinSpeed={spinSpeed}
             />
-          ))}
+            <BingoMachine quaternionRef={quaternionRef} />
+            {activeBallNumbers.map((num) => (
+              <BingoBall
+                key={num}
+                number={num}
+                initialPosition={ballPositionMap.get(num)!}
+                registerBody={registerBody}
+                registerMesh={registerMesh}
+              />
+            ))}
+          </group>
         </Physics>
       </Suspense>
       {selectedBall && (
         <BingoBallAnimated
           number={selectedBall.number}
           startPosition={selectedBall.startPosition}
+          startRotation={selectedBall.startRotation}
           onComplete={onAnimationComplete}
         />
       )}

@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useMemo } from "react";
 import { RotatingMesh } from "./RotatingMesh";
 
 function randomSpeed() {
@@ -7,11 +7,11 @@ function randomSpeed() {
 }
 
 export function Scene() {
-  const rotationSpeeds = useRef({
+  const rotationSpeeds = useMemo(() => ({
     x: randomSpeed(),
     y: randomSpeed(),
     z: randomSpeed(),
-  }).current;
+  }), []);
 
   return (
     <>

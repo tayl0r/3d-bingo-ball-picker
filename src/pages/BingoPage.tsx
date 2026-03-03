@@ -9,7 +9,7 @@ import { disposeBallTextures } from "../utils/ballTexture";
 export function BingoPage() {
   const game = useBingoGameState();
   const [spinTime, setSpinTime] = useState(5);
-  const [spinSpeed, setSpinSpeed] = useState(1);
+  const [spinSpeed, setSpinSpeed] = useState(3);
 
   useEffect(() => {
     return () => disposeBallTextures();
@@ -23,7 +23,9 @@ export function BingoPage() {
         activeBallNumbers={game.activeBallNumbers}
         selectedBall={game.selectedBall}
         ballBodiesRef={game.ballBodiesRef}
+        ballMeshesRef={game.ballMeshesRef}
         registerBody={game.registerBody}
+        registerMesh={game.registerMesh}
         selectBall={game.selectBall}
         onAnimationComplete={game.onAnimationComplete}
         spinTime={spinTime}

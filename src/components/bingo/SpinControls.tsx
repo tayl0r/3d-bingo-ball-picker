@@ -33,7 +33,7 @@ export function SpinControls({ spinTime, setSpinTime, spinSpeed, setSpinSpeed }:
         Spin Speed: {spinSpeed.toFixed(1)}x
         <input
           type="range"
-          min={0.5} max={3} step={0.1}
+          min={0.5} max={4} step={0.1}
           value={spinSpeed}
           onChange={(e) => setSpinSpeed(Number(e.target.value))}
           style={{ width: 140 }}
