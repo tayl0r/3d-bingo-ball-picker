@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useRef, useEffect } from "react";
+import { Suspense, useMemo, useRef, useEffect, useState, useCallback } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import type { RapierRigidBody } from "@react-three/rapier";
@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { BingoMachine } from "./BingoMachine";
 import { BingoBall } from "./BingoBall";
 import { BingoBallAnimated } from "./BingoBallAnimated";
+import { LastBallResting, LastBallDeparting, LAST_BALL_REST_POS, LAST_BALL_SCALE, LAST_BALL_QUAT } from "./LastBall3D";
 import { HoloLogo, OrbitingLookAtTarget } from "./HoloLogo";
 import type { GamePhase, SelectedBall } from "../../hooks/useBingoGameState";
 import { useSphereRotation } from "../../hooks/useSphereRotation";
@@ -61,10 +62,8 @@ function PhaseController({
   const spinTimeSnapshotRef = useRef(0);
   const spinSpeedSnapshotRef = useRef(0);
   const settleStartRef = useRef<number | null>(null);
-  // Guard: prevents firing phase transitions multiple frames before React re-renders
   const transitionedRef = useRef(false);
 
-  // Clear the guard when phase actually changes (React re-rendered with new prop)
   useEffect(() => {
     transitionedRef.current = false;
   }, [phase]);
@@ -92,19 +91,18 @@ function PhaseController({
         return;
       }
 
-      // Eased angular velocity: ease-in first 20%, full 20-80%, ease-out last 20%
       let factor: number;
       if (t < 0.2) {
         const s = t / 0.2;
-        factor = s * s * s; // cubic ease-in
+        factor = s * s * s;
       } else if (t < 0.8) {
         factor = 1;
       } else {
         const s = 1 - (t - 0.8) / 0.2;
-        factor = s * s * s; // cubic ease-out
+        factor = s * s * s;
       }
 
-      const baseSpeed = 3; // rad/s base
+      const baseSpeed = 3;
       const angle = factor * baseSpeed * spinSpeedSnapshotRef.current * delta;
       spinQuatRef.current.setFromAxisAngle(SPIN_AXIS, angle);
       quaternionRef.current.premultiply(spinQuatRef.current);
@@ -178,6 +176,7 @@ interface BingoSceneProps {
   phase: GamePhase;
   setPhase: (p: GamePhase) => void;
   activeBallNumbers: number[];
+  drawnBalls: number[];
   selectedBall: SelectedBall | null;
   ballBodiesRef: React.MutableRefObject<Map<number, RapierRigidBody>>;
   ballMeshesRef: React.MutableRefObject<Map<number, THREE.Mesh>>;
@@ -193,6 +192,7 @@ export function BingoScene({
   phase,
   setPhase,
   activeBallNumbers,
+  drawnBalls,
   selectedBall,
   ballBodiesRef,
   ballMeshesRef,
@@ -205,6 +205,37 @@ export function BingoScene({
 }: BingoSceneProps) {
   const { quaternionRef, pointerHandlers, isDragging } = useSphereRotation();
   const lookAtTargetRef = useRef<THREE.Object3D>(null!);
+
+  // Last ball state: resting (static display) and departing (flying off screen)
+  const [restingBallNumber, setRestingBallNumber] = useState<number | null>(
+    () => drawnBalls.length > 0 ? drawnBalls[drawnBalls.length - 1] : null,
+  );
+  const [departingBallNumber, setDepartingBallNumber] = useState<number | null>(null);
+
+  // When a new ball is selected (animating in), start departing the old resting ball
+  const prevSelectedRef = useRef<SelectedBall | null>(null);
+  useEffect(() => {
+    if (selectedBall && !prevSelectedRef.current) {
+      // New ball animation starting — old resting ball departs
+      if (restingBallNumber !== null) {
+        setDepartingBallNumber(restingBallNumber);
+        setRestingBallNumber(null);
+      }
+    }
+    prevSelectedRef.current = selectedBall;
+  }, [selectedBall, restingBallNumber]);
+
+  // Wrap onAnimationComplete to also set the new resting ball
+  const handleAnimationComplete = useCallback(() => {
+    if (selectedBall) {
+      setRestingBallNumber(selectedBall.number);
+    }
+    onAnimationComplete();
+  }, [selectedBall, onAnimationComplete]);
+
+  const handleDepartComplete = useCallback(() => {
+    setDepartingBallNumber(null);
+  }, []);
 
   const ballPositionMap = useMemo(() => {
     const map = new Map<number, [number, number, number]>();
@@ -220,13 +251,12 @@ export function BingoScene({
       style={{ touchAction: "none", cursor: isDragging ? "grabbing" : "grab" }}
       {...pointerHandlers}
     >
-      {/* Lights outside Suspense so BingoBallAnimated is always lit */}
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 5, 5]} intensity={1} />
       <OrbitingLookAtTarget targetRef={lookAtTargetRef} />
       <Suspense fallback={null}>
-        <HoloLogo position={[-4.5, 2.8, -2]} scale={0.7} targetRef={lookAtTargetRef} />
-        <HoloLogo position={[4.5, 2.8, -2]} scale={0.7} targetRef={lookAtTargetRef} />
+        {/* Single logo docked to top-left */}
+        <HoloLogo position={[-5.8, 3.2, -1]} scale={0.55} targetRef={lookAtTargetRef} />
       </Suspense>
       <Suspense fallback={null}>
         <Physics gravity={[0, -9.81, 0]}>
@@ -255,12 +285,24 @@ export function BingoScene({
           </group>
         </Physics>
       </Suspense>
+
+      {/* Resting "last ball" 3D display */}
+      {restingBallNumber !== null && (
+        <LastBallResting number={restingBallNumber} position={LAST_BALL_REST_POS.toArray() as [number, number, number]} scale={LAST_BALL_SCALE} quaternion={LAST_BALL_QUAT} />
+      )}
+
+      {/* Departing old ball flying off screen */}
+      {departingBallNumber !== null && (
+        <LastBallDeparting number={departingBallNumber} position={LAST_BALL_REST_POS.toArray() as [number, number, number]} scale={LAST_BALL_SCALE} quaternion={LAST_BALL_QUAT} onComplete={handleDepartComplete} />
+      )}
+
+      {/* New ball flying to rest position */}
       {selectedBall && (
         <BingoBallAnimated
           number={selectedBall.number}
           startPosition={selectedBall.startPosition}
           startRotation={selectedBall.startRotation}
-          onComplete={onAnimationComplete}
+          onComplete={handleAnimationComplete}
         />
       )}
     </Canvas>
