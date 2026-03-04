@@ -18,8 +18,8 @@ export const GAME_SOUNDS = {
   /** Satisfying thud when ball lands at rest position (~150ms) */
   ballLand: [, , 925, .04, .3, .6, 1, .3, , 6.27, -184, .09, .17] as SoundParams,
 
-  /** Short percussive "clack" for spinning tick (~20ms) */
-  spinTick: [.12, , 150, , .008, .003, 4, 2, , , , , , , 2, , , , .05] as SoundParams,
+  /** Short percussive "clack" for spinning tick (~15ms) */
+  spinTick: [.1, , 80, , .005, .001, 4, 3, , , , , , , 4, , .5, , .02] as SoundParams,
 } as const;
 
 export const UI_SOUNDS = {
