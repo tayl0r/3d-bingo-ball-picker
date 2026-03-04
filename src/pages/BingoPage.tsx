@@ -34,6 +34,24 @@ export function BingoPage() {
       flexShrink: 0,
       border: "2px solid orange",
     }}>
+      {/* Top center copyright */}
+      <div
+        style={{
+          position: "absolute",
+          top: 16,
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 10,
+          color: "rgba(255, 255, 255, 0.4)",
+          fontSize: 14,
+          letterSpacing: 1,
+          whiteSpace: "nowrap",
+          pointerEvents: "none",
+        }}
+      >
+        &copy; 2026 Taylor Steil &middot; Created by Taylor Steil
+      </div>
+
       {/* 3D Scene */}
       <BingoScene
         phase={game.phase}
