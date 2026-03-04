@@ -4,7 +4,7 @@ import { useViewportScale } from "../hooks/useViewportScale";
 import { BingoScene } from "../components/bingo/BingoScene";
 import { GetABallButton } from "../components/bingo/GetABallButton";
 import { DrawnBallsList } from "../components/bingo/DrawnBallsList";
-import { SpinControls } from "../components/bingo/SpinControls";
+import { SpinStyleSelector } from "../components/bingo/SpinStyleSelector";
 import { GameHistoryModal } from "../components/bingo/GameHistoryModal";
 import { PatternPickerModal } from "../components/bingo/PatternPickerModal";
 import { CurrentPatternDisplay } from "../components/bingo/CurrentPatternDisplay";
@@ -82,114 +82,82 @@ export function BingoPage() {
         <DrawnBallsList balls={game.drawnBalls} />
       </div>
 
-      {/* Bottom-center: debug controls */}
+      {/* Left column: pattern, draw button, spin controls, action buttons */}
       <div
         style={{
           position: "absolute",
           bottom: 40,
-          left: "50%",
-          transform: "translateX(-50%)",
-          zIndex: 10,
-          pointerEvents: "auto",
-        }}
-      >
-        <SpinControls
-          spinTime={spinTime}
-          setSpinTime={setSpinTime}
-          spinSpeed={spinSpeed}
-          setSpinSpeed={setSpinSpeed}
-        />
-      </div>
-
-      {/* Pattern display above GET A BALL, horizontally centered with it */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 460,
           left: 40,
           zIndex: 10,
-          pointerEvents: "none",
           display: "flex",
-          justifyContent: "center",
-          minWidth: 400,
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 90,
+          pointerEvents: "none",
         }}
       >
         <CurrentPatternDisplay patternId={game.patternId} />
-      </div>
 
-      {/* GET A BALL button */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 360,
-          left: 40,
-          zIndex: 10,
-          pointerEvents: "auto",
-        }}
-      >
-        <GetABallButton
-          onClick={game.startDraw}
-          disabled={game.phase !== "idle" || game.activeBallNumbers.length === 0}
-          phase={game.phase}
-        />
-      </div>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20, pointerEvents: "auto" }}>
+          <GetABallButton
+            onClick={game.startDraw}
+            disabled={game.phase !== "idle" || game.activeBallNumbers.length === 0}
+            phase={game.phase}
+          />
+          <SpinStyleSelector
+            spinSpeed={spinSpeed}
+            setSpinSpeed={setSpinSpeed}
+            spinTime={spinTime}
+            setSpinTime={setSpinTime}
+          />
+        </div>
 
-      {/* Bottom-left secondary buttons */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 40,
-          left: 40,
-          zIndex: 10,
-          pointerEvents: "auto",
-        }}
-      >
-        <div style={{ display: "flex", gap: 14 }}>
-            <button
-              onClick={() => setShowPatternPicker(true)}
-              disabled={game.phase !== "idle"}
-              style={{
-                padding: "14px 32px",
-                fontSize: 20,
-                fontFamily: "var(--font-mono)",
-                fontWeight: 500,
-                letterSpacing: 2,
-                textTransform: "uppercase",
-                borderRadius: 12,
-                border: "1px solid var(--border-light)",
-                background: "rgba(10, 10, 20, 0.8)",
-                backdropFilter: "blur(8px)",
-                WebkitBackdropFilter: "blur(8px)",
-                color: game.phase !== "idle" ? "var(--text-dim)" : "var(--text)",
-                cursor: game.phase !== "idle" ? "not-allowed" : "pointer",
-                transition: "all 0.2s",
-              }}
-            >
-              New Game
-            </button>
-            <button
-              onClick={() => { purgeEmptyGames(); setShowHistory(true); }}
-              disabled={game.phase !== "idle"}
-              style={{
-                padding: "14px 32px",
-                fontSize: 20,
-                fontFamily: "var(--font-mono)",
-                fontWeight: 500,
-                letterSpacing: 2,
-                textTransform: "uppercase",
-                borderRadius: 12,
-                border: "1px solid var(--border-light)",
-                background: "rgba(10, 10, 20, 0.8)",
-                backdropFilter: "blur(8px)",
-                WebkitBackdropFilter: "blur(8px)",
-                color: game.phase !== "idle" ? "var(--text-dim)" : "var(--text)",
-                cursor: game.phase !== "idle" ? "not-allowed" : "pointer",
-                transition: "all 0.2s",
-              }}
-            >
-              History
-            </button>
-          </div>
+        <div style={{ display: "flex", gap: 14, pointerEvents: "auto" }}>
+          <button
+            onClick={() => setShowPatternPicker(true)}
+            disabled={game.phase !== "idle"}
+            style={{
+              padding: "14px 32px",
+              fontSize: 20,
+              fontFamily: "var(--font-mono)",
+              fontWeight: 500,
+              letterSpacing: 2,
+              textTransform: "uppercase",
+              borderRadius: 12,
+              border: "1px solid var(--border-light)",
+              background: "rgba(10, 10, 20, 0.8)",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+              color: game.phase !== "idle" ? "var(--text-dim)" : "var(--text)",
+              cursor: game.phase !== "idle" ? "not-allowed" : "pointer",
+              transition: "all 0.2s",
+            }}
+          >
+            New Game
+          </button>
+          <button
+            onClick={() => { purgeEmptyGames(); setShowHistory(true); }}
+            disabled={game.phase !== "idle"}
+            style={{
+              padding: "14px 32px",
+              fontSize: 20,
+              fontFamily: "var(--font-mono)",
+              fontWeight: 500,
+              letterSpacing: 2,
+              textTransform: "uppercase",
+              borderRadius: 12,
+              border: "1px solid var(--border-light)",
+              background: "rgba(10, 10, 20, 0.8)",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+              color: game.phase !== "idle" ? "var(--text-dim)" : "var(--text)",
+              cursor: game.phase !== "idle" ? "not-allowed" : "pointer",
+              transition: "all 0.2s",
+            }}
+          >
+            History
+          </button>
+        </div>
       </div>
 
       {/* Game History Modal */}

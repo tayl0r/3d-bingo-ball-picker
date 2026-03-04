@@ -30,7 +30,6 @@ function generateBallPositions(count: number, maxRadius: number): [number, numbe
 
 const INITIAL_POSITIONS = generateBallPositions(75, 2.0);
 
-const SPIN_AXIS = Object.freeze(new THREE.Vector3(1, 0, 1).normalize());
 const _worldPos = new THREE.Vector3();
 
 // -- PhaseController: drives game loop inside Physics --
@@ -59,6 +58,7 @@ function PhaseController({
   spinSpeed,
 }: PhaseControllerProps) {
   const mixStartRef = useRef<number | null>(null);
+  const spinAxisRef = useRef(new THREE.Vector3(1, 0.2, 0).normalize());
   const spinQuatRef = useRef(new THREE.Quaternion());
   const spinTimeSnapshotRef = useRef(0);
   const spinSpeedSnapshotRef = useRef(0);
@@ -82,6 +82,8 @@ function PhaseController({
         mixStartRef.current = now;
         spinTimeSnapshotRef.current = spinTime;
         spinSpeedSnapshotRef.current = spinSpeed;
+        const theta = Math.random() * Math.PI * 2;
+        spinAxisRef.current.set(Math.cos(theta), 0.2, Math.sin(theta)).normalize();
       }
 
       const elapsed = now - mixStartRef.current;
@@ -107,7 +109,7 @@ function PhaseController({
 
       const baseSpeed = 3;
       const angle = factor * baseSpeed * spinSpeedSnapshotRef.current * delta;
-      spinQuatRef.current.setFromAxisAngle(SPIN_AXIS, angle);
+      spinQuatRef.current.setFromAxisAngle(spinAxisRef.current, angle);
       quaternionRef.current.premultiply(spinQuatRef.current);
     }
 
