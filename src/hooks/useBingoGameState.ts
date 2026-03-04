@@ -31,6 +31,7 @@ export function useBingoGameState() {
     ballsFromDrawn(initialGameRef.current.drawnBalls),
   );
   const [drawnBalls, setDrawnBalls] = useState<number[]>(initialGameRef.current.drawnBalls);
+  const [patternId, setPatternId] = useState<string>(initialGameRef.current.patternId ?? "any-line");
   const [selectedBall, setSelectedBall] = useState<SelectedBall | null>(null);
   const selectedBallRef = useRef<SelectedBall | null>(null);
   const ballBodiesRef = useRef<Map<number, RapierRigidBody>>(new Map());
@@ -84,12 +85,13 @@ export function useBingoGameState() {
     setPhaseTracked("idle");
   }, [setPhaseTracked, currentGameId, drawnBalls]);
 
-  const newGame = useCallback(() => {
+  const newGame = useCallback((selectedPatternId: string) => {
     if (phase !== "idle") return;
-    const game = createGame();
+    const game = createGame(selectedPatternId);
     setCurrentGameId(game.id);
     setDrawnBalls([]);
     setActiveBallNumbers(Array.from({ length: 75 }, (_, i) => i + 1));
+    setPatternId(selectedPatternId);
   }, [phase]);
 
   const loadGame = useCallback((game: SavedGame) => {
@@ -98,6 +100,7 @@ export function useBingoGameState() {
     setCurrentGameId(game.id);
     setDrawnBalls(game.drawnBalls);
     setActiveBallNumbers(ballsFromDrawn(game.drawnBalls));
+    setPatternId(game.patternId ?? "any-line");
   }, [phase]);
 
   return {
@@ -116,5 +119,6 @@ export function useBingoGameState() {
     newGame,
     loadGame,
     currentGameId,
+    patternId,
   };
 }
