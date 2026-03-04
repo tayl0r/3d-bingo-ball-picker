@@ -1,0 +1,184 @@
+[
+  {
+    "id": "any-line",
+    "name": "Any Line",
+    "description": "Any complete row, column, or diagonal",
+    "grid": [
+      [1, 1, 1, 1, 1],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0]
+    ],
+    "tags": ["basic"]
+  },
+  {
+    "id": "four-corners",
+    "name": "Four Corners",
+    "description": "Mark all four corner squares",
+    "grid": [
+      [1, 0, 0, 0, 1],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [1, 0, 0, 0, 1]
+    ],
+    "tags": ["basic"]
+  },
+  {
+    "id": "blackout",
+    "name": "Blackout",
+    "description": "Cover every square on the card",
+    "grid": [
+      [1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1]
+    ],
+    "tags": ["basic"]
+  },
+  {
+    "id": "postage-stamp",
+    "name": "Postage Stamp",
+    "description": "Any 2x2 square in a corner",
+    "grid": [
+      [0, 0, 0, 1, 1],
+      [0, 0, 0, 1, 1],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0]
+    ],
+    "tags": ["basic"]
+  },
+  {
+    "id": "letter-t",
+    "name": "Letter T",
+    "description": "Top row plus middle column",
+    "grid": [
+      [1, 1, 1, 1, 1],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0]
+    ],
+    "tags": ["letter"]
+  },
+  {
+    "id": "letter-l",
+    "name": "Letter L",
+    "description": "Left column plus bottom row",
+    "grid": [
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1]
+    ],
+    "tags": ["letter"]
+  },
+  {
+    "id": "letter-h",
+    "name": "Letter H",
+    "description": "Both side columns plus middle row",
+    "grid": [
+      [1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1],
+      [1, 1, 1, 1, 1],
+      [1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1]
+    ],
+    "tags": ["letter"]
+  },
+  {
+    "id": "letter-x",
+    "name": "X",
+    "description": "Both diagonals crossing at center",
+    "grid": [
+      [1, 0, 0, 0, 1],
+      [0, 1, 0, 1, 0],
+      [0, 0, 1, 0, 0],
+      [0, 1, 0, 1, 0],
+      [1, 0, 0, 0, 1]
+    ],
+    "tags": ["letter", "shape"]
+  },
+  {
+    "id": "diamond",
+    "name": "Diamond",
+    "description": "Diamond shape in the center",
+    "grid": [
+      [0, 0, 1, 0, 0],
+      [0, 1, 0, 1, 0],
+      [1, 0, 0, 0, 1],
+      [0, 1, 0, 1, 0],
+      [0, 0, 1, 0, 0]
+    ],
+    "tags": ["shape"]
+  },
+  {
+    "id": "plus-sign",
+    "name": "Plus Sign",
+    "description": "Middle row and middle column",
+    "grid": [
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0],
+      [1, 1, 1, 1, 1],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0]
+    ],
+    "tags": ["shape"]
+  },
+  {
+    "id": "arrow",
+    "name": "Arrow",
+    "description": "Arrow pointing right",
+    "grid": [
+      [0, 0, 1, 0, 0],
+      [0, 0, 0, 1, 0],
+      [1, 1, 1, 1, 1],
+      [0, 0, 0, 1, 0],
+      [0, 0, 1, 0, 0]
+    ],
+    "tags": ["shape"]
+  },
+  {
+    "id": "heart",
+    "name": "Heart",
+    "description": "Heart shape",
+    "grid": [
+      [0, 1, 0, 1, 0],
+      [1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1],
+      [0, 1, 1, 1, 0],
+      [0, 0, 1, 0, 0]
+    ],
+    "tags": ["shape"]
+  },
+  {
+    "id": "outer-edge",
+    "name": "Outer Edge",
+    "description": "All squares along the border",
+    "grid": [
+      [1, 1, 1, 1, 1],
+      [1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1],
+      [1, 1, 1, 1, 1]
+    ],
+    "tags": ["advanced"]
+  },
+  {
+    "id": "checkerboard",
+    "name": "Checkerboard",
+    "description": "Alternating squares like a checkerboard",
+    "grid": [
+      [1, 0, 1, 0, 1],
+      [0, 1, 0, 1, 0],
+      [1, 0, 1, 0, 1],
+      [0, 1, 0, 1, 0],
+      [1, 0, 1, 0, 1]
+    ],
+    "tags": ["advanced"]
+  }
+]
