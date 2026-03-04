@@ -83,21 +83,32 @@ export function BingoPage() {
         />
       </div>
 
-      {/* Left controls: pattern display + GET A BALL */}
+      {/* Pattern display above GET A BALL, horizontally centered with it */}
       <div
         style={{
           position: "absolute",
           bottom: 460,
           left: 40,
           zIndex: 10,
-          pointerEvents: "auto",
+          pointerEvents: "none",
           display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 24,
+          justifyContent: "center",
+          minWidth: 400,
         }}
       >
         <CurrentPatternDisplay patternId={game.patternId} />
+      </div>
+
+      {/* GET A BALL button */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 360,
+          left: 40,
+          zIndex: 10,
+          pointerEvents: "auto",
+        }}
+      >
         <GetABallButton
           onClick={game.startDraw}
           disabled={game.phase !== "idle" || game.activeBallNumbers.length === 0}
