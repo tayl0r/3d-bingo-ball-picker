@@ -3,6 +3,8 @@
 
 export type SoundParams = (number | undefined)[];
 
+/* eslint-disable no-sparse-arrays */
+
 export const GAME_SOUNDS = {
   /** Short punchy "boop" when GET A BALL is clicked (~200ms) */
   ballDraw: [, , 537, .02, .02, .22, 1, 1.59, -6.98, 4.97] as SoundParams,
@@ -33,3 +35,5 @@ export const UI_SOUNDS = {
   /** Bright confirmation ping when pattern is selected (~150ms) */
   patternSelect: [, , 880, .01, .06, .15, 1, 1, , , 150, .03, .04] as SoundParams,
 } as const;
+
+/* eslint-enable no-sparse-arrays */
