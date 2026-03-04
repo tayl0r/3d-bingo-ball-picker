@@ -40,9 +40,9 @@ function createSoundManager() {
     playBallLand: (ballNumber?: number) => {
       const p = [...GAME_SOUNDS.ballLand];
       if (ballNumber != null) {
-        // Interpolate frequency: ball 1 = 150Hz, ball 75 = 990Hz
+        // Interpolate frequency: ball 1 = 80Hz, ball 75 = 1400Hz
         const t = (ballNumber - 1) / 74;
-        p[2] = 150 + t * 840;
+        p[2] = 80 + t * 1320;
       }
       play(p);
     },
