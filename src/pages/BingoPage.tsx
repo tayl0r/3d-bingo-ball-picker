@@ -83,7 +83,24 @@ export function BingoPage() {
         />
       </div>
 
-      {/* Left controls: GET A BALL at ~33% up, secondary buttons at bottom */}
+      {/* Pattern display: centered between top logo and GET A BALL button */}
+      <div
+        style={{
+          position: "absolute",
+          top: "15%",
+          bottom: "67%",
+          left: 40,
+          zIndex: 10,
+          pointerEvents: "none",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "flex-start",
+        }}
+      >
+        <CurrentPatternDisplay patternId={game.patternId} />
+      </div>
+
+      {/* Left controls: GET A BALL at ~33% up */}
       <div
         style={{
           position: "absolute",
@@ -91,13 +108,8 @@ export function BingoPage() {
           left: 40,
           zIndex: 10,
           pointerEvents: "auto",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          gap: 16,
         }}
       >
-        <CurrentPatternDisplay patternId={game.patternId} />
         <GetABallButton
           onClick={game.startDraw}
           disabled={game.phase !== "idle" || game.activeBallNumbers.length === 0}
