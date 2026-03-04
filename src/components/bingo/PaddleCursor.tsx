@@ -16,15 +16,32 @@ const _unprojectTarget = new THREE.Vector3();
 interface PaddleCursorProps {
   isDraggingRef: React.RefObject<boolean>;
   groupPosition: [number, number, number];
+  fixed?: boolean;
 }
 
-export function PaddleCursor({ isDraggingRef, groupPosition }: PaddleCursorProps) {
+export function PaddleCursor({ isDraggingRef, groupPosition, fixed }: PaddleCursorProps) {
   const bodyRef = useRef<RapierRigidBody>(null);
   const wasActiveRef = useRef(false);
 
   useFrame((state) => {
     const body = bodyRef.current;
     if (!body) return;
+
+    // Fixed mode: place paddle at the bottom of the sphere
+    if (fixed) {
+      const bottomPos = {
+        x: groupPosition[0],
+        y: groupPosition[1] - MAX_OFFSET,
+        z: groupPosition[2],
+      };
+      if (!wasActiveRef.current) {
+        body.setTranslation(bottomPos, true);
+        wasActiveRef.current = true;
+      } else {
+        body.setNextKinematicTranslation(bottomPos);
+      }
+      return;
+    }
 
     if (isDraggingRef.current) {
       if (wasActiveRef.current) {

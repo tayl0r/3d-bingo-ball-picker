@@ -163,7 +163,7 @@ export function BingoPage() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: 70,
+          gap: 50,
           pointerEvents: "none",
         }}
       >
@@ -193,7 +193,7 @@ export function BingoPage() {
               spinMode={spinMode}
               setSpinMode={setSpinMode}
             />
-            <VolumeControl paddleEnabled={paddleEnabled} onPaddleToggle={setPaddleEnabled} />
+            <VolumeControl paddleEnabled={paddleEnabled} onPaddleToggle={setPaddleEnabled} spinMode={spinMode} />
           </div>
         </div>
 

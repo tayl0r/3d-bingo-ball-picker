@@ -35,6 +35,7 @@ const INITIAL_POSITIONS = generateBallPositions(75, BALL_SPAWN_RADIUS);
 const BASE_SPIN_SPEED = 3;
 const TICK_INTERVAL = 1.2;
 const AUTO_RESTART_DELAY_MS = 3000;
+const AUTO_SPIN_SOUND_DURATION = 3;
 const EASE_IN_DURATION = 0.5;
 
 const _worldPos = new THREE.Vector3();
@@ -115,7 +116,7 @@ function PhaseController({
         autoMixStartRef.current = now;
         spinSpeedSnapshotRef.current = spinSpeed;
         const theta = Math.random() * Math.PI * 2;
-        spinAxisRef.current.set(Math.cos(theta), 0.2, Math.sin(theta)).normalize();
+        spinAxisRef.current.set(Math.cos(theta), 0.3, Math.sin(theta)).normalize();
         spinDistanceRef.current = 0;
       }
 
@@ -128,10 +129,13 @@ function PhaseController({
 
       const angle = factor * BASE_SPIN_SPEED * spinSpeedSnapshotRef.current * delta;
 
-      spinDistanceRef.current += angle;
-      if (spinDistanceRef.current >= TICK_INTERVAL) {
-        spinDistanceRef.current -= TICK_INTERVAL;
-        soundManager.playSpinTick();
+      // Only play spin sound for the first 3 seconds of auto-mixing
+      if (elapsed <= AUTO_SPIN_SOUND_DURATION) {
+        spinDistanceRef.current += angle;
+        if (spinDistanceRef.current >= TICK_INTERVAL) {
+          spinDistanceRef.current -= TICK_INTERVAL;
+          soundManager.playSpinTick();
+        }
       }
 
       spinQuatRef.current.setFromAxisAngle(spinAxisRef.current, angle);
@@ -392,7 +396,14 @@ function SceneContent({
                 registerMesh={registerMesh}
               />
             ))}
-            {paddleEnabled && phase !== "settling" && phase !== "selecting" && (
+            {spinMode === "auto" && phase !== "settling" && phase !== "selecting" && (
+              <PaddleCursor
+                isDraggingRef={isDraggingRef}
+                groupPosition={layout.spherePosition}
+                fixed
+              />
+            )}
+            {spinMode === "manual" && paddleEnabled && phase !== "settling" && phase !== "selecting" && (
               <PaddleCursor
                 isDraggingRef={isDraggingRef}
                 groupPosition={layout.spherePosition}

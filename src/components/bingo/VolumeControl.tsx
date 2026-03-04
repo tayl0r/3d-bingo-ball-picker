@@ -3,9 +3,12 @@ import { useSoundSettings } from "../../hooks/useSoundSettings";
 interface VolumeControlProps {
   paddleEnabled: boolean;
   onPaddleToggle: (enabled: boolean) => void;
+  spinMode?: "manual" | "auto";
 }
 
-export function VolumeControl({ paddleEnabled, onPaddleToggle }: VolumeControlProps) {
+export function VolumeControl({ paddleEnabled, onPaddleToggle, spinMode }: VolumeControlProps) {
+  const paddleForceOn = spinMode === "auto";
+  const paddleActive = paddleForceOn || paddleEnabled;
   const { volume, muted, setVolume, setMuted } = useSoundSettings();
 
   return (
@@ -63,25 +66,27 @@ export function VolumeControl({ paddleEnabled, onPaddleToggle }: VolumeControlPr
         }}
       />
       <button
-        onClick={() => onPaddleToggle(!paddleEnabled)}
+        onClick={() => { if (!paddleForceOn) onPaddleToggle(!paddleEnabled); }}
+        disabled={paddleForceOn}
         style={{
           background: "none",
           border: "none",
-          color: paddleEnabled ? "var(--cyan)" : "var(--text-dim)",
+          color: paddleActive ? "var(--cyan)" : "var(--text-dim)",
           fontSize: 16,
-          cursor: "pointer",
+          cursor: paddleForceOn ? "default" : "pointer",
           padding: "2px 4px",
           lineHeight: 1,
           display: "flex",
           alignItems: "center",
           gap: 4,
+          opacity: paddleForceOn ? 0.6 : 1,
         }}
-        title={paddleEnabled ? "Disable ball paddle" : "Enable ball paddle"}
+        title={paddleForceOn ? "Paddle always on in auto mode" : paddleActive ? "Disable ball paddle" : "Enable ball paddle"}
       >
         <span style={{
           fontSize: 18,
-          filter: paddleEnabled ? "none" : "grayscale(1)",
-          opacity: paddleEnabled ? 1 : 0.5,
+          filter: paddleActive ? "none" : "grayscale(1)",
+          opacity: paddleActive ? 1 : 0.5,
         }}>🏓</span>
         <span
           style={{
@@ -89,12 +94,12 @@ export function VolumeControl({ paddleEnabled, onPaddleToggle }: VolumeControlPr
             fontFamily: "var(--font-mono)",
             letterSpacing: 1,
             textTransform: "uppercase",
-            opacity: paddleEnabled ? 1 : 0.5,
+            opacity: paddleActive ? 1 : 0.5,
             width: 24,
             textAlign: "center",
           }}
         >
-          {paddleEnabled ? "on" : "off"}
+          {paddleActive ? "on" : "off"}
         </span>
       </button>
     </div>
