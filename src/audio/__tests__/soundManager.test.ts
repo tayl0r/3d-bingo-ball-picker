@@ -97,16 +97,14 @@ describe("soundManager", () => {
   it("exposes all game sound play methods", async () => {
     const sm = await getSoundManager();
     expect(typeof sm.playBallDraw).toBe("function");
-    expect(typeof sm.playMixing).toBe("function");
     expect(typeof sm.playBallLaunch).toBe("function");
     expect(typeof sm.playBallLand).toBe("function");
+    expect(typeof sm.playSpinTick).toBe("function");
   });
 
   it("exposes all UI sound play methods", async () => {
     const sm = await getSoundManager();
     expect(typeof sm.playButtonClick).toBe("function");
-    expect(typeof sm.playModalOpen).toBe("function");
-    expect(typeof sm.playModalClose).toBe("function");
     expect(typeof sm.playToggleSwitch).toBe("function");
     expect(typeof sm.playPatternSelect).toBe("function");
   });

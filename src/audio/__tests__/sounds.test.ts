@@ -3,7 +3,7 @@ import { GAME_SOUNDS, UI_SOUNDS, type SoundParams } from "../sounds";
 
 describe("sounds", () => {
   describe("GAME_SOUNDS", () => {
-    const expectedKeys = ["ballDraw", "mixing", "ballLaunch", "ballLand", "spinTick"];
+    const expectedKeys = ["ballDraw", "ballLaunch", "ballLand", "spinTick"];
 
     it("exports all required game sound keys", () => {
       for (const key of expectedKeys) {
@@ -24,8 +24,6 @@ describe("sounds", () => {
   describe("UI_SOUNDS", () => {
     const expectedKeys = [
       "buttonClick",
-      "modalOpen",
-      "modalClose",
       "toggleSwitch",
       "patternSelect",
     ];

@@ -86,7 +86,6 @@ function PhaseController({
         spinSpeedSnapshotRef.current = spinSpeed;
         const theta = Math.random() * Math.PI * 2;
         spinAxisRef.current.set(Math.cos(theta), 0.2, Math.sin(theta)).normalize();
-        soundManager.playMixing();
         spinDistanceRef.current = 0;
       }
 

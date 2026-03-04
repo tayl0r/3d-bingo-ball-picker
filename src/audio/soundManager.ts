@@ -35,7 +35,6 @@ function createSoundManager() {
 
   return {
     playBallDraw: () => play(GAME_SOUNDS.ballDraw),
-    playMixing: () => play(GAME_SOUNDS.mixing),
     playBallLaunch: () => play(GAME_SOUNDS.ballLaunch),
     playBallLand: (ballNumber?: number) => {
       const p = [...GAME_SOUNDS.ballLand];
@@ -48,8 +47,6 @@ function createSoundManager() {
     },
     playSpinTick: () => play(GAME_SOUNDS.spinTick),
     playButtonClick: () => play(UI_SOUNDS.buttonClick),
-    playModalOpen: () => play(UI_SOUNDS.modalOpen),
-    playModalClose: () => play(UI_SOUNDS.modalClose),
     playToggleSwitch: () => play(UI_SOUNDS.toggleSwitch),
     playPatternSelect: () => play(UI_SOUNDS.patternSelect),
     isMuted: () => settings.muted,

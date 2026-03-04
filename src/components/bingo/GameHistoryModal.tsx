@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { getAllGames, deleteGame, type SavedGame } from "../../utils/gameStorage";
 import { getBallColor } from "../../utils/ballTexture";
 import patterns from "../../data/bingoPatterns.json";
@@ -39,13 +39,9 @@ export function GameHistoryModal({ onClose, onLoadGame, currentGameId }: GameHis
     setConfirmDeleteId(null);
   };
 
-  useEffect(() => {
-    soundManager.playModalOpen();
-  }, []);
-
   return (
     <div
-      onClick={() => { soundManager.playModalClose(); onClose(); }}
+      onClick={onClose}
       style={{
         position: "fixed",
         inset: 0,
@@ -94,7 +90,7 @@ export function GameHistoryModal({ onClose, onLoadGame, currentGameId }: GameHis
             GAME HISTORY
           </h2>
           <button
-            onClick={() => { soundManager.playModalClose(); onClose(); }}
+            onClick={onClose}
             style={{
               background: "none",
               border: "none",
