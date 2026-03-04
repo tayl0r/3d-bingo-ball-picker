@@ -1,3 +1,5 @@
+import { soundManager } from "../../audio/soundManager";
+
 const COLUMNS = [
   { letter: "B", range: [1, 15], color: "#1E90FF" },
   { letter: "I", range: [16, 30], color: "#FF4444" },
@@ -62,6 +64,7 @@ export function DrawnBallsList({ balls }: { balls: number[] }) {
               return (
                 <div
                   key={num}
+                  onClick={() => soundManager.playBallLand(num)}
                   style={{
                     width: 60,
                     height: 42,
@@ -76,6 +79,7 @@ export function DrawnBallsList({ balls }: { balls: number[] }) {
                     borderRadius: 8,
                     transition: "all 0.3s ease",
                     opacity: isDrawn ? 1 : 0.4,
+                    cursor: "pointer",
                   }}
                 >
                   {num}

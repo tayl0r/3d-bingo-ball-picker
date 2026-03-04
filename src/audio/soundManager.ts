@@ -37,7 +37,15 @@ function createSoundManager() {
     playBallDraw: () => play(GAME_SOUNDS.ballDraw),
     playMixing: () => play(GAME_SOUNDS.mixing),
     playBallLaunch: () => play(GAME_SOUNDS.ballLaunch),
-    playBallLand: () => play(GAME_SOUNDS.ballLand),
+    playBallLand: (ballNumber?: number) => {
+      const p = [...GAME_SOUNDS.ballLand];
+      if (ballNumber != null) {
+        // Interpolate frequency: ball 1 = 330Hz, ball 75 = 990Hz
+        const t = (ballNumber - 1) / 74;
+        p[2] = 330 + t * 660;
+      }
+      play(p);
+    },
     playSpinTick: () => play(GAME_SOUNDS.spinTick),
     playButtonClick: () => play(UI_SOUNDS.buttonClick),
     playModalOpen: () => play(UI_SOUNDS.modalOpen),

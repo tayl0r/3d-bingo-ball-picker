@@ -259,7 +259,7 @@ function SceneContent({
 
   // Wrap onAnimationComplete to also set the new resting ball
   const handleAnimationComplete = useCallback(() => {
-    soundManager.playBallLand();
+    soundManager.playBallLand(selectedBall?.number);
     if (selectedBall) {
       setRestingBallNumber(selectedBall.number);
     }
