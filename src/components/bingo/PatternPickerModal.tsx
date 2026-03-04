@@ -1,8 +1,8 @@
-import { useState, useEffect, type CSSProperties } from "react";
+import { useState, useEffect, useRef, type CSSProperties } from "react";
 import bingoPatterns from "../../data/bingoPatterns.json";
 import type { BingoPattern } from "../../data/bingoPatterns.types";
 import { PatternGrid } from "./PatternGrid";
-import { getFavorites, toggleFavorite } from "../../utils/patternFavorites";
+import { getFavorites, toggleFavorite, getActiveTag, setActiveTag as saveActiveTag } from "../../utils/patternFavorites";
 
 interface PatternPickerModalProps {
   onSelect: (patternId: string) => void;
@@ -13,32 +13,31 @@ const patterns = bingoPatterns as BingoPattern[];
 
 export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTag, setActiveTagState] = useState<string | null>(() => {
-    return localStorage.getItem("bingo_pattern_active_tag") ?? null;
-  });
+  const uniqueTags = Array.from(new Set(patterns.flatMap((p) => p.tags)));
+  const [activeTag, setActiveTagState] = useState<string | null>(() => getActiveTag(uniqueTags));
   const setActiveTag = (tag: string | null) => {
     setActiveTagState(tag);
-    if (tag === null) {
-      localStorage.removeItem("bingo_pattern_active_tag");
-    } else {
-      localStorage.setItem("bingo_pattern_active_tag", tag);
-    }
+    saveActiveTag(tag);
   };
   const [favorites, setFavorites] = useState<Set<string>>(() => getFavorites());
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        if (document.activeElement instanceof HTMLInputElement) {
+          document.activeElement.blur();
+        } else {
+          onCloseRef.current();
+        }
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
-
-  // Derive unique tags from all patterns
-  const uniqueTags = Array.from(
-    new Set(patterns.flatMap((p) => p.tags))
-  );
+  }, []);
 
   // Filter patterns
   const filtered = patterns.filter((p) => {
