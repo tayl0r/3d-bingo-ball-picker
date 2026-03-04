@@ -38,7 +38,7 @@ export function BingoPage() {
       <div
         style={{
           position: "absolute",
-          top: 16,
+          bottom: 16,
           left: "50%",
           transform: "translateX(-50%)",
           zIndex: 10,
