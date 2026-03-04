@@ -1,0 +1,335 @@
+import { useState } from "react";
+import bingoPatterns from "../../data/bingoPatterns.json";
+import type { BingoPattern } from "../../data/bingoPatterns.types";
+import { PatternGrid } from "./PatternGrid";
+import { getFavorites, toggleFavorite } from "../../utils/patternFavorites";
+
+interface PatternPickerModalProps {
+  onSelect: (patternId: string) => void;
+  onClose: () => void;
+}
+
+const patterns = bingoPatterns as BingoPattern[];
+
+export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [favorites, setFavorites] = useState<Set<string>>(() => getFavorites());
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+
+  // Derive unique tags from all patterns
+  const uniqueTags = Array.from(
+    new Set(patterns.flatMap((p) => p.tags))
+  );
+
+  // Filter patterns
+  const filtered = patterns.filter((p) => {
+    // Search filter
+    if (searchQuery && !p.name.toLowerCase().includes(searchQuery.toLowerCase())) {
+      return false;
+    }
+    // Tag filter
+    if (activeTag === "favorites") {
+      return favorites.has(p.id);
+    }
+    if (activeTag !== null) {
+      return p.tags.includes(activeTag);
+    }
+    return true;
+  });
+
+  const handleToggleFavorite = (e: React.MouseEvent, patternId: string) => {
+    e.stopPropagation();
+    toggleFavorite(patternId);
+    setFavorites(getFavorites());
+  };
+
+  const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 100,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.7)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: "min(900px, 90%)",
+          maxHeight: "85%",
+          background: "rgba(20, 20, 35, 0.98)",
+          border: "1px solid rgba(245, 158, 11, 0.3)",
+          borderRadius: 16,
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          boxShadow: "0 0 60px rgba(0,0,0,0.5), 0 0 20px rgba(245,158,11,0.1)",
+        }}
+      >
+        {/* Header */}
+        <div
+          style={{
+            padding: "24px 32px",
+            borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <h2
+            style={{
+              fontSize: 20,
+              fontWeight: 700,
+              color: "rgba(245, 158, 11, 0.9)",
+              letterSpacing: 3,
+              margin: 0,
+              textTransform: "uppercase",
+            }}
+          >
+            Choose a Pattern
+          </h2>
+          <button
+            onClick={onClose}
+            style={{
+              background: "none",
+              border: "none",
+              color: "rgba(245, 158, 11, 0.9)",
+              fontSize: 28,
+              cursor: "pointer",
+              padding: "4px 10px",
+              lineHeight: 1,
+            }}
+          >
+            &times;
+          </button>
+        </div>
+
+        {/* Search + Filters + Grid */}
+        <div
+          style={{
+            flex: 1,
+            overflowY: "auto",
+            padding: "20px 32px 32px",
+          }}
+        >
+          {/* Search input */}
+          <input
+            type="text"
+            placeholder="Search patterns..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              width: "100%",
+              boxSizing: "border-box",
+              padding: "10px 16px",
+              borderRadius: 8,
+              fontSize: 14,
+              background: "rgba(255, 255, 255, 0.06)",
+              border: "1px solid rgba(255, 255, 255, 0.1)",
+              color: "white",
+              outline: "none",
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = "rgba(245, 158, 11, 0.5)";
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.1)";
+            }}
+          />
+
+          {/* Tag filter chips */}
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 8,
+              margin: "16px 0",
+            }}
+          >
+            {/* "All" chip */}
+            <button
+              onClick={() => setActiveTag(null)}
+              style={{
+                background: activeTag === null
+                  ? "rgba(245, 158, 11, 0.2)"
+                  : "rgba(255, 255, 255, 0.06)",
+                color: activeTag === null
+                  ? "rgba(245, 158, 11, 0.9)"
+                  : "rgba(255, 255, 255, 0.5)",
+                border: activeTag === null
+                  ? "1px solid rgba(245, 158, 11, 0.4)"
+                  : "1px solid transparent",
+                padding: "6px 14px",
+                borderRadius: 16,
+                fontSize: 12,
+                cursor: "pointer",
+              }}
+            >
+              All
+            </button>
+
+            {/* Tag chips */}
+            {uniqueTags.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => setActiveTag(tag)}
+                style={{
+                  background: activeTag === tag
+                    ? "rgba(245, 158, 11, 0.2)"
+                    : "rgba(255, 255, 255, 0.06)",
+                  color: activeTag === tag
+                    ? "rgba(245, 158, 11, 0.9)"
+                    : "rgba(255, 255, 255, 0.5)",
+                  border: activeTag === tag
+                    ? "1px solid rgba(245, 158, 11, 0.4)"
+                    : "1px solid transparent",
+                  padding: "6px 14px",
+                  borderRadius: 16,
+                  fontSize: 12,
+                  cursor: "pointer",
+                }}
+              >
+                {capitalize(tag)}
+              </button>
+            ))}
+
+            {/* Favorites chip */}
+            <button
+              onClick={() => setActiveTag("favorites")}
+              style={{
+                background: activeTag === "favorites"
+                  ? "rgba(245, 158, 11, 0.2)"
+                  : "rgba(255, 255, 255, 0.06)",
+                color: activeTag === "favorites"
+                  ? "rgba(245, 158, 11, 0.9)"
+                  : "rgba(255, 255, 255, 0.5)",
+                border: activeTag === "favorites"
+                  ? "1px solid rgba(245, 158, 11, 0.4)"
+                  : "1px solid transparent",
+                padding: "6px 14px",
+                borderRadius: 16,
+                fontSize: 12,
+                cursor: "pointer",
+              }}
+            >
+              ♥ Favorites
+            </button>
+          </div>
+
+          {/* Pattern cards grid */}
+          {filtered.length === 0 ? (
+            <div
+              style={{
+                textAlign: "center",
+                color: "rgba(255, 255, 255, 0.4)",
+                padding: 60,
+                fontSize: 16,
+              }}
+            >
+              No patterns found
+            </div>
+          ) : (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
+                gap: 16,
+              }}
+            >
+              {filtered.map((pattern) => {
+                const isHovered = hoveredCard === pattern.id;
+                const isFav = favorites.has(pattern.id);
+
+                return (
+                  <div
+                    key={pattern.id}
+                    onClick={() => onSelect(pattern.id)}
+                    onMouseEnter={() => setHoveredCard(pattern.id)}
+                    onMouseLeave={() => setHoveredCard(null)}
+                    style={{
+                      position: "relative",
+                      background: isHovered
+                        ? "rgba(245, 158, 11, 0.08)"
+                        : "rgba(255, 255, 255, 0.04)",
+                      border: isHovered
+                        ? "1px solid rgba(245, 158, 11, 0.3)"
+                        : "1px solid rgba(255, 255, 255, 0.08)",
+                      borderRadius: 12,
+                      padding: 16,
+                      cursor: "pointer",
+                      textAlign: "center",
+                      transition: "background 0.15s, border-color 0.15s",
+                    }}
+                  >
+                    {/* Heart toggle */}
+                    <button
+                      onClick={(e) => handleToggleFavorite(e, pattern.id)}
+                      style={{
+                        position: "absolute",
+                        top: 8,
+                        right: 8,
+                        fontSize: 18,
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        color: isFav
+                          ? "rgba(245, 158, 11, 0.9)"
+                          : "rgba(255, 255, 255, 0.3)",
+                        padding: 2,
+                        lineHeight: 1,
+                      }}
+                    >
+                      {isFav ? "\u2665" : "\u2661"}
+                    </button>
+
+                    {/* Pattern grid preview */}
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <PatternGrid grid={pattern.grid} size={80} />
+                    </div>
+
+                    {/* Pattern name */}
+                    <div
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 600,
+                        color: "white",
+                        marginTop: 10,
+                      }}
+                    >
+                      {pattern.name}
+                    </div>
+
+                    {/* Pattern description */}
+                    <div
+                      style={{
+                        fontSize: 11,
+                        color: "rgba(255, 255, 255, 0.4)",
+                        marginTop: 4,
+                      }}
+                    >
+                      {pattern.description}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
