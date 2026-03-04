@@ -12,12 +12,12 @@ export function CurrentPatternDisplay({ patternId }: CurrentPatternDisplayProps)
 
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-      <PatternGrid grid={pattern.grid} size={160} />
+      <PatternGrid grid={pattern.grid} size={260} />
       <span style={{
         color: "rgba(245, 158, 11, 0.9)",
-        fontSize: 28,
+        fontSize: 40,
         fontWeight: 700,
-        letterSpacing: 2,
+        letterSpacing: 3,
         textTransform: "uppercase",
       }}>
         {pattern.name}
