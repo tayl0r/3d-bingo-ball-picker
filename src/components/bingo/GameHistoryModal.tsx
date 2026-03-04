@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { getAllGames, deleteGame, type SavedGame } from "../../utils/gameStorage";
 import { getBallColor } from "../../utils/ballTexture";
+import patterns from "../../data/bingoPatterns.json";
+import type { BingoPattern } from "../../data/bingoPatterns.types";
+import { PatternGrid } from "./PatternGrid";
 
 function getBallLetter(num: number): string {
   if (num <= 15) return "B";
@@ -155,6 +158,20 @@ export function GameHistoryModal({ onClose, onLoadGame, currentGameId }: GameHis
                         Active
                       </span>
                     )}
+                    {(() => {
+                      const pattern = (patterns as BingoPattern[]).find(
+                        (p) => p.id === ((game as SavedGame & { patternId?: string }).patternId ?? "any-line")
+                      );
+                      if (!pattern) return null;
+                      return (
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                          <PatternGrid grid={pattern.grid} size={28} />
+                          <span style={{ fontSize: 13, color: "rgba(255,255,255,0.6)" }}>
+                            {pattern.name}
+                          </span>
+                        </div>
+                      );
+                    })()}
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: 18, color: "var(--text-dim)" }}>
                       {game.drawnBalls.length}/75 drawn
                     </span>
