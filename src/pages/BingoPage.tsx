@@ -42,7 +42,12 @@ export function BingoPage() {
     try { const v = localStorage.getItem("bingo_spin_time"); return v ? Number(v) : 5; } catch { return 5; }
   });
   const [spinSpeed, setSpinSpeed] = useState(() => {
-    try { const v = localStorage.getItem("bingo_spin_speed"); return v ? Number(v) : 3; } catch { return 3; }
+    try {
+      const mode = localStorage.getItem("bingo_spin_mode");
+      if (mode !== "manual") return 1.5;
+      const v = localStorage.getItem("bingo_spin_speed");
+      return v ? Number(v) : 3;
+    } catch { return 1.5; }
   });
 
   const [paddleEnabled, setPaddleEnabled] = useState(() => {
@@ -53,7 +58,7 @@ export function BingoPage() {
   });
 
   useEffect(() => { try { localStorage.setItem("bingo_spin_time", String(spinTime)); } catch {} }, [spinTime]);
-  useEffect(() => { try { localStorage.setItem("bingo_spin_speed", String(spinSpeed)); } catch {} }, [spinSpeed]);
+  useEffect(() => { if (spinMode === "manual") { try { localStorage.setItem("bingo_spin_speed", String(spinSpeed)); } catch {} } }, [spinSpeed, spinMode]);
   useEffect(() => { try { localStorage.setItem("bingo_paddle", String(paddleEnabled)); } catch {} }, [paddleEnabled]);
   useEffect(() => { try { localStorage.setItem("bingo_spin_mode", spinMode); } catch {} }, [spinMode]);
   const [customLogo, setCustomLogoState] = useState(() => getCustomLogo());
@@ -117,7 +122,7 @@ export function BingoPage() {
       )}
 
       {/* Logo edit button */}
-      <LogoEditButton onLogoChange={handleLogoChange} />
+      <LogoEditButton onLogoChange={handleLogoChange} disabled={game.phase !== "idle" && game.phase !== "auto-mixing"} />
 
       {/* 3D Scene */}
       <BingoScene
@@ -138,6 +143,7 @@ export function BingoPage() {
         logoAspect={customLogo?.aspect}
         paddleEnabled={paddleEnabled}
         spinMode={spinMode}
+
       />
 
       {/* Bottom-right: drawn balls board */}
@@ -191,7 +197,14 @@ export function BingoPage() {
               spinTime={spinTime}
               setSpinTime={setSpinTime}
               spinMode={spinMode}
-              setSpinMode={setSpinMode}
+              setSpinMode={(v) => {
+                setSpinMode(v);
+                if (v === "auto") {
+                  setSpinSpeed(1.5);
+                } else {
+                  try { const saved = localStorage.getItem("bingo_spin_speed"); if (saved) setSpinSpeed(Number(saved)); } catch {}
+                }
+              }}
             />
             <VolumeControl paddleEnabled={paddleEnabled} onPaddleToggle={setPaddleEnabled} spinMode={spinMode} />
           </div>

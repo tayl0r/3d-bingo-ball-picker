@@ -34,11 +34,17 @@ const BALL_SPAWN_RADIUS = 2.0;
 const INITIAL_POSITIONS = generateBallPositions(75, BALL_SPAWN_RADIUS);
 const BASE_SPIN_SPEED = 3;
 const TICK_INTERVAL = 1.2;
-const AUTO_RESTART_DELAY_MS = 3000;
 const AUTO_SPIN_SOUND_DURATION = 3;
 const EASE_IN_DURATION = 0.5;
 
+const SPIN_X_MAGNITUDE = 1.65;
+const SPIN_YZ_AMPLITUDE = 0.4;
+const SPIN_YZ_PERIOD = 10;
+
 const _worldPos = new THREE.Vector3();
+const _xAxis = new THREE.Vector3(1, 0, 0);
+const _yAxis = new THREE.Vector3(0, 1, 0);
+const _zAxis = new THREE.Vector3(0, 0, 1);
 
 interface PhaseControllerProps {
   phase: GamePhase;
@@ -51,6 +57,7 @@ interface PhaseControllerProps {
   spinTime: number;
   spinSpeed: number;
   spinMode: "manual" | "auto";
+  spinDebugRef: React.MutableRefObject<THREE.Vector3>;
 }
 
 function PhaseController({
@@ -64,9 +71,9 @@ function PhaseController({
   spinTime,
   spinSpeed,
   spinMode,
+  spinDebugRef,
 }: PhaseControllerProps) {
   const mixStartRef = useRef<number | null>(null);
-  const spinAxisRef = useRef(new THREE.Vector3(1, 0.2, 0).normalize());
   const spinQuatRef = useRef(new THREE.Quaternion());
   const spinTimeSnapshotRef = useRef(0);
   const spinSpeedSnapshotRef = useRef(0);
@@ -77,6 +84,10 @@ function PhaseController({
   const autoMixStartRef = useRef<number | null>(null);
   const fromAutoMixRef = useRef(false);
   const autoMixElapsedRef = useRef(0);
+  // Per-spin axis randomization
+  const spinXSignRef = useRef(1);
+  const spinYPhaseRef = useRef(0);
+  const spinZPhaseRef = useRef(0);
 
   useEffect(() => {
     transitionedRef.current = false;
@@ -100,10 +111,10 @@ function PhaseController({
     if (spinMode === "auto" && phase === "idle") {
       const timer = setTimeout(() => {
         setPhase("auto-mixing");
-      }, AUTO_RESTART_DELAY_MS);
+      }, spinTime * 500);
       return () => clearTimeout(timer);
     }
-  }, [phase, spinMode, setPhase]);
+  }, [phase, spinMode, spinTime, setPhase]);
 
   useFrame(({ clock, camera }, delta) => {
     if (transitionedRef.current) return;
@@ -111,13 +122,16 @@ function PhaseController({
     const now = clock.elapsedTime;
     const bodies = ballBodiesRef.current;
 
+    // Y/Z use absolute clock time for continuous sine waves across phase transitions
+    const sy = SPIN_YZ_AMPLITUDE * Math.sin(spinYPhaseRef.current + (now / SPIN_YZ_PERIOD) * Math.PI * 2);
+    const sz = SPIN_YZ_AMPLITUDE * Math.sin(spinZPhaseRef.current + (now / SPIN_YZ_PERIOD) * Math.PI * 2);
+
     if (phase === "auto-mixing") {
       if (autoMixStartRef.current === null) {
         autoMixStartRef.current = now;
-        spinSpeedSnapshotRef.current = spinSpeed;
-        const theta = Math.random() * Math.PI * 2;
-        spinAxisRef.current.set(Math.cos(theta), 0.3, Math.sin(theta)).normalize();
         spinDistanceRef.current = 0;
+        // Only randomize X direction on resume; keep Y/Z continuous
+        spinXSignRef.current = Math.random() < 0.5 ? -1 : 1;
       }
 
       const elapsed = now - autoMixStartRef.current;
@@ -127,19 +141,27 @@ function PhaseController({
         ? Math.pow(elapsed / EASE_IN_DURATION, 3)
         : 1;
 
-      const angle = factor * BASE_SPIN_SPEED * spinSpeedSnapshotRef.current * delta;
+      const sx = spinXSignRef.current * SPIN_X_MAGNITUDE;
+      spinDebugRef.current.set(sx, sy, sz);
+      const globalSpeed = factor * BASE_SPIN_SPEED * spinSpeed * delta;
+
+      spinQuatRef.current.setFromAxisAngle(_xAxis, sx * globalSpeed);
+      quaternionRef.current.premultiply(spinQuatRef.current);
+      spinQuatRef.current.setFromAxisAngle(_yAxis, sy * globalSpeed);
+      quaternionRef.current.premultiply(spinQuatRef.current);
+      spinQuatRef.current.setFromAxisAngle(_zAxis, sz * globalSpeed);
+      quaternionRef.current.premultiply(spinQuatRef.current);
 
       // Only play spin sound for the first 3 seconds of auto-mixing
       if (elapsed <= AUTO_SPIN_SOUND_DURATION) {
-        spinDistanceRef.current += angle;
+        const totalAngle = (Math.abs(sx) + Math.abs(sy) + Math.abs(sz)) * globalSpeed;
+        spinDistanceRef.current += totalAngle;
         if (spinDistanceRef.current >= TICK_INTERVAL) {
           spinDistanceRef.current -= TICK_INTERVAL;
           soundManager.playSpinTick();
         }
       }
 
-      spinQuatRef.current.setFromAxisAngle(spinAxisRef.current, angle);
-      quaternionRef.current.premultiply(spinQuatRef.current);
       return;
     }
 
@@ -150,19 +172,19 @@ function PhaseController({
         spinSpeedSnapshotRef.current = spinSpeed;
 
         if (fromAutoMixRef.current) {
-          // Coming from auto-mixing: inherit axis, calculate time offset
+          // Coming from auto-mixing: inherit axis randomization, calculate time offset
           const autoElapsed = autoMixElapsedRef.current;
           if (autoElapsed >= spinTimeSnapshotRef.current) {
-            // Min time met: start at beginning of ease-down (t=0.8)
             mixStartRef.current = now - (0.8 * spinTimeSnapshotRef.current);
           } else {
-            // Min time not met: continue from where we are
             mixStartRef.current = now - autoElapsed;
           }
           fromAutoMixRef.current = false;
         } else {
-          const theta = Math.random() * Math.PI * 2;
-          spinAxisRef.current.set(Math.cos(theta), 0.2, Math.sin(theta)).normalize();
+          // Fresh manual spin: randomize axis values
+          spinXSignRef.current = Math.random() < 0.5 ? -1 : 1;
+          spinYPhaseRef.current = Math.random() * Math.PI * 2;
+          spinZPhaseRef.current = Math.random() * Math.PI * 2;
         }
         spinDistanceRef.current = 0;
       }
@@ -188,16 +210,23 @@ function PhaseController({
         factor = s * s * s;
       }
 
-      const angle = factor * BASE_SPIN_SPEED * spinSpeedSnapshotRef.current * delta;
+      const sx = spinXSignRef.current * SPIN_X_MAGNITUDE;
+      spinDebugRef.current.set(sx, sy, sz);
+      const globalSpeed = factor * BASE_SPIN_SPEED * spinSpeedSnapshotRef.current * delta;
 
-      spinDistanceRef.current += angle;
+      spinQuatRef.current.setFromAxisAngle(_xAxis, sx * globalSpeed);
+      quaternionRef.current.premultiply(spinQuatRef.current);
+      spinQuatRef.current.setFromAxisAngle(_yAxis, sy * globalSpeed);
+      quaternionRef.current.premultiply(spinQuatRef.current);
+      spinQuatRef.current.setFromAxisAngle(_zAxis, sz * globalSpeed);
+      quaternionRef.current.premultiply(spinQuatRef.current);
+
+      const totalAngle = (Math.abs(sx) + Math.abs(sy) + Math.abs(sz)) * globalSpeed;
+      spinDistanceRef.current += totalAngle;
       if (spinDistanceRef.current >= TICK_INTERVAL) {
         spinDistanceRef.current -= TICK_INTERVAL;
         soundManager.playSpinTick();
       }
-
-      spinQuatRef.current.setFromAxisAngle(spinAxisRef.current, angle);
-      quaternionRef.current.premultiply(spinQuatRef.current);
     }
 
     if (phase === "settling") {
@@ -270,6 +299,30 @@ function PhaseController({
   return null;
 }
 
+const AXLE_HALF_LEN = 3.0; // matches sphere radius
+
+function SpinAxisLine({ spinDebugRef }: { spinDebugRef: React.MutableRefObject<THREE.Vector3> }) {
+  const meshRef = useRef<THREE.Mesh>(null!);
+  const _axis = useMemo(() => new THREE.Vector3(), []);
+  const _up = useMemo(() => new THREE.Vector3(0, 1, 0), []);
+  const _quat = useMemo(() => new THREE.Quaternion(), []);
+
+  useFrame(() => {
+    const v = spinDebugRef.current;
+    if (v.lengthSq() === 0) return;
+    _axis.copy(v).normalize();
+    _quat.setFromUnitVectors(_up, _axis);
+    meshRef.current.quaternion.copy(_quat);
+  });
+
+  return (
+    <mesh ref={meshRef}>
+      <cylinderGeometry args={[0.005, 0.005, AXLE_HALF_LEN * 2, 4]} />
+      <meshBasicMaterial wireframe color="#4488ff" transparent opacity={0.12} />
+    </mesh>
+  );
+}
+
 interface BingoSceneProps {
   phase: GamePhase;
   setPhase: (p: GamePhase) => void;
@@ -318,6 +371,7 @@ function SceneContent({
 }: SceneContentProps) {
   const layout = useFrustumLayout();
   const lookAtTargetRef = useRef<THREE.Object3D>(null!);
+  const spinDebugRef = useRef(new THREE.Vector3());
 
   // Last ball state: resting (static display) and departing (flying off screen)
   const [restingBallNumber, setRestingBallNumber] = useState<number | null>(
@@ -385,8 +439,10 @@ function SceneContent({
               spinTime={spinTime}
               spinSpeed={spinSpeed}
               spinMode={spinMode}
+              spinDebugRef={spinDebugRef}
             />
             <BingoMachine quaternionRef={quaternionRef} />
+            <SpinAxisLine spinDebugRef={spinDebugRef} />
             {activeBallNumbers.map((num) => (
               <BingoBall
                 key={num}
@@ -396,10 +452,11 @@ function SceneContent({
                 registerMesh={registerMesh}
               />
             ))}
-            {spinMode === "auto" && phase !== "settling" && phase !== "selecting" && (
+            {spinMode === "auto" && (
               <PaddleCursor
                 isDraggingRef={isDraggingRef}
                 groupPosition={layout.spherePosition}
+                quaternionRef={quaternionRef}
                 fixed
               />
             )}
@@ -407,6 +464,7 @@ function SceneContent({
               <PaddleCursor
                 isDraggingRef={isDraggingRef}
                 groupPosition={layout.spherePosition}
+                quaternionRef={quaternionRef}
               />
             )}
           </group>
