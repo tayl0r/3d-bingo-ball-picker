@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useBingoGameState } from "../hooks/useBingoGameState";
 import { useViewportScale } from "../hooks/useViewportScale";
-import { BingoScene } from "../components/bingo/BingoScene";
+import { BingoScene, AUTO_SPIN_SPEED } from "../components/bingo/BingoScene";
 import { GetABallButton } from "../components/bingo/GetABallButton";
 import { DrawnBallsList } from "../components/bingo/DrawnBallsList";
 import { SpinStyleSelector } from "../components/bingo/SpinStyleSelector";
@@ -44,10 +44,10 @@ export function BingoPage() {
   const [spinSpeed, setSpinSpeed] = useState(() => {
     try {
       const mode = localStorage.getItem("bingo_spin_mode");
-      if (mode !== "manual") return 1.5;
+      if (mode !== "manual") return AUTO_SPIN_SPEED;
       const v = localStorage.getItem("bingo_spin_speed");
       return v ? Number(v) : 3;
-    } catch { return 1.5; }
+    } catch { return AUTO_SPIN_SPEED; }
   });
 
   const [paddleEnabled, setPaddleEnabled] = useState(() => {
@@ -200,7 +200,7 @@ export function BingoPage() {
               setSpinMode={(v) => {
                 setSpinMode(v);
                 if (v === "auto") {
-                  setSpinSpeed(1.5);
+                  setSpinSpeed(AUTO_SPIN_SPEED);
                 } else {
                   try { const saved = localStorage.getItem("bingo_spin_speed"); if (saved) setSpinSpeed(Number(saved)); } catch {}
                 }

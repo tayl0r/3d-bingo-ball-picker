@@ -87,8 +87,8 @@ export function LogoEditButton({ onLogoChange, disabled }: LogoEditButtonProps) 
           opacity: disabled ? 0.15 : open ? 1 : 0.3,
           transition: "opacity 0.2s",
         }}
-        onMouseEnter={(e) => { e.currentTarget.style.opacity = "1"; }}
-        onMouseLeave={(e) => { if (!open) e.currentTarget.style.opacity = "0.3"; }}
+        onMouseEnter={(e) => { if (!disabled) e.currentTarget.style.opacity = "1"; }}
+        onMouseLeave={(e) => { if (!open && !disabled) e.currentTarget.style.opacity = "0.3"; }}
         title="Edit logo"
         aria-label="Edit logo"
       >

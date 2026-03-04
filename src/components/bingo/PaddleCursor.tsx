@@ -14,7 +14,6 @@ const _rayDir = new THREE.Vector3();
 const _unprojectTarget = new THREE.Vector3();
 const _inverseQuat = new THREE.Quaternion();
 
-
 interface PaddleCursorProps {
   isDraggingRef: React.RefObject<boolean>;
   groupPosition: [number, number, number];

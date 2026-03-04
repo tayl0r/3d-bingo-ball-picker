@@ -74,4 +74,4 @@ In Catalyst Agent, use `./start.local.sh` instead of `pnpm run dev`.
 - **Tests**: Co-located in `__tests__/` directories next to source files
 - **Win patterns**: Players choose a bingo pattern (winning formation) when starting a game. Pattern data in JSON, favorites in localStorage.
 - **Game phases**: `idle` → `auto-mixing` → `mixing` → `settling` → `selecting` → `animating` → `idle`. Phase drives sphere rotation, ball selection, and paddle visibility.
-- **Auto-spin**: Default spin mode. Sphere spins continuously in `auto-mixing` phase. GET A BALL triggers ease-down without full spin cycle. 3s auto-restart after each ball draw. Toggle in SpinStyleSelector, persisted in `bingo_spin_mode` localStorage key.
+- **Auto-spin**: Default spin mode. Sphere spins continuously in `auto-mixing` phase. GET A BALL triggers ease-down without full spin cycle. Auto-restart delay is configurable via Duration selector (Quick=1s, Medium=2.5s, Long=5s). Strength locked to soft (`AUTO_SPIN_SPEED`). Invisible paddle collider stays active and counter-rotates against sphere. Toggle in SpinStyleSelector, persisted in `bingo_spin_mode` localStorage key.

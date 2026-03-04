@@ -33,9 +33,15 @@ function generateBallPositions(count: number, maxRadius: number): [number, numbe
 const BALL_SPAWN_RADIUS = 2.0;
 const INITIAL_POSITIONS = generateBallPositions(75, BALL_SPAWN_RADIUS);
 const BASE_SPIN_SPEED = 3;
+export const AUTO_SPIN_SPEED = 1.5;
 const TICK_INTERVAL = 1.2;
-const AUTO_SPIN_SOUND_DURATION = 3;
-const EASE_IN_DURATION = 0.5;
+const AUTO_SPIN_SOUND_DURATION = 3;       // seconds of spin tick sound after auto-mix starts
+const AUTO_RESTART_DELAY_FACTOR = 500;    // ms per spinTime unit (Quick=2→1s, Medium=5→2.5s, Long=10→5s)
+const EASE_IN_DURATION = 0.5;             // seconds for cubic ease-in on auto-mix start
+const EASE_RAMP = 0.2;                    // fraction of spin time for ease-in/out ramps
+const SETTLE_SPEED_THRESHOLD = 0.5;       // ball speed below which it's considered settled
+const SETTLE_TIMEOUT = 5;                 // seconds before forcing settle
+const SETTLE_CONFIRMATION_DELAY = 0.25;   // seconds balls must stay settled before selecting
 
 const SPIN_X_MAGNITUDE = 1.65;
 const SPIN_YZ_AMPLITUDE = 0.4;
@@ -45,6 +51,22 @@ const _worldPos = new THREE.Vector3();
 const _xAxis = new THREE.Vector3(1, 0, 0);
 const _yAxis = new THREE.Vector3(0, 1, 0);
 const _zAxis = new THREE.Vector3(0, 0, 1);
+const _spinScratch = new THREE.Quaternion();
+
+/** Apply per-axis rotation to the sphere quaternion and update the debug axis display. */
+function applySpinRotation(
+  sx: number, sy: number, sz: number, speed: number,
+  quaternionRef: React.MutableRefObject<THREE.Quaternion>,
+  spinDebugRef: React.MutableRefObject<THREE.Vector3>,
+) {
+  spinDebugRef.current.set(sx, sy, sz);
+  _spinScratch.setFromAxisAngle(_xAxis, sx * speed);
+  quaternionRef.current.premultiply(_spinScratch);
+  _spinScratch.setFromAxisAngle(_yAxis, sy * speed);
+  quaternionRef.current.premultiply(_spinScratch);
+  _spinScratch.setFromAxisAngle(_zAxis, sz * speed);
+  quaternionRef.current.premultiply(_spinScratch);
+}
 
 interface PhaseControllerProps {
   phase: GamePhase;
@@ -74,7 +96,7 @@ function PhaseController({
   spinDebugRef,
 }: PhaseControllerProps) {
   const mixStartRef = useRef<number | null>(null);
-  const spinQuatRef = useRef(new THREE.Quaternion());
+
   const spinTimeSnapshotRef = useRef(0);
   const spinSpeedSnapshotRef = useRef(0);
   const settleStartRef = useRef<number | null>(null);
@@ -100,8 +122,8 @@ function PhaseController({
     }
   }, [phase]);
 
-  // Auto-spin phase management: handles both auto-restart (3s after draw)
-  // and live spinMode toggling. When auto+idle, delays 3s then spins.
+  // Auto-spin phase management: handles auto-restart after draw
+  // and live spinMode toggling. When auto+idle, delays then spins.
   // When manual+auto-mixing, snaps to idle immediately.
   useEffect(() => {
     if (spinMode === "manual" && phase === "auto-mixing") {
@@ -111,7 +133,7 @@ function PhaseController({
     if (spinMode === "auto" && phase === "idle") {
       const timer = setTimeout(() => {
         setPhase("auto-mixing");
-      }, spinTime * 500);
+      }, spinTime * AUTO_RESTART_DELAY_FACTOR);
       return () => clearTimeout(timer);
     }
   }, [phase, spinMode, spinTime, setPhase]);
@@ -142,17 +164,10 @@ function PhaseController({
         : 1;
 
       const sx = spinXSignRef.current * SPIN_X_MAGNITUDE;
-      spinDebugRef.current.set(sx, sy, sz);
       const globalSpeed = factor * BASE_SPIN_SPEED * spinSpeed * delta;
+      applySpinRotation(sx, sy, sz, globalSpeed, quaternionRef, spinDebugRef);
 
-      spinQuatRef.current.setFromAxisAngle(_xAxis, sx * globalSpeed);
-      quaternionRef.current.premultiply(spinQuatRef.current);
-      spinQuatRef.current.setFromAxisAngle(_yAxis, sy * globalSpeed);
-      quaternionRef.current.premultiply(spinQuatRef.current);
-      spinQuatRef.current.setFromAxisAngle(_zAxis, sz * globalSpeed);
-      quaternionRef.current.premultiply(spinQuatRef.current);
-
-      // Only play spin sound for the first 3 seconds of auto-mixing
+      // Only play spin sound for the first few seconds of auto-mixing
       if (elapsed <= AUTO_SPIN_SOUND_DURATION) {
         const totalAngle = (Math.abs(sx) + Math.abs(sy) + Math.abs(sz)) * globalSpeed;
         spinDistanceRef.current += totalAngle;
@@ -175,7 +190,7 @@ function PhaseController({
           // Coming from auto-mixing: inherit axis randomization, calculate time offset
           const autoElapsed = autoMixElapsedRef.current;
           if (autoElapsed >= spinTimeSnapshotRef.current) {
-            mixStartRef.current = now - (0.8 * spinTimeSnapshotRef.current);
+            mixStartRef.current = now - ((1 - EASE_RAMP) * spinTimeSnapshotRef.current);
           } else {
             mixStartRef.current = now - autoElapsed;
           }
@@ -200,26 +215,19 @@ function PhaseController({
       }
 
       let factor: number;
-      if (t < 0.2) {
-        const s = t / 0.2;
+      if (t < EASE_RAMP) {
+        const s = t / EASE_RAMP;
         factor = s * s * s;
-      } else if (t < 0.8) {
+      } else if (t < 1 - EASE_RAMP) {
         factor = 1;
       } else {
-        const s = 1 - (t - 0.8) / 0.2;
+        const s = 1 - (t - (1 - EASE_RAMP)) / EASE_RAMP;
         factor = s * s * s;
       }
 
       const sx = spinXSignRef.current * SPIN_X_MAGNITUDE;
-      spinDebugRef.current.set(sx, sy, sz);
       const globalSpeed = factor * BASE_SPIN_SPEED * spinSpeedSnapshotRef.current * delta;
-
-      spinQuatRef.current.setFromAxisAngle(_xAxis, sx * globalSpeed);
-      quaternionRef.current.premultiply(spinQuatRef.current);
-      spinQuatRef.current.setFromAxisAngle(_yAxis, sy * globalSpeed);
-      quaternionRef.current.premultiply(spinQuatRef.current);
-      spinQuatRef.current.setFromAxisAngle(_zAxis, sz * globalSpeed);
-      quaternionRef.current.premultiply(spinQuatRef.current);
+      applySpinRotation(sx, sy, sz, globalSpeed, quaternionRef, spinDebugRef);
 
       const totalAngle = (Math.abs(sx) + Math.abs(sy) + Math.abs(sz)) * globalSpeed;
       spinDistanceRef.current += totalAngle;
@@ -241,18 +249,18 @@ function PhaseController({
         if (body) {
           const vel = body.linvel();
           const speed = Math.sqrt(vel.x ** 2 + vel.y ** 2 + vel.z ** 2);
-          if (speed > 0.5) {
+          if (speed > SETTLE_SPEED_THRESHOLD) {
             allSettled = false;
             break;
           }
         }
       }
 
-      if (allSettled || settleElapsed > 5) {
+      if (allSettled || settleElapsed > SETTLE_TIMEOUT) {
         if (settledAtRef.current === null) {
           settledAtRef.current = now;
         }
-        if (now - settledAtRef.current >= 0.25) {
+        if (now - settledAtRef.current >= SETTLE_CONFIRMATION_DELAY) {
           settleStartRef.current = null;
           settledAtRef.current = null;
           transitionedRef.current = true;
