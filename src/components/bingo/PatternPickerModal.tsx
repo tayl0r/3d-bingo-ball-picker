@@ -53,9 +53,9 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
     background: isActive ? "rgba(245, 158, 11, 0.2)" : "rgba(255, 255, 255, 0.06)",
     color: isActive ? "rgba(245, 158, 11, 0.9)" : "rgba(255, 255, 255, 0.5)",
     border: isActive ? "1px solid rgba(245, 158, 11, 0.4)" : "1px solid transparent",
-    padding: "6px 14px",
-    borderRadius: 16,
-    fontSize: 12,
+    padding: "16px 36px",
+    borderRadius: 24,
+    fontSize: 36,
     cursor: "pointer",
   });
 
@@ -77,8 +77,8 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          width: "min(900px, 90%)",
-          maxHeight: "85%",
+          position: "absolute",
+          inset: 20,
           background: "rgba(20, 20, 35, 0.98)",
           border: "1px solid rgba(245, 158, 11, 0.3)",
           borderRadius: 16,
@@ -100,10 +100,10 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
         >
           <h2
             style={{
-              fontSize: 20,
+              fontSize: 60,
               fontWeight: 700,
               color: "rgba(245, 158, 11, 0.9)",
-              letterSpacing: 3,
+              letterSpacing: 6,
               margin: 0,
               textTransform: "uppercase",
             }}
@@ -116,7 +116,7 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
               background: "none",
               border: "none",
               color: "rgba(245, 158, 11, 0.9)",
-              fontSize: 28,
+              fontSize: 72,
               cursor: "pointer",
               padding: "4px 10px",
               lineHeight: 1,
@@ -143,9 +143,9 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
             style={{
               width: "100%",
               boxSizing: "border-box",
-              padding: "10px 16px",
-              borderRadius: 8,
-              fontSize: 14,
+              padding: "24px 40px",
+              borderRadius: 16,
+              fontSize: 42,
               background: "rgba(255, 255, 255, 0.06)",
               border: "1px solid rgba(255, 255, 255, 0.1)",
               color: "white",
@@ -164,8 +164,8 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
             style={{
               display: "flex",
               flexWrap: "wrap",
-              gap: 8,
-              margin: "16px 0",
+              gap: 16,
+              margin: "32px 0",
             }}
           >
             <button onClick={() => setActiveTag(null)} style={chipStyle(activeTag === null)}>
@@ -188,7 +188,7 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
                 textAlign: "center",
                 color: "rgba(255, 255, 255, 0.4)",
                 padding: 60,
-                fontSize: 16,
+                fontSize: 42,
               }}
             >
               No patterns found
@@ -197,8 +197,8 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
-                gap: 16,
+                gridTemplateColumns: "repeat(auto-fill, minmax(380px, 1fr))",
+                gap: 32,
               }}
             >
               {filtered.map((pattern) => {
@@ -219,8 +219,8 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
                       border: isHovered
                         ? "1px solid rgba(245, 158, 11, 0.3)"
                         : "1px solid rgba(255, 255, 255, 0.08)",
-                      borderRadius: 12,
-                      padding: 16,
+                      borderRadius: 24,
+                      padding: 32,
                       cursor: "pointer",
                       textAlign: "center",
                       transition: "background 0.15s, border-color 0.15s",
@@ -231,9 +231,9 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
                       onClick={(e) => handleToggleFavorite(e, pattern.id)}
                       style={{
                         position: "absolute",
-                        top: 8,
-                        right: 8,
-                        fontSize: 18,
+                        top: 16,
+                        right: 16,
+                        fontSize: 48,
                         background: "none",
                         border: "none",
                         cursor: "pointer",
@@ -254,16 +254,16 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
                         justifyContent: "center",
                       }}
                     >
-                      <PatternGrid grid={pattern.grid} size={80} />
+                      <PatternGrid grid={pattern.grid} size={240} />
                     </div>
 
                     {/* Pattern name */}
                     <div
                       style={{
-                        fontSize: 13,
+                        fontSize: 36,
                         fontWeight: 600,
                         color: "white",
-                        marginTop: 10,
+                        marginTop: 20,
                       }}
                     >
                       {pattern.name}
@@ -272,9 +272,9 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
                     {/* Pattern description */}
                     <div
                       style={{
-                        fontSize: 11,
+                        fontSize: 28,
                         color: "rgba(255, 255, 255, 0.4)",
-                        marginTop: 4,
+                        marginTop: 8,
                       }}
                     >
                       {pattern.description}
