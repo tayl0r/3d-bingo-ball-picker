@@ -8,7 +8,7 @@ interface GetABallButtonProps {
 
 const phaseText: Record<GamePhase, string> = {
   idle: "GET A BALL",
-  "auto-mixing": "AUTO...",
+  "auto-mixing": "GET A BALL",
   mixing: "MIXING...",
   settling: "SETTLING...",
   selecting: "SETTLING...",
@@ -17,7 +17,7 @@ const phaseText: Record<GamePhase, string> = {
 
 
 export function GetABallButton({ onClick, disabled, phase }: GetABallButtonProps) {
-  const isIdle = phase === "idle";
+  const isIdle = phase === "idle" || phase === "auto-mixing";
   const sheenActive = isIdle && !disabled;
 
   return (
