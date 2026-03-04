@@ -29,16 +29,13 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
-  // Filter patterns
   const filtered = patterns.filter((p) => {
-    // Search filter (matches name or description)
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       if (!p.name.toLowerCase().includes(q) && !p.description.toLowerCase().includes(q)) {
         return false;
       }
     }
-    // Tag filter
     if (activeTag === "favorites") {
       return favorites.has(p.id);
     }
@@ -95,7 +92,6 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
           boxShadow: "0 0 60px rgba(0,0,0,0.5), 0 0 20px rgba(245,158,11,0.1)",
         }}
       >
-        {/* Header */}
         <div
           style={{
             padding: "24px 32px",
@@ -133,7 +129,6 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
           </button>
         </div>
 
-        {/* Search + Filters + Grid */}
         <div
           style={{
             flex: 1,
@@ -141,7 +136,6 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
             padding: "20px 32px 32px",
           }}
         >
-          {/* Search input */}
           <input
             type="text"
             placeholder="Search patterns..."
@@ -166,7 +160,6 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
             }}
           />
 
-          {/* Tag filter chips */}
           <div
             style={{
               display: "flex",
@@ -188,7 +181,6 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
             </button>
           </div>
 
-          {/* Pattern cards grid */}
           {filtered.length === 0 ? (
             <div
               style={{
@@ -233,7 +225,6 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
                       transition: "background 0.15s, border-color 0.15s",
                     }}
                   >
-                    {/* Heart toggle */}
                     <button
                       onClick={(e) => handleToggleFavorite(e, pattern.id)}
                       style={{
@@ -254,7 +245,6 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
                       {isFav ? "\u2665" : "\u2661"}
                     </button>
 
-                    {/* Pattern grid preview */}
                     <div
                       style={{
                         display: "flex",
@@ -264,7 +254,6 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
                       <PatternGrid grid={pattern.grid} size={240} />
                     </div>
 
-                    {/* Pattern name */}
                     <div
                       style={{
                         fontSize: 36,
@@ -276,7 +265,6 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
                       {pattern.name}
                     </div>
 
-                    {/* Pattern description */}
                     <div
                       style={{
                         fontSize: 28,

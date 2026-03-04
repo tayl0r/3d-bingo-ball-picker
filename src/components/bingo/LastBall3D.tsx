@@ -72,9 +72,6 @@ interface LastBallDepartingProps {
   onComplete: () => void;
 }
 
-/**
- * Ball that flies off screen from the rest position when a new ball is incoming.
- */
 const EXIT_OFFSET = new THREE.Vector3(1.75, 2.65, 2.5);
 const DEPART_DURATION = 0.6;
 
@@ -113,7 +110,6 @@ export function LastBallDeparting({ number, position, scale, quaternion, onCompl
     const s = scale * (1 - eased * 0.7);
     meshRef.current.scale.setScalar(s);
 
-    // Fade out
     const mat = meshRef.current.material as THREE.MeshStandardMaterial;
     mat.opacity = 1 - eased;
 

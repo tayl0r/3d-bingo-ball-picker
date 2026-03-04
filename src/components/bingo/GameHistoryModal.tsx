@@ -1,18 +1,10 @@
 import { useState } from "react";
 import { getAllGames, deleteGame, type SavedGame } from "../../utils/gameStorage";
-import { getBallColor } from "../../utils/ballTexture";
+import { getBallColor, getBallLetter } from "../../utils/ballTexture";
 import patterns from "../../data/bingoPatterns.json";
 import type { BingoPattern } from "../../data/bingoPatterns.types";
 import { PatternGrid } from "./PatternGrid";
 import { soundManager } from "../../audio/soundManager";
-
-function getBallLetter(num: number): string {
-  if (num <= 15) return "B";
-  if (num <= 30) return "I";
-  if (num <= 45) return "N";
-  if (num <= 60) return "G";
-  return "O";
-}
 
 function formatDate(ts: number): string {
   const d = new Date(ts);
@@ -68,7 +60,6 @@ export function GameHistoryModal({ onClose, onLoadGame, currentGameId }: GameHis
           boxShadow: "0 0 60px rgba(0,0,0,0.5), 0 0 20px var(--amber-glow)",
         }}
       >
-        {/* Header */}
         <div
           style={{
             padding: "28px 32px",
@@ -105,7 +96,6 @@ export function GameHistoryModal({ onClose, onLoadGame, currentGameId }: GameHis
           </button>
         </div>
 
-        {/* Games list */}
         <div
           style={{
             flex: 1,
@@ -137,7 +127,6 @@ export function GameHistoryModal({ onClose, onLoadGame, currentGameId }: GameHis
                   transition: "border-color 0.2s",
                 }}
               >
-                {/* Top row: date + actions */}
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: 18, color: "var(--text-muted)" }}>
@@ -251,7 +240,6 @@ export function GameHistoryModal({ onClose, onLoadGame, currentGameId }: GameHis
                   </div>
                 </div>
 
-                {/* Ball preview strip */}
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
                   {game.drawnBalls.length === 0 ? (
                     <span style={{ fontSize: 16, color: "var(--text-dim)", fontStyle: "italic" }}>

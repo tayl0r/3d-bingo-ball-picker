@@ -69,7 +69,7 @@ export function BingoBallAnimated({ number, startPosition, startRotation, target
       const eased = 1 - Math.pow(1 - t, 3); // cubic ease-out
       quadraticBezier(_bezierTemp, startRef.current, controlRef.current, targetPos, eased);
       meshRef.current.position.copy(_bezierTemp);
-      const scale = 1 + (targetScale - 1) * eased; // scale 1x -> targetScale
+      const scale = 1 + (targetScale - 1) * eased;
       meshRef.current.scale.setScalar(scale);
       meshRef.current.quaternion.slerpQuaternions(startQuatRef.current, targetQuaternion, eased);
     }

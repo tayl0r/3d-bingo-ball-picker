@@ -75,7 +75,6 @@ export function LogoEditButton({ onLogoChange }: LogoEditButtonProps) {
 
   return (
     <div ref={popoverRef} style={{ position: "absolute", top: 16, left: 16, zIndex: 20 }}>
-      {/* Pencil button */}
       <button
         onClick={() => setOpen((v) => !v)}
         style={{
@@ -97,7 +96,6 @@ export function LogoEditButton({ onLogoChange }: LogoEditButtonProps) {
         </svg>
       </button>
 
-      {/* Popover */}
       {open && (
         <div
           style={{
@@ -117,7 +115,6 @@ export function LogoEditButton({ onLogoChange }: LogoEditButtonProps) {
             pointerEvents: "auto",
           }}
         >
-          {/* Upload */}
           <input
             ref={fileInputRef}
             type="file"
@@ -137,7 +134,6 @@ export function LogoEditButton({ onLogoChange }: LogoEditButtonProps) {
             Upload Image
           </button>
 
-          {/* Paste URL */}
           <div style={{ display: "flex", gap: 6 }}>
             <input
               type="text"
@@ -166,7 +162,6 @@ export function LogoEditButton({ onLogoChange }: LogoEditButtonProps) {
             </button>
           </div>
 
-          {/* Reset */}
           <button
             onClick={handleReset}
             style={{
@@ -185,7 +180,6 @@ export function LogoEditButton({ onLogoChange }: LogoEditButtonProps) {
             Reset to Default
           </button>
 
-          {/* Status */}
           {loading && <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>Processing...</div>}
           {error && <div style={{ color: "#ff6b6b", fontSize: 12 }}>{error}</div>}
         </div>

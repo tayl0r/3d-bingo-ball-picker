@@ -1,6 +1,7 @@
 import { useRef, useMemo, useState, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import { LOGO_ASPECT as DEFAULT_LOGO_ASPECT, LOGO_BASE_HEIGHT } from "../../hooks/useFrustumLayout";
 
 const BASE_URL = import.meta.env.BASE_URL;
 
@@ -161,8 +162,8 @@ export function HoloLogo({
     }
   });
 
-  const aspect = logoAspect ?? 744 / 267;
-  const height = 1.8 * scale;
+  const aspect = logoAspect ?? DEFAULT_LOGO_ASPECT;
+  const height = LOGO_BASE_HEIGHT * scale;
   const width = height * aspect;
 
   if (!texture) return null;

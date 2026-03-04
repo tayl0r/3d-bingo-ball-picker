@@ -18,6 +18,23 @@ import { getCustomLogo, setCustomLogo, clearCustomLogo } from "../utils/logoStor
 import bingoNicknames from "../data/bingoNicknames.json";
 import { soundManager } from "../audio/soundManager";
 
+const gameActionButtonStyle: React.CSSProperties = {
+  padding: "14px 32px",
+  fontSize: 20,
+  fontFamily: "var(--font-mono)",
+  fontWeight: 500,
+  letterSpacing: 2,
+  textTransform: "uppercase",
+  borderRadius: 12,
+  border: "1px solid var(--border-light)",
+  background: "rgba(10, 10, 20, 0.8)",
+  backdropFilter: "blur(8px)",
+  WebkitBackdropFilter: "blur(8px)",
+  color: "var(--text)",
+  cursor: "pointer",
+  transition: "all 0.2s",
+};
+
 export function BingoPage() {
   const game = useBingoGameState();
   const { scale, width, height } = useViewportScale();
@@ -68,7 +85,6 @@ export function BingoPage() {
       flexShrink: 0,
       border: "2px solid orange",
     }}>
-      {/* Bottom center copyright */}
       <div
         style={{
           position: "absolute",
@@ -91,10 +107,8 @@ export function BingoPage() {
         <NicknameSheen key={displayBall} displayBall={displayBall} nicknameText={nicknameText} />
       )}
 
-      {/* Logo edit button */}
       <LogoEditButton onLogoChange={handleLogoChange} />
 
-      {/* 3D Scene */}
       <BingoScene
         phase={game.phase}
         setPhase={game.setPhase}
@@ -113,7 +127,6 @@ export function BingoPage() {
         logoAspect={customLogo?.aspect}
       />
 
-      {/* Bottom-right: drawn balls board */}
       <div
         style={{
           position: "absolute",
@@ -170,51 +183,20 @@ export function BingoPage() {
           <button
             onClick={() => { soundManager.playButtonClick(); setPatternPickerMode("new"); setShowPatternPicker(true); }}
             disabled={game.phase !== "idle"}
-            style={{
-              padding: "14px 32px",
-              fontSize: 20,
-              fontFamily: "var(--font-mono)",
-              fontWeight: 500,
-              letterSpacing: 2,
-              textTransform: "uppercase",
-              borderRadius: 12,
-              border: "1px solid var(--border-light)",
-              background: "rgba(10, 10, 20, 0.8)",
-              backdropFilter: "blur(8px)",
-              WebkitBackdropFilter: "blur(8px)",
-              color: game.phase !== "idle" ? "var(--text-dim)" : "var(--text)",
-              cursor: game.phase !== "idle" ? "not-allowed" : "pointer",
-              transition: "all 0.2s",
-            }}
+            style={gameActionButtonStyle}
           >
             New Game
           </button>
           <button
             onClick={() => { soundManager.playButtonClick(); purgeEmptyGames(); setShowHistory(true); }}
             disabled={game.phase !== "idle"}
-            style={{
-              padding: "14px 32px",
-              fontSize: 20,
-              fontFamily: "var(--font-mono)",
-              fontWeight: 500,
-              letterSpacing: 2,
-              textTransform: "uppercase",
-              borderRadius: 12,
-              border: "1px solid var(--border-light)",
-              background: "rgba(10, 10, 20, 0.8)",
-              backdropFilter: "blur(8px)",
-              WebkitBackdropFilter: "blur(8px)",
-              color: game.phase !== "idle" ? "var(--text-dim)" : "var(--text)",
-              cursor: game.phase !== "idle" ? "not-allowed" : "pointer",
-              transition: "all 0.2s",
-            }}
+            style={gameActionButtonStyle}
           >
             History
           </button>
         </div>
       </div>
 
-      {/* Game History Modal */}
       {showHistory && (
         <GameHistoryModal
           onClose={() => setShowHistory(false)}
@@ -223,7 +205,6 @@ export function BingoPage() {
         />
       )}
 
-      {/* Pattern Picker Modal */}
       {showPatternPicker && (
         <PatternPickerModal
           onSelect={(patternId) => {

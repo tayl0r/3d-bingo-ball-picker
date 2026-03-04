@@ -1,5 +1,13 @@
 import * as THREE from "three";
 
+export function getBallLetter(num: number): string {
+  if (num <= 15) return "B";
+  if (num <= 30) return "I";
+  if (num <= 45) return "N";
+  if (num <= 60) return "G";
+  return "O";
+}
+
 export function getBallColor(num: number): string {
   if (num <= 15) return "#1E90FF";
   if (num <= 30) return "#FF4444";
@@ -22,13 +30,11 @@ export function createBallTexture(num: number): THREE.CanvasTexture {
   ctx.fillStyle = getBallColor(num);
   ctx.fillRect(0, 0, size, size);
 
-  // White circle for number
   ctx.beginPath();
   ctx.arc(size / 2, size / 2, size * 0.3, 0, Math.PI * 2);
   ctx.fillStyle = "#FFFFFF";
   ctx.fill();
 
-  // Number text
   ctx.fillStyle = "#000000";
   ctx.font = `bold ${size * 0.28}px Arial`;
   ctx.textAlign = "center";

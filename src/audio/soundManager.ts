@@ -2,6 +2,9 @@ import { zzfx } from "zzfx";
 import { GAME_SOUNDS, UI_SOUNDS, type SoundParams } from "./sounds";
 
 const STORAGE_KEY = "bingo_sound_settings";
+const BALL_FREQ_MIN_HZ = 40;
+const BALL_FREQ_MAX_HZ = 2000;
+const MAX_BALL_INDEX = 74; // 75 balls, 0-indexed
 
 interface SoundSettings {
   volume: number;
@@ -39,9 +42,9 @@ function createSoundManager() {
     playBallLand: (ballNumber?: number) => {
       const p = [...GAME_SOUNDS.ballLand];
       if (ballNumber != null) {
-        // Interpolate frequency: ball 1 = 40Hz, ball 75 = 2000Hz
-        const t = (ballNumber - 1) / 74;
-        p[2] = 40 + t * 1960;
+        // Interpolate frequency: ball 1 → MIN, ball 75 → MAX
+        const t = (ballNumber - 1) / MAX_BALL_INDEX;
+        p[2] = BALL_FREQ_MIN_HZ + t * (BALL_FREQ_MAX_HZ - BALL_FREQ_MIN_HZ);
       }
       play(p);
     },

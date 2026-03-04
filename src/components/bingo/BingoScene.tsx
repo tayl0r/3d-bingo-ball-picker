@@ -30,11 +30,10 @@ function generateBallPositions(count: number, maxRadius: number): [number, numbe
   return positions;
 }
 
-const INITIAL_POSITIONS = generateBallPositions(75, 2.0);
+const BALL_SPAWN_RADIUS = 2.0;
+const INITIAL_POSITIONS = generateBallPositions(75, BALL_SPAWN_RADIUS);
 
 const _worldPos = new THREE.Vector3();
-
-// -- PhaseController: drives game loop inside Physics --
 
 interface PhaseControllerProps {
   phase: GamePhase;
@@ -114,7 +113,6 @@ function PhaseController({
       const baseSpeed = 3;
       const angle = factor * baseSpeed * spinSpeedSnapshotRef.current * delta;
 
-      // Tick sound every ~0.5 radians of sphere travel (like a clicker hitting pegs)
       const TICK_INTERVAL = 1.2;
       spinDistanceRef.current += angle;
       if (spinDistanceRef.current >= TICK_INTERVAL) {
@@ -196,8 +194,6 @@ function PhaseController({
   return null;
 }
 
-// -- BingoScene: main exported component --
-
 interface BingoSceneProps {
   phase: GamePhase;
   setPhase: (p: GamePhase) => void;
@@ -254,7 +250,6 @@ function SceneContent({
   useEffect(() => {
     if (selectedBall && !prevSelectedRef.current) {
       soundManager.playBallLaunch();
-      // New ball animation starting — old resting ball departs
       if (restingBallNumber !== null) {
         setDepartingBallNumber(restingBallNumber);
         setRestingBallNumber(null);
@@ -328,7 +323,6 @@ function SceneContent({
         </Physics>
       </Suspense>
 
-      {/* Resting "last ball" 3D display */}
       {restingBallNumber !== null && (
         <LastBallResting
           number={restingBallNumber}
@@ -338,7 +332,6 @@ function SceneContent({
         />
       )}
 
-      {/* Departing old ball flying off screen */}
       {departingBallNumber !== null && (
         <LastBallDeparting
           number={departingBallNumber}
@@ -349,7 +342,6 @@ function SceneContent({
         />
       )}
 
-      {/* New ball flying to rest position */}
       {selectedBall && (
         <BingoBallAnimated
           number={selectedBall.number}

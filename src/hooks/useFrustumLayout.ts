@@ -11,8 +11,8 @@ const SPHERE_Z = 0;
 const PADDING = 0.05;
 
 // Logo intrinsic dimensions (aspect 744/267 ≈ 2.786, base height 1.8)
-const LOGO_ASPECT = 744 / 267;
-const LOGO_BASE_HEIGHT = 1.8;
+export const LOGO_ASPECT = 744 / 267;
+export const LOGO_BASE_HEIGHT = 1.8;
 
 // Ball radius for inset calculation (must match BingoBall.BALL_RADIUS)
 const BALL_DISPLAY_RADIUS = 0.25;

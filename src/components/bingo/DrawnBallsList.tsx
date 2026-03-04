@@ -20,7 +20,6 @@ export function DrawnBallsList({ balls }: { balls: number[] }) {
         pointerEvents: "none",
       }}
     >
-      {/* Compact BINGO board */}
       <div
         style={{
           background: "rgba(10, 10, 20, 0.85)",
@@ -44,7 +43,6 @@ export function DrawnBallsList({ balls }: { balls: number[] }) {
               gap: 4,
             }}
           >
-            {/* Column header */}
             <div
               style={{
                 fontFamily: "var(--font-display)",
@@ -57,7 +55,6 @@ export function DrawnBallsList({ balls }: { balls: number[] }) {
             >
               {col.letter}
             </div>
-            {/* Numbers in column */}
             {Array.from({ length: 15 }, (_, i) => {
               const num = col.range[0] + i;
               const isDrawn = drawnSet.has(num);
@@ -90,7 +87,6 @@ export function DrawnBallsList({ balls }: { balls: number[] }) {
         ))}
       </div>
 
-      {/* Count */}
       <div
         style={{
           textAlign: "center",

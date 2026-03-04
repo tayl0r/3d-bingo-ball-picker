@@ -34,7 +34,6 @@ export function BingoMachine({ quaternionRef }: BingoMachineProps) {
         </mesh>
       </MeshCollider>
 
-      {/* Visible wireframe */}
       <mesh>
         <sphereGeometry args={[CONTAINER_RADIUS, 24, 24]} />
         <meshBasicMaterial
