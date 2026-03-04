@@ -6,6 +6,8 @@ import { GetABallButton } from "../components/bingo/GetABallButton";
 import { DrawnBallsList } from "../components/bingo/DrawnBallsList";
 import { SpinControls } from "../components/bingo/SpinControls";
 import { GameHistoryModal } from "../components/bingo/GameHistoryModal";
+import { PatternPickerModal } from "../components/bingo/PatternPickerModal";
+import { CurrentPatternDisplay } from "../components/bingo/CurrentPatternDisplay";
 import { disposeBallTextures } from "../utils/ballTexture";
 import { purgeEmptyGames } from "../utils/gameStorage";
 
@@ -15,6 +17,7 @@ export function BingoPage() {
   const [spinTime, setSpinTime] = useState(5);
   const [spinSpeed, setSpinSpeed] = useState(3);
   const [showHistory, setShowHistory] = useState(false);
+  const [showPatternPicker, setShowPatternPicker] = useState(false);
 
   useEffect(() => {
     return () => disposeBallTextures();
@@ -88,8 +91,13 @@ export function BingoPage() {
           left: 40,
           zIndex: 10,
           pointerEvents: "auto",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+          gap: 16,
         }}
       >
+        <CurrentPatternDisplay patternId={game.patternId} />
         <GetABallButton
           onClick={game.startDraw}
           disabled={game.phase !== "idle" || game.activeBallNumbers.length === 0}
@@ -109,7 +117,7 @@ export function BingoPage() {
       >
         <div style={{ display: "flex", gap: 14 }}>
             <button
-              onClick={game.newGame}
+              onClick={() => setShowPatternPicker(true)}
               disabled={game.phase !== "idle"}
               style={{
                 padding: "14px 32px",
@@ -160,6 +168,17 @@ export function BingoPage() {
           onClose={() => setShowHistory(false)}
           onLoadGame={game.loadGame}
           currentGameId={game.currentGameId}
+        />
+      )}
+
+      {/* Pattern Picker Modal */}
+      {showPatternPicker && (
+        <PatternPickerModal
+          onSelect={(patternId) => {
+            game.newGame(patternId);
+            setShowPatternPicker(false);
+          }}
+          onClose={() => setShowPatternPicker(false)}
         />
       )}
     </div>
