@@ -1,8 +1,37 @@
-import { useRef, useCallback, useMemo, useEffect } from "react";
+import { useRef, useMemo, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { createBallTexture } from "../../utils/ballTexture";
 import { BALL_RADIUS } from "./BingoBall";
+
+// Squash-stretch keyframes matching the CSS squash-bounce timing (5s cycle).
+// Values amplified ~3x vs CSS since spheres need stronger deformation to be visible.
+// Each entry: [time (0-1), scaleXZ, scaleY]
+const SQUASH_KEYS: [number, number, number][] = [
+  [0.00, 1, 1],
+  [0.10, 1.12, 0.88],
+  [0.17, 0.91, 1.09],
+  [0.23, 1.06, 0.94],
+  [0.28, 0.97, 1.03],
+  [0.33, 1, 1],
+  [1.00, 1, 1],
+];
+const SQUASH_PERIOD = 5; // seconds, same as CSS animation duration
+
+function sampleSquash(t: number): [number, number] {
+  const frac = (t % SQUASH_PERIOD) / SQUASH_PERIOD;
+  for (let i = 1; i < SQUASH_KEYS.length; i++) {
+    if (frac <= SQUASH_KEYS[i][0]) {
+      const prev = SQUASH_KEYS[i - 1];
+      const next = SQUASH_KEYS[i];
+      const seg = (frac - prev[0]) / (next[0] - prev[0]);
+      // ease-in-out per segment
+      const e = seg * seg * (3 - 2 * seg);
+      return [prev[1] + (next[1] - prev[1]) * e, prev[2] + (next[2] - prev[2]) * e];
+    }
+  }
+  return [1, 1];
+}
 
 interface LastBallRestingProps {
   number: number;
@@ -11,18 +40,24 @@ interface LastBallRestingProps {
   quaternion: THREE.Quaternion;
 }
 
-/**
- * Static 3D ball sitting at the "last ball" rest position.
- */
 export function LastBallResting({ number, position, scale, quaternion }: LastBallRestingProps) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const timeRef = useRef(0);
   const texture = useMemo(() => createBallTexture(number), [number]);
 
-  const setRef = useCallback((mesh: THREE.Mesh | null) => {
-    if (mesh) mesh.quaternion.copy(quaternion);
+  useEffect(() => {
+    if (meshRef.current) meshRef.current.quaternion.copy(quaternion);
   }, [quaternion]);
 
+  useFrame((_, delta) => {
+    if (!meshRef.current) return;
+    timeRef.current += delta;
+    const [sx, sy] = sampleSquash(timeRef.current);
+    meshRef.current.scale.set(scale * sx, scale * sy, scale * sx);
+  });
+
   return (
-    <mesh ref={setRef} position={position} scale={scale}>
+    <mesh ref={meshRef} position={position} scale={scale}>
       <sphereGeometry args={[BALL_RADIUS, 16, 16]} />
       <meshStandardMaterial map={texture} />
     </mesh>
