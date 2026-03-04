@@ -131,7 +131,8 @@ describe("useBingoGameState", () => {
     act(() => result.current.loadGame({
       id: "test-id",
       drawnBalls: [1, 2, 3],
-      timestamp: Date.now(),
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
       patternId: "any-line",
     }));
     expect(result.current.drawnBalls).toEqual([1, 2, 3]);
