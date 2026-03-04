@@ -50,6 +50,7 @@ In Catalyst Agent, use `./start.local.sh` instead of `pnpm run dev`.
 - `src/data/` — Static data:
   - `bingoPatterns.json` — Bingo win pattern definitions (14 patterns)
   - `bingoPatterns.types.ts` — TypeScript type for BingoPattern
+  - `bingoNicknames.json` — Traditional bingo number nicknames (1-75)
 - `src/components/Scene.tsx` — Original test scene with rotating primitives
 - `src/hooks/` — Custom hooks:
   - `useBingoGameState.ts` — Game state management (draw, reset, history)

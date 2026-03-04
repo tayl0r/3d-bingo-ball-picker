@@ -11,6 +11,7 @@ import { CurrentPatternDisplay } from "../components/bingo/CurrentPatternDisplay
 import { VolumeControl } from "../components/bingo/VolumeControl";
 import { disposeBallTextures } from "../utils/ballTexture";
 import { purgeEmptyGames } from "../utils/gameStorage";
+import bingoNicknames from "../data/bingoNicknames.json";
 import { soundManager } from "../audio/soundManager";
 
 export function BingoPage() {
@@ -28,6 +29,14 @@ export function BingoPage() {
   const [showHistory, setShowHistory] = useState(false);
   const [showPatternPicker, setShowPatternPicker] = useState(false);
 
+  const displayBall = game.phase !== "settling"
+    ? (game.selectedBall?.number ?? game.drawnBalls[game.drawnBalls.length - 1])
+    : undefined;
+  const nickname = displayBall != null
+    ? bingoNicknames[String(displayBall) as keyof typeof bingoNicknames]
+    : undefined;
+  const nicknameText = nickname ? `${displayBall} \u2014 ${nickname}` : "";
+
   useEffect(() => {
     return () => disposeBallTextures();
   }, []);
@@ -43,7 +52,7 @@ export function BingoPage() {
       flexShrink: 0,
       border: "2px solid orange",
     }}>
-      {/* Top center copyright */}
+      {/* Bottom center copyright */}
       <div
         style={{
           position: "absolute",
@@ -58,8 +67,68 @@ export function BingoPage() {
           pointerEvents: "none",
         }}
       >
-        &copy; 2026 Taylor Steil &middot; Created by Taylor Steil
+        &copy; 2026 Taylor Steil
       </div>
+
+      {/* Bingo nickname for last drawn ball */}
+      {nickname && (
+        <svg
+          key={displayBall}
+          viewBox="0 0 1000 100"
+          style={{
+            position: "absolute",
+            bottom: 44,
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "55%",
+            height: 80,
+            zIndex: 10,
+            pointerEvents: "none",
+            overflow: "visible",
+            animation: "nickname-fade-in 0.4s ease-in",
+          }}
+        >
+          <defs>
+            <linearGradient id={`sheen-${displayBall}`} x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="rgba(255,255,255,0.7)" />
+              <stop offset="15%" stopColor="rgba(255,255,255,0.7)" />
+              <stop offset="20%" stopColor="#ff0000" />
+              <stop offset="28%" stopColor="#ff8800" />
+              <stop offset="36%" stopColor="#ffff00" />
+              <stop offset="44%" stopColor="#00cc00" />
+              <stop offset="52%" stopColor="#0088ff" />
+              <stop offset="60%" stopColor="#4400ff" />
+              <stop offset="68%" stopColor="#8800cc" />
+              <stop offset="75%" stopColor="rgba(255,255,255,0.7)" />
+              <stop offset="100%" stopColor="rgba(255,255,255,0.7)" />
+              <animate
+                attributeName="x1"
+                values="-100%;100%"
+                dur="2.5s"
+                fill="freeze"
+              />
+              <animate
+                attributeName="x2"
+                values="0%;200%"
+                dur="2.5s"
+                fill="freeze"
+              />
+            </linearGradient>
+          </defs>
+          <text
+            x="500"
+            y="70"
+            textAnchor="middle"
+            fill={`url(#sheen-${displayBall})`}
+            fontFamily="var(--font-mono)"
+            fontStyle="italic"
+            fontSize="80"
+            letterSpacing="1"
+          >
+            {nicknameText}
+          </text>
+        </svg>
+      )}
 
       {/* 3D Scene */}
       <BingoScene
