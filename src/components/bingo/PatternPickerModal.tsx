@@ -3,7 +3,6 @@ import bingoPatterns from "../../data/bingoPatterns.json";
 import type { BingoPattern } from "../../data/bingoPatterns.types";
 import { PatternGrid } from "./PatternGrid";
 import { getFavorites, toggleFavorite, getActiveTag, setActiveTag as saveActiveTag } from "../../utils/patternFavorites";
-
 interface PatternPickerModalProps {
   onSelect: (patternId: string) => void;
   onClose: () => void;
