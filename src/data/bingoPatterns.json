@@ -52,56 +52,56 @@
     "tags": ["basic", "fast"]
   },
   {
-    "id": "letter-t",
-    "name": "Letter T",
-    "description": "Top row plus middle column",
+    "id": "letter-a",
+    "name": "Letter A",
+    "description": "Triangle top with middle crossbar",
     "grid": [
+      [0, 0, 1, 0, 0],
+      [0, 1, 0, 1, 0],
       [1, 1, 1, 1, 1],
-      [0, 0, 1, 0, 0],
-      [0, 0, 1, 0, 0],
-      [0, 0, 1, 0, 0],
-      [0, 0, 1, 0, 0]
-    ],
-    "tags": ["letter", "popular"]
-  },
-  {
-    "id": "letter-l",
-    "name": "Letter L",
-    "description": "Left column plus bottom row",
-    "grid": [
-      [1, 0, 0, 0, 0],
-      [1, 0, 0, 0, 0],
-      [1, 0, 0, 0, 0],
-      [1, 0, 0, 0, 0],
-      [1, 1, 1, 1, 1]
+      [1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1]
     ],
     "tags": ["letter"]
   },
   {
-    "id": "letter-h",
-    "name": "Letter H",
-    "description": "Both side columns plus middle row",
+    "id": "letter-b",
+    "name": "Letter B",
+    "description": "Left spine with two bumps",
     "grid": [
+      [1, 1, 1, 1, 0],
       [1, 0, 0, 0, 1],
+      [1, 1, 1, 1, 0],
       [1, 0, 0, 0, 1],
-      [1, 1, 1, 1, 1],
-      [1, 0, 0, 0, 1],
-      [1, 0, 0, 0, 1]
+      [1, 1, 1, 1, 0]
     ],
     "tags": ["letter", "long"]
   },
   {
-    "id": "letter-x",
-    "name": "X",
-    "description": "Both diagonals crossing at center",
+    "id": "letter-c",
+    "name": "Letter C",
+    "description": "Open curve facing right",
     "grid": [
-      [1, 0, 0, 0, 1],
-      [0, 1, 0, 1, 0],
-      [0, 0, 1, 0, 0],
-      [0, 1, 0, 1, 0],
-      [1, 0, 0, 0, 1]
+      [0, 1, 1, 1, 0],
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0],
+      [0, 1, 1, 1, 0]
     ],
-    "tags": ["letter", "shape", "popular"]
+    "tags": ["letter"]
+  },
+  {
+    "id": "letter-d",
+    "name": "Letter D",
+    "description": "Left spine with right arc",
+    "grid": [
+      [1, 1, 1, 1, 0],
+      [1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1],
+      [1, 1, 1, 1, 0]
+    ],
+    "tags": ["letter"]
   },
   {
     "id": "letter-e",
@@ -130,17 +130,95 @@
     "tags": ["letter"]
   },
   {
-    "id": "letter-z",
-    "name": "Letter Z",
-    "description": "Top and bottom rows with diagonal",
+    "id": "letter-g",
+    "name": "Letter G",
+    "description": "C shape with inward shelf",
+    "grid": [
+      [0, 1, 1, 1, 0],
+      [1, 0, 0, 0, 0],
+      [1, 0, 1, 1, 1],
+      [1, 0, 0, 0, 1],
+      [0, 1, 1, 1, 0]
+    ],
+    "tags": ["letter"]
+  },
+  {
+    "id": "letter-h",
+    "name": "Letter H",
+    "description": "Both side columns plus middle row",
+    "grid": [
+      [1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1],
+      [1, 1, 1, 1, 1],
+      [1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1]
+    ],
+    "tags": ["letter", "long"]
+  },
+  {
+    "id": "letter-i",
+    "name": "Letter I",
+    "description": "Top and bottom bars with center column",
     "grid": [
       [1, 1, 1, 1, 1],
-      [0, 0, 0, 1, 0],
       [0, 0, 1, 0, 0],
-      [0, 1, 0, 0, 0],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0],
+      [1, 1, 1, 1, 1]
+    ],
+    "tags": ["letter", "long"]
+  },
+  {
+    "id": "letter-j",
+    "name": "Letter J",
+    "description": "Right column with bottom hook",
+    "grid": [
+      [0, 0, 0, 0, 1],
+      [0, 0, 0, 0, 1],
+      [0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1],
+      [0, 1, 1, 1, 0]
+    ],
+    "tags": ["letter"]
+  },
+  {
+    "id": "letter-k",
+    "name": "Letter K",
+    "description": "Left spine with angled arms",
+    "grid": [
+      [1, 0, 0, 0, 1],
+      [1, 0, 0, 1, 0],
+      [1, 1, 1, 0, 0],
+      [1, 0, 0, 1, 0],
+      [1, 0, 0, 0, 1]
+    ],
+    "tags": ["letter"]
+  },
+  {
+    "id": "letter-l",
+    "name": "Letter L",
+    "description": "Left column plus bottom row",
+    "grid": [
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0],
       [1, 1, 1, 1, 1]
     ],
     "tags": ["letter"]
+  },
+  {
+    "id": "letter-m",
+    "name": "Letter M",
+    "description": "Two peaks with side columns",
+    "grid": [
+      [1, 0, 0, 0, 1],
+      [1, 1, 0, 1, 1],
+      [1, 0, 1, 0, 1],
+      [1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1]
+    ],
+    "tags": ["letter", "long"]
   },
   {
     "id": "letter-n",
@@ -156,9 +234,165 @@
     "tags": ["letter", "long"]
   },
   {
+    "id": "letter-o",
+    "name": "Letter O",
+    "description": "Complete ring around center",
+    "grid": [
+      [0, 1, 1, 1, 0],
+      [1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1],
+      [0, 1, 1, 1, 0]
+    ],
+    "tags": ["letter"]
+  },
+  {
+    "id": "letter-p",
+    "name": "Letter P",
+    "description": "Left spine with top bump",
+    "grid": [
+      [1, 1, 1, 1, 0],
+      [1, 0, 0, 0, 1],
+      [1, 1, 1, 1, 0],
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0]
+    ],
+    "tags": ["letter"]
+  },
+  {
+    "id": "letter-q",
+    "name": "Letter Q",
+    "description": "Ring with a tail at bottom-right",
+    "grid": [
+      [0, 1, 1, 1, 0],
+      [1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1],
+      [1, 0, 0, 1, 0],
+      [0, 1, 1, 0, 1]
+    ],
+    "tags": ["letter"]
+  },
+  {
+    "id": "letter-r",
+    "name": "Letter R",
+    "description": "P shape with diagonal leg",
+    "grid": [
+      [1, 1, 1, 1, 0],
+      [1, 0, 0, 0, 1],
+      [1, 1, 1, 1, 0],
+      [1, 0, 0, 1, 0],
+      [1, 0, 0, 0, 1]
+    ],
+    "tags": ["letter", "long"]
+  },
+  {
+    "id": "letter-s",
+    "name": "Letter S",
+    "description": "Snake shape curving back and forth",
+    "grid": [
+      [0, 1, 1, 1, 1],
+      [1, 0, 0, 0, 0],
+      [0, 1, 1, 1, 0],
+      [0, 0, 0, 0, 1],
+      [1, 1, 1, 1, 0]
+    ],
+    "tags": ["letter", "long"]
+  },
+  {
+    "id": "letter-t",
+    "name": "Letter T",
+    "description": "Top row plus middle column",
+    "grid": [
+      [1, 1, 1, 1, 1],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0]
+    ],
+    "tags": ["letter", "popular"]
+  },
+  {
+    "id": "letter-u",
+    "name": "Letter U",
+    "description": "Both side columns with flat bottom",
+    "grid": [
+      [1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1],
+      [0, 1, 1, 1, 0]
+    ],
+    "tags": ["letter"]
+  },
+  {
+    "id": "letter-v",
+    "name": "Letter V",
+    "description": "Two arms meeting at a bottom point",
+    "grid": [
+      [1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1],
+      [0, 1, 0, 1, 0],
+      [0, 1, 0, 1, 0],
+      [0, 0, 1, 0, 0]
+    ],
+    "tags": ["letter"]
+  },
+  {
+    "id": "letter-w",
+    "name": "Letter W",
+    "description": "Inverted M with two valleys",
+    "grid": [
+      [1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1],
+      [1, 0, 1, 0, 1],
+      [1, 1, 0, 1, 1],
+      [0, 1, 0, 1, 0]
+    ],
+    "tags": ["letter", "long"]
+  },
+  {
+    "id": "letter-x",
+    "name": "X",
+    "description": "Both diagonals crossing at center",
+    "grid": [
+      [1, 0, 0, 0, 1],
+      [0, 1, 0, 1, 0],
+      [0, 0, 1, 0, 0],
+      [0, 1, 0, 1, 0],
+      [1, 0, 0, 0, 1]
+    ],
+    "tags": ["letter", "shape", "popular"]
+  },
+  {
+    "id": "letter-y",
+    "name": "Letter Y",
+    "description": "Fork at top with center stem",
+    "grid": [
+      [1, 0, 0, 0, 1],
+      [0, 1, 0, 1, 0],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0]
+    ],
+    "tags": ["letter", "fast"]
+  },
+  {
+    "id": "letter-z",
+    "name": "Letter Z",
+    "description": "Top and bottom rows with diagonal",
+    "grid": [
+      [1, 1, 1, 1, 1],
+      [0, 0, 0, 1, 0],
+      [0, 0, 1, 0, 0],
+      [0, 1, 0, 0, 0],
+      [1, 1, 1, 1, 1]
+    ],
+    "tags": ["letter"]
+  },
+  {
     "id": "diamond",
     "name": "Diamond",
-    "description": "Diamond shape in the center",
+    "description": "Diamond outline in the center",
     "grid": [
       [0, 0, 1, 0, 0],
       [0, 1, 0, 1, 0],
@@ -167,6 +401,19 @@
       [0, 0, 1, 0, 0]
     ],
     "tags": ["shape", "popular"]
+  },
+  {
+    "id": "full-diamond",
+    "name": "Full Diamond",
+    "description": "Solid filled diamond shape",
+    "grid": [
+      [0, 0, 1, 0, 0],
+      [0, 1, 1, 1, 0],
+      [1, 1, 1, 1, 1],
+      [0, 1, 1, 1, 0],
+      [0, 0, 1, 0, 0]
+    ],
+    "tags": ["shape", "popular", "long"]
   },
   {
     "id": "plus-sign",
@@ -231,6 +478,32 @@
       [0, 0, 1, 0, 0],
       [0, 1, 1, 1, 0]
     ],
+    "tags": ["shape", "long"]
+  },
+  {
+    "id": "full-glass",
+    "name": "Full Glass",
+    "description": "Filled wine glass with wide bowl",
+    "grid": [
+      [1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1],
+      [0, 1, 1, 1, 0],
+      [0, 0, 1, 0, 0],
+      [0, 1, 1, 1, 0]
+    ],
+    "tags": ["shape", "long"]
+  },
+  {
+    "id": "empty-glass",
+    "name": "Empty Glass",
+    "description": "Wine glass outline only",
+    "grid": [
+      [1, 1, 1, 1, 1],
+      [1, 0, 0, 0, 1],
+      [0, 1, 0, 1, 0],
+      [0, 0, 1, 0, 0],
+      [0, 1, 1, 1, 0]
+    ],
     "tags": ["shape"]
   },
   {
@@ -270,12 +543,12 @@
       [1, 0, 0, 0, 1],
       [1, 1, 1, 1, 1]
     ],
-    "tags": ["advanced", "long"]
+    "tags": ["shape", "advanced", "long"]
   },
   {
     "id": "checkerboard",
     "name": "Checkerboard",
-    "description": "Alternating squares",
+    "description": "Alternating squares like a chess board",
     "grid": [
       [1, 0, 1, 0, 1],
       [0, 1, 0, 1, 0],
@@ -284,6 +557,19 @@
       [1, 0, 1, 0, 1]
     ],
     "tags": ["advanced", "long"]
+  },
+  {
+    "id": "plaid",
+    "name": "Plaid",
+    "description": "Alternating squares on odd rows only",
+    "grid": [
+      [1, 0, 1, 0, 1],
+      [0, 0, 0, 0, 0],
+      [1, 0, 1, 0, 1],
+      [0, 0, 0, 0, 0],
+      [1, 0, 1, 0, 1]
+    ],
+    "tags": ["shape"]
   },
   {
     "id": "railroad-tracks",
@@ -351,6 +637,396 @@
     "tags": ["shape", "popular", "long"]
   },
   {
+    "id": "starburst",
+    "name": "Starburst",
+    "description": "Star rays from center in all directions",
+    "grid": [
+      [1, 0, 1, 0, 1],
+      [0, 1, 1, 1, 0],
+      [1, 1, 1, 1, 1],
+      [0, 1, 1, 1, 0],
+      [1, 0, 1, 0, 1]
+    ],
+    "tags": ["shape", "popular", "long"]
+  },
+  {
+    "id": "anchor",
+    "name": "Anchor",
+    "description": "Ship anchor with crossbar and base",
+    "grid": [
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0],
+      [0, 1, 1, 1, 0],
+      [1, 0, 1, 0, 1],
+      [1, 1, 1, 1, 1]
+    ],
+    "tags": ["shape", "long"]
+  },
+  {
+    "id": "butterfly",
+    "name": "Butterfly",
+    "description": "Wings spread with center body",
+    "grid": [
+      [1, 0, 0, 0, 1],
+      [1, 1, 0, 1, 1],
+      [1, 0, 1, 0, 1],
+      [1, 1, 0, 1, 1],
+      [1, 0, 0, 0, 1]
+    ],
+    "tags": ["shape", "long"]
+  },
+  {
+    "id": "check-mark",
+    "name": "Check Mark",
+    "description": "Diagonal check with short arm",
+    "grid": [
+      [0, 0, 0, 0, 1],
+      [0, 0, 0, 1, 0],
+      [0, 0, 1, 0, 0],
+      [1, 0, 1, 0, 0],
+      [0, 1, 0, 0, 0]
+    ],
+    "tags": ["shape", "fast"]
+  },
+  {
+    "id": "chevron",
+    "name": "Chevron",
+    "description": "V-shape pointing up",
+    "grid": [
+      [1, 0, 0, 0, 1],
+      [0, 1, 0, 1, 0],
+      [0, 0, 1, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0]
+    ],
+    "tags": ["shape", "fast"]
+  },
+  {
+    "id": "goal-post",
+    "name": "Goal Post",
+    "description": "Two uprights with crossbar and post",
+    "grid": [
+      [1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1],
+      [1, 1, 1, 1, 1],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0]
+    ],
+    "tags": ["shape"]
+  },
+  {
+    "id": "kite",
+    "name": "Kite",
+    "description": "Diamond body with tail dropping down",
+    "grid": [
+      [0, 0, 1, 0, 0],
+      [0, 1, 1, 1, 0],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0]
+    ],
+    "tags": ["shape", "fast"]
+  },
+  {
+    "id": "layer-cake",
+    "name": "Layer Cake",
+    "description": "Three horizontal layers with gaps",
+    "grid": [
+      [1, 1, 1, 1, 1],
+      [0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1],
+      [0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1]
+    ],
+    "tags": ["shape", "long"]
+  },
+  {
+    "id": "lucky-7",
+    "name": "Lucky 7",
+    "description": "Number seven shape",
+    "grid": [
+      [1, 1, 1, 1, 1],
+      [0, 0, 0, 1, 0],
+      [0, 0, 1, 0, 0],
+      [0, 1, 0, 0, 0],
+      [1, 0, 0, 0, 0]
+    ],
+    "tags": ["shape", "popular"]
+  },
+  {
+    "id": "lucky-13",
+    "name": "Lucky 13",
+    "description": "X pattern plus center column",
+    "grid": [
+      [1, 0, 1, 0, 1],
+      [0, 1, 1, 1, 0],
+      [0, 0, 1, 0, 0],
+      [0, 1, 1, 1, 0],
+      [1, 0, 1, 0, 1]
+    ],
+    "tags": ["shape", "popular", "long"]
+  },
+  {
+    "id": "open-house",
+    "name": "Open House",
+    "description": "House outline with peaked roof",
+    "grid": [
+      [0, 0, 1, 0, 0],
+      [0, 1, 0, 1, 0],
+      [1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1],
+      [1, 1, 1, 1, 1]
+    ],
+    "tags": ["shape"]
+  },
+  {
+    "id": "picnic-table",
+    "name": "Picnic Table",
+    "description": "Table top with bench seats",
+    "grid": [
+      [0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1],
+      [0, 1, 0, 1, 0],
+      [0, 1, 0, 1, 0],
+      [1, 1, 0, 1, 1]
+    ],
+    "tags": ["shape", "long"]
+  },
+  {
+    "id": "six-pack",
+    "name": "Six Pack",
+    "description": "Two columns of three",
+    "grid": [
+      [0, 0, 0, 0, 0],
+      [0, 1, 1, 0, 0],
+      [0, 1, 1, 0, 0],
+      [0, 1, 1, 0, 0],
+      [0, 0, 0, 0, 0]
+    ],
+    "tags": ["shape", "fast"]
+  },
+  {
+    "id": "double-six-pack",
+    "name": "Double Six Pack",
+    "description": "Two groups of six in opposite corners",
+    "grid": [
+      [1, 1, 0, 0, 0],
+      [1, 1, 0, 0, 0],
+      [1, 1, 0, 1, 1],
+      [0, 0, 0, 1, 1],
+      [0, 0, 0, 1, 1]
+    ],
+    "tags": ["shape"]
+  },
+  {
+    "id": "stairs",
+    "name": "Stairs",
+    "description": "Staircase stepping down diagonally",
+    "grid": [
+      [1, 0, 0, 0, 0],
+      [1, 1, 0, 0, 0],
+      [0, 1, 1, 0, 0],
+      [0, 0, 1, 1, 0],
+      [0, 0, 0, 1, 1]
+    ],
+    "tags": ["shape"]
+  },
+  {
+    "id": "stand",
+    "name": "Stand",
+    "description": "Narrow top widening to broad base",
+    "grid": [
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0],
+      [0, 1, 1, 1, 0],
+      [0, 0, 1, 0, 0],
+      [1, 1, 1, 1, 1]
+    ],
+    "tags": ["shape"]
+  },
+  {
+    "id": "thunderbird",
+    "name": "Thunderbird",
+    "description": "Spread wings with center column",
+    "grid": [
+      [0, 0, 1, 0, 0],
+      [1, 1, 1, 1, 1],
+      [1, 0, 1, 0, 1],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0]
+    ],
+    "tags": ["shape", "popular"]
+  },
+  {
+    "id": "window-shade",
+    "name": "Window Shade",
+    "description": "Shade pulled down with pull cord",
+    "grid": [
+      [1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1],
+      [0, 0, 0, 0, 0],
+      [0, 0, 1, 0, 0]
+    ],
+    "tags": ["shape", "long"]
+  },
+  {
+    "id": "pyramid",
+    "name": "Pyramid",
+    "description": "Triangle pointing up",
+    "grid": [
+      [0, 0, 1, 0, 0],
+      [0, 1, 1, 1, 0],
+      [1, 1, 1, 1, 1],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0]
+    ],
+    "tags": ["shape"]
+  },
+  {
+    "id": "turtle",
+    "name": "Turtle",
+    "description": "Shell with head and feet",
+    "grid": [
+      [0, 0, 1, 0, 0],
+      [0, 1, 1, 1, 0],
+      [1, 1, 1, 1, 1],
+      [0, 1, 1, 1, 0],
+      [0, 1, 0, 1, 0]
+    ],
+    "tags": ["shape", "long"]
+  },
+  {
+    "id": "crown",
+    "name": "Crown",
+    "description": "Royal crown with three points",
+    "grid": [
+      [1, 0, 1, 0, 1],
+      [1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0]
+    ],
+    "tags": ["shape", "long"]
+  },
+  {
+    "id": "umbrella",
+    "name": "Umbrella",
+    "description": "Canopy with handle hook",
+    "grid": [
+      [0, 1, 1, 1, 0],
+      [1, 1, 1, 1, 1],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0],
+      [0, 1, 0, 0, 0]
+    ],
+    "tags": ["shape"]
+  },
+  {
+    "id": "mushroom",
+    "name": "Mushroom",
+    "description": "Wide cap with narrow stem",
+    "grid": [
+      [0, 1, 1, 1, 0],
+      [1, 1, 1, 1, 1],
+      [0, 1, 1, 1, 0],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0]
+    ],
+    "tags": ["shape", "long"]
+  },
+  {
+    "id": "horseshoe",
+    "name": "Horseshoe",
+    "description": "U-shape curving to a point",
+    "grid": [
+      [1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1],
+      [0, 1, 0, 1, 0],
+      [0, 0, 1, 0, 0]
+    ],
+    "tags": ["shape"]
+  },
+  {
+    "id": "flag",
+    "name": "Flag",
+    "description": "Flag rectangle on a pole",
+    "grid": [
+      [1, 1, 1, 0, 0],
+      [1, 1, 1, 0, 0],
+      [1, 1, 1, 0, 0],
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0]
+    ],
+    "tags": ["shape"]
+  },
+  {
+    "id": "sail-boat",
+    "name": "Sail Boat",
+    "description": "Triangle sail with hull below",
+    "grid": [
+      [0, 0, 1, 0, 0],
+      [0, 1, 1, 0, 0],
+      [1, 1, 1, 0, 0],
+      [0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1]
+    ],
+    "tags": ["shape"]
+  },
+  {
+    "id": "exclamation-mark",
+    "name": "Exclamation Mark",
+    "description": "Vertical line with dot below",
+    "grid": [
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 1, 0, 0]
+    ],
+    "tags": ["shape", "fast"]
+  },
+  {
+    "id": "trident",
+    "name": "Trident",
+    "description": "Three prongs with center handle",
+    "grid": [
+      [1, 0, 1, 0, 1],
+      [1, 0, 1, 0, 1],
+      [0, 1, 1, 1, 0],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0]
+    ],
+    "tags": ["shape"]
+  },
+  {
+    "id": "castle",
+    "name": "Castle",
+    "description": "Fortress with turrets and walls",
+    "grid": [
+      [1, 0, 1, 0, 1],
+      [1, 1, 1, 1, 1],
+      [1, 0, 1, 0, 1],
+      [1, 0, 1, 0, 1],
+      [1, 1, 1, 1, 1]
+    ],
+    "tags": ["shape", "long"]
+  },
+  {
+    "id": "spider",
+    "name": "Spider",
+    "description": "Legs radiating from center body",
+    "grid": [
+      [1, 0, 0, 0, 1],
+      [0, 1, 0, 1, 0],
+      [0, 1, 1, 1, 0],
+      [0, 1, 0, 1, 0],
+      [1, 0, 0, 0, 1]
+    ],
+    "tags": ["shape"]
+  },
+  {
     "id": "christmas-tree",
     "name": "Christmas Tree",
     "description": "Tree shape with trunk",
@@ -361,7 +1037,7 @@
       [1, 1, 1, 1, 1],
       [0, 0, 1, 0, 0]
     ],
-    "tags": ["holiday"]
+    "tags": ["holiday", "long"]
   },
   {
     "id": "candy-cane",
@@ -401,5 +1077,148 @@
       [0, 0, 1, 0, 0]
     ],
     "tags": ["holiday"]
+  },
+  {
+    "id": "inside-four-corners",
+    "name": "Inside Four Corners",
+    "description": "Four inner corners around free space",
+    "grid": [
+      [0, 0, 0, 0, 0],
+      [0, 1, 0, 1, 0],
+      [0, 0, 0, 0, 0],
+      [0, 1, 0, 1, 0],
+      [0, 0, 0, 0, 0]
+    ],
+    "tags": ["combo", "fast"]
+  },
+  {
+    "id": "top-and-bottom",
+    "name": "Top and Bottom",
+    "description": "Both top and bottom rows filled",
+    "grid": [
+      [1, 1, 1, 1, 1],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1]
+    ],
+    "tags": ["combo"]
+  },
+  {
+    "id": "triple-stamp",
+    "name": "Triple Stamp",
+    "description": "Three 2x2 stamps in corners",
+    "grid": [
+      [1, 1, 0, 1, 1],
+      [1, 1, 0, 1, 1],
+      [0, 0, 0, 0, 0],
+      [1, 1, 0, 0, 0],
+      [1, 1, 0, 0, 0]
+    ],
+    "tags": ["combo"]
+  },
+  {
+    "id": "five-around-corner",
+    "name": "5 Around Corner",
+    "description": "Five cells forming an L in a corner",
+    "grid": [
+      [1, 1, 1, 0, 0],
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0]
+    ],
+    "tags": ["combo", "fast"]
+  },
+  {
+    "id": "eight-around-corner",
+    "name": "8 Around Corner",
+    "description": "Full row plus column from a corner",
+    "grid": [
+      [1, 1, 1, 1, 1],
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0]
+    ],
+    "tags": ["combo"]
+  },
+  {
+    "id": "line-plus-corners",
+    "name": "Line Plus Corners",
+    "description": "Any line plus all four corners",
+    "grid": [
+      [1, 0, 0, 0, 1],
+      [0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1],
+      [0, 0, 0, 0, 0],
+      [1, 0, 0, 0, 1]
+    ],
+    "tags": ["combo"]
+  },
+  {
+    "id": "hi",
+    "name": "Hi",
+    "description": "Spells HI across the card",
+    "grid": [
+      [1, 0, 1, 0, 1],
+      [1, 0, 1, 0, 1],
+      [1, 1, 1, 0, 1],
+      [1, 0, 1, 0, 1],
+      [1, 0, 1, 0, 1]
+    ],
+    "tags": ["combo", "long"]
+  },
+  {
+    "id": "bno",
+    "name": "BNO",
+    "description": "Columns B, N, and O fully filled",
+    "grid": [
+      [1, 0, 1, 0, 1],
+      [1, 0, 1, 0, 1],
+      [1, 0, 1, 0, 1],
+      [1, 0, 1, 0, 1],
+      [1, 0, 1, 0, 1]
+    ],
+    "tags": ["combo", "long"]
+  },
+  {
+    "id": "block-of-six",
+    "name": "Block of 6",
+    "description": "Solid 2x3 rectangular block",
+    "grid": [
+      [1, 1, 1, 0, 0],
+      [1, 1, 1, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0]
+    ],
+    "tags": ["combo", "fast"]
+  },
+  {
+    "id": "block-of-eight",
+    "name": "Block of 8",
+    "description": "Solid 2x4 rectangular block",
+    "grid": [
+      [0, 0, 0, 0, 0],
+      [0, 1, 1, 1, 1],
+      [0, 1, 1, 1, 1],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0]
+    ],
+    "tags": ["combo"]
+  },
+  {
+    "id": "block-of-nine",
+    "name": "Block of 9",
+    "description": "Solid 3x3 square block in center",
+    "grid": [
+      [0, 0, 0, 0, 0],
+      [0, 1, 1, 1, 0],
+      [0, 1, 1, 1, 0],
+      [0, 1, 1, 1, 0],
+      [0, 0, 0, 0, 0]
+    ],
+    "tags": ["combo"]
   }
 ]

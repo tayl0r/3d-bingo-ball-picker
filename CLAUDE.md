@@ -43,6 +43,10 @@ In Catalyst Agent, use `./start.local.sh` instead of `pnpm run dev`.
   - `PatternPickerModal.tsx` — Full-screen pattern selection modal
   - `PatternGrid.tsx` — Reusable 5x5 pattern grid display
   - `CurrentPatternDisplay.tsx` — In-game current pattern indicator
+  - `VolumeControl.tsx` — Mute toggle + volume slider for sound effects
+- `src/audio/` — Sound system:
+  - `sounds.ts` — zzfx parameter arrays for all sound effects
+  - `soundManager.ts` — Central audio module (play functions, volume/mute, localStorage)
 - `src/data/` — Static data:
   - `bingoPatterns.json` — Bingo win pattern definitions (14 patterns)
   - `bingoPatterns.types.ts` — TypeScript type for BingoPattern
@@ -53,6 +57,7 @@ In Catalyst Agent, use `./start.local.sh` instead of `pnpm run dev`.
   - `useFrustumLayout.ts` — Camera frustum-based responsive positioning
   - `useViewportScale.ts` — Viewport-aware scaling
   - `useSphereRotation.ts` — Sphere rotation animation
+  - `useSoundSettings.ts` — Volume/mute React state for VolumeControl UI
 - `src/utils/` — Utilities:
   - `ballTexture.ts` — Canvas-based ball number texture generation
   - `sphereContainerGeometry.ts` — Sphere container mesh geometry

@@ -75,15 +75,16 @@ export function useBingoGameState() {
   const onAnimationComplete = useCallback(() => {
     const current = selectedBallRef.current;
     if (current) {
-      setDrawnBalls((prev) => [...prev, current.number]);
-      // Persist outside the state updater to avoid double-writes in StrictMode
-      const nextDrawn = [...drawnBalls, current.number];
-      updateGame(currentGameId, nextDrawn);
+      setDrawnBalls((prev) => {
+        const next = [...prev, current.number];
+        updateGame(currentGameId, next);
+        return next;
+      });
     }
     selectedBallRef.current = null;
     setSelectedBall(null);
     setPhaseTracked("idle");
-  }, [setPhaseTracked, currentGameId, drawnBalls]);
+  }, [setPhaseTracked, currentGameId]);
 
   const newGame = useCallback((selectedPatternId: string) => {
     if (phase !== "idle") return;
