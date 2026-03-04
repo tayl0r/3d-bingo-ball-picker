@@ -47,7 +47,14 @@ function createSoundManager() {
     },
     playSpinTick: () => play(GAME_SOUNDS.spinTick),
     playButtonClick: () => play(UI_SOUNDS.buttonClick),
-    playToggleSwitch: () => play(UI_SOUNDS.toggleSwitch),
+    playToggleSwitch: (intensity?: number) => {
+      const p = [...UI_SOUNDS.toggleSwitch];
+      if (intensity != null) {
+        // Low intensity = lower pitch, high intensity = higher pitch
+        p[2] = 600 + intensity * 800;
+      }
+      play(p);
+    },
     playPatternSelect: () => play(UI_SOUNDS.patternSelect),
     isMuted: () => settings.muted,
     setMuted: (muted: boolean) => { settings.muted = muted; saveSettings(settings); },

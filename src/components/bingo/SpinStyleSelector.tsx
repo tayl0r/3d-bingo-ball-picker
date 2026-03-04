@@ -56,7 +56,7 @@ function ToggleGroup({
           return (
             <button
               key={opt.value}
-              onClick={() => { soundManager.playToggleSwitch(); onChange(opt.value); }}
+              onClick={() => { soundManager.playToggleSwitch(i / (options.length - 1)); onChange(opt.value); }}
               style={{
                 flex: 1,
                 padding: "6px 14px",
