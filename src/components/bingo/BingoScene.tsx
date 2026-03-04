@@ -8,6 +8,7 @@ import { BingoBall } from "./BingoBall";
 import { BingoBallAnimated } from "./BingoBallAnimated";
 import { LastBallResting, LastBallDeparting } from "./LastBall3D";
 import { HoloLogo, OrbitingLookAtTarget } from "./HoloLogo";
+import { PaddleCursor } from "./PaddleCursor";
 import type { GamePhase, SelectedBall } from "../../hooks/useBingoGameState";
 import { useSphereRotation } from "../../hooks/useSphereRotation";
 import { useFrustumLayout } from "../../hooks/useFrustumLayout";
@@ -148,7 +149,7 @@ function PhaseController({
         if (settledAtRef.current === null) {
           settledAtRef.current = now;
         }
-        if (now - settledAtRef.current >= 0.5) {
+        if (now - settledAtRef.current >= 0.25) {
           settleStartRef.current = null;
           settledAtRef.current = null;
           transitionedRef.current = true;
@@ -215,6 +216,7 @@ interface BingoSceneProps {
 
 interface SceneContentProps extends BingoSceneProps {
   quaternionRef: React.MutableRefObject<THREE.Quaternion>;
+  isDraggingRef: React.RefObject<boolean>;
 }
 
 function SceneContent({
@@ -232,6 +234,7 @@ function SceneContent({
   spinTime,
   spinSpeed,
   quaternionRef,
+  isDraggingRef,
 }: SceneContentProps) {
   const layout = useFrustumLayout();
   const lookAtTargetRef = useRef<THREE.Object3D>(null!);
@@ -313,6 +316,10 @@ function SceneContent({
                 registerMesh={registerMesh}
               />
             ))}
+            <PaddleCursor
+              isDraggingRef={isDraggingRef}
+              groupPosition={layout.spherePosition}
+            />
           </group>
         </Physics>
       </Suspense>
@@ -355,7 +362,7 @@ function SceneContent({
 }
 
 export function BingoScene(props: BingoSceneProps) {
-  const { quaternionRef, pointerHandlers, isDragging } = useSphereRotation();
+  const { quaternionRef, pointerHandlers, isDragging, isDraggingRef } = useSphereRotation();
 
   return (
     <Canvas
@@ -364,7 +371,7 @@ export function BingoScene(props: BingoSceneProps) {
       style={{ touchAction: "none", cursor: isDragging ? "grabbing" : "grab" }}
       {...pointerHandlers}
     >
-      <SceneContent {...props} quaternionRef={quaternionRef} />
+      <SceneContent {...props} quaternionRef={quaternionRef} isDraggingRef={isDraggingRef} />
     </Canvas>
   );
 }

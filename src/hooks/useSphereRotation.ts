@@ -47,5 +47,5 @@ export function useSphereRotation() {
     onPointerCancel: stopDrag,
   };
 
-  return { quaternionRef, pointerHandlers, isDragging };
+  return { quaternionRef, pointerHandlers, isDragging, isDraggingRef };
 }
