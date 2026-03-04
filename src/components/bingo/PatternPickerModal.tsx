@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from "react";
+import { useState, useEffect, type CSSProperties } from "react";
 import bingoPatterns from "../../data/bingoPatterns.json";
 import type { BingoPattern } from "../../data/bingoPatterns.types";
 import { PatternGrid } from "./PatternGrid";
@@ -16,6 +16,14 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [favorites, setFavorites] = useState<Set<string>>(() => getFavorites());
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
 
   // Derive unique tags from all patterns
   const uniqueTags = Array.from(
