@@ -145,7 +145,7 @@ function PhaseController({
         }
       }
 
-      if (allSettled || settleElapsed > 10) {
+      if (allSettled || settleElapsed > 5) {
         if (settledAtRef.current === null) {
           settledAtRef.current = now;
         }
