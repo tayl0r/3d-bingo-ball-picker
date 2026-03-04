@@ -87,9 +87,9 @@ export function BingoPage() {
       <div
         style={{
           position: "absolute",
-          top: "15%",
-          bottom: "67%",
-          left: 40,
+          top: "calc(15% + 50px)",
+          bottom: "calc(67% - 50px)",
+          left: 70,
           zIndex: 10,
           pointerEvents: "none",
           display: "flex",
