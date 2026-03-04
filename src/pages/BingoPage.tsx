@@ -48,10 +48,14 @@ export function BingoPage() {
   const [paddleEnabled, setPaddleEnabled] = useState(() => {
     try { return localStorage.getItem("bingo_paddle") === "true"; } catch { return false; }
   });
+  const [spinMode, setSpinMode] = useState<"manual" | "auto">(() => {
+    try { const v = localStorage.getItem("bingo_spin_mode"); return v === "manual" ? "manual" : "auto"; } catch { return "auto"; }
+  });
 
   useEffect(() => { try { localStorage.setItem("bingo_spin_time", String(spinTime)); } catch {} }, [spinTime]);
   useEffect(() => { try { localStorage.setItem("bingo_spin_speed", String(spinSpeed)); } catch {} }, [spinSpeed]);
   useEffect(() => { try { localStorage.setItem("bingo_paddle", String(paddleEnabled)); } catch {} }, [paddleEnabled]);
+  useEffect(() => { try { localStorage.setItem("bingo_spin_mode", spinMode); } catch {} }, [spinMode]);
   const [customLogo, setCustomLogoState] = useState(() => getCustomLogo());
   const handleLogoChange = useCallback((logo: CustomLogo | null) => {
     if (logo) {
@@ -133,6 +137,7 @@ export function BingoPage() {
         logoUrl={customLogo?.dataUrl}
         logoAspect={customLogo?.aspect}
         paddleEnabled={paddleEnabled}
+        spinMode={spinMode}
       />
 
       {/* Bottom-right: drawn balls board */}
@@ -164,9 +169,9 @@ export function BingoPage() {
       >
         <CurrentPatternDisplay
           patternId={game.patternId}
-          editDisabled={game.phase !== "idle"}
+          editDisabled={game.phase !== "idle" && game.phase !== "auto-mixing"}
           onEdit={() => {
-            if (game.phase !== "idle") return;
+            if (game.phase !== "idle" && game.phase !== "auto-mixing") return;
             soundManager.playButtonClick();
             setPatternPickerMode("edit");
             setShowPatternPicker(true);
@@ -176,7 +181,7 @@ export function BingoPage() {
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20, pointerEvents: "auto" }}>
           <GetABallButton
             onClick={() => { soundManager.playBallDraw(); game.startDraw(); }}
-            disabled={game.phase !== "idle" || game.activeBallNumbers.length === 0}
+            disabled={(game.phase !== "idle" && game.phase !== "auto-mixing") || game.activeBallNumbers.length === 0}
             phase={game.phase}
           />
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -185,6 +190,8 @@ export function BingoPage() {
               setSpinSpeed={setSpinSpeed}
               spinTime={spinTime}
               setSpinTime={setSpinTime}
+              spinMode={spinMode}
+              setSpinMode={setSpinMode}
             />
             <VolumeControl paddleEnabled={paddleEnabled} onPaddleToggle={setPaddleEnabled} />
           </div>
@@ -193,14 +200,14 @@ export function BingoPage() {
         <div style={{ display: "flex", gap: 14, pointerEvents: "auto" }}>
           <button
             onClick={() => { soundManager.playButtonClick(); setPatternPickerMode("new"); setShowPatternPicker(true); }}
-            disabled={game.phase !== "idle"}
+            disabled={game.phase !== "idle" && game.phase !== "auto-mixing"}
             style={gameActionButtonStyle}
           >
             New Game
           </button>
           <button
             onClick={() => { soundManager.playButtonClick(); purgeEmptyGames(); setShowHistory(true); }}
-            disabled={game.phase !== "idle"}
+            disabled={game.phase !== "idle" && game.phase !== "auto-mixing"}
             style={gameActionButtonStyle}
           >
             History
