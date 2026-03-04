@@ -7,8 +7,7 @@ interface SpinStyleSelectorProps {
 
 const STRENGTHS = [
   { label: "Soft", value: 1.5 },
-  { label: "Medium", value: 3 },
-  { label: "Hard", value: 5 },
+  { label: "Hard", value: 3 },
 ] as const;
 
 const DURATIONS = [

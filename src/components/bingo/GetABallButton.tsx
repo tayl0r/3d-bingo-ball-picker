@@ -14,30 +14,13 @@ const phaseText: Record<GamePhase, string> = {
   animating: "WATCH...",
 };
 
-const BUTTON_KEYFRAMES = `
-  @keyframes sheen-sweep {
-    0% { transform: translateX(-100%) skewX(-20deg); }
-    35% { transform: translateX(350%) skewX(-20deg); }
-    100% { transform: translateX(350%) skewX(-20deg); }
-  }
-  @keyframes squash-bounce {
-    0%, 100% { transform: scaleX(1) scaleY(1); }
-    10% { transform: scaleX(1.04) scaleY(0.96); }
-    17% { transform: scaleX(0.97) scaleY(1.03); }
-    23% { transform: scaleX(1.02) scaleY(0.98); }
-    28% { transform: scaleX(0.99) scaleY(1.01); }
-    33% { transform: scaleX(1) scaleY(1); }
-  }
-`;
 
 export function GetABallButton({ onClick, disabled, phase }: GetABallButtonProps) {
   const isIdle = phase === "idle";
   const sheenActive = isIdle && !disabled;
 
   return (
-    <>
-      <style>{BUTTON_KEYFRAMES}</style>
-      <button
+    <button
         onClick={onClick}
         disabled={disabled}
         style={{
@@ -85,6 +68,5 @@ export function GetABallButton({ onClick, disabled, phase }: GetABallButtonProps
         />
         {phaseText[phase]}
       </button>
-    </>
   );
 }
