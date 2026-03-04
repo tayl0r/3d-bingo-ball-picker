@@ -5,6 +5,7 @@ import {
   getOrCreateActiveGame,
   createGame,
   updateGame,
+  updateGamePattern,
   setActiveGameId,
   type SavedGame,
 } from "../utils/gameStorage";
@@ -86,6 +87,12 @@ export function useBingoGameState() {
     setPhaseTracked("idle");
   }, [setPhaseTracked, currentGameId]);
 
+  const changePattern = useCallback((newPatternId: string) => {
+    if (phase !== "idle") return;
+    updateGamePattern(currentGameId, newPatternId);
+    setPatternId(newPatternId);
+  }, [phase, currentGameId]);
+
   const newGame = useCallback((selectedPatternId: string) => {
     if (phase !== "idle") return;
     const game = createGame(selectedPatternId);
@@ -118,6 +125,7 @@ export function useBingoGameState() {
     selectBall,
     onAnimationComplete,
     newGame,
+    changePattern,
     loadGame,
     currentGameId,
     patternId,
