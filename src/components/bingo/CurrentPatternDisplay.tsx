@@ -11,13 +11,13 @@ export function CurrentPatternDisplay({ patternId }: CurrentPatternDisplayProps)
   if (!pattern) return null;
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-      <PatternGrid grid={pattern.grid} size={64} />
+    <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+      <PatternGrid grid={pattern.grid} size={160} />
       <span style={{
         color: "rgba(245, 158, 11, 0.9)",
-        fontSize: 14,
-        fontWeight: 600,
-        letterSpacing: 1,
+        fontSize: 28,
+        fontWeight: 700,
+        letterSpacing: 2,
         textTransform: "uppercase",
       }}>
         {pattern.name}
