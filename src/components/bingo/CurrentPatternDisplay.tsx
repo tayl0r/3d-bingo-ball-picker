@@ -11,8 +11,7 @@ export function CurrentPatternDisplay({ patternId }: CurrentPatternDisplayProps)
   if (!pattern) return null;
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-      <PatternGrid grid={pattern.grid} size={260} />
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
       <span style={{
         color: "rgba(245, 158, 11, 0.9)",
         fontSize: 40,
@@ -22,6 +21,7 @@ export function CurrentPatternDisplay({ patternId }: CurrentPatternDisplayProps)
       }}>
         {pattern.name}
       </span>
+      <PatternGrid grid={pattern.grid} size={260} />
     </div>
   );
 }
