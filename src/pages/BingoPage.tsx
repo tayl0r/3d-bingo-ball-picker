@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useBingoGameState } from "../hooks/useBingoGameState";
 import { useViewportScale } from "../hooks/useViewportScale";
 import { BingoScene } from "../components/bingo/BingoScene";
@@ -10,8 +10,11 @@ import { PatternPickerModal } from "../components/bingo/PatternPickerModal";
 import { CurrentPatternDisplay } from "../components/bingo/CurrentPatternDisplay";
 import { VolumeControl } from "../components/bingo/VolumeControl";
 import { NicknameSheen } from "../components/bingo/NicknameSheen";
+import { LogoEditButton } from "../components/bingo/LogoEditButton";
 import { disposeBallTextures } from "../utils/ballTexture";
 import { purgeEmptyGames } from "../utils/gameStorage";
+import type { CustomLogo } from "../utils/logoStorage";
+import { getCustomLogo, setCustomLogo, clearCustomLogo } from "../utils/logoStorage";
 import bingoNicknames from "../data/bingoNicknames.json";
 import { soundManager } from "../audio/soundManager";
 
@@ -27,6 +30,17 @@ export function BingoPage() {
 
   useEffect(() => { try { localStorage.setItem("bingo_spin_time", String(spinTime)); } catch {} }, [spinTime]);
   useEffect(() => { try { localStorage.setItem("bingo_spin_speed", String(spinSpeed)); } catch {} }, [spinSpeed]);
+  const [customLogo, setCustomLogoState] = useState(() => getCustomLogo());
+  const handleLogoChange = useCallback((logo: CustomLogo | null) => {
+    if (logo) {
+      if (!setCustomLogo(logo.dataUrl, logo.aspect)) return;
+      setCustomLogoState(logo);
+    } else {
+      clearCustomLogo();
+      setCustomLogoState(null);
+    }
+  }, []);
+
   const [showHistory, setShowHistory] = useState(false);
   const [showPatternPicker, setShowPatternPicker] = useState(false);
   const [patternPickerMode, setPatternPickerMode] = useState<"new" | "edit">("new");
@@ -77,6 +91,9 @@ export function BingoPage() {
         <NicknameSheen key={displayBall} displayBall={displayBall} nicknameText={nicknameText} />
       )}
 
+      {/* Logo edit button */}
+      <LogoEditButton onLogoChange={handleLogoChange} />
+
       {/* 3D Scene */}
       <BingoScene
         phase={game.phase}
@@ -92,6 +109,8 @@ export function BingoPage() {
         onAnimationComplete={game.onAnimationComplete}
         spinTime={spinTime}
         spinSpeed={spinSpeed}
+        logoUrl={customLogo?.dataUrl}
+        logoAspect={customLogo?.aspect}
       />
 
       {/* Bottom-right: drawn balls board */}
