@@ -94,6 +94,50 @@ describe("useBingoGameState", () => {
     expect(result.current.ballMeshesRef.current.has(1)).toBe(false);
   });
 
+  it("startDraw transitions from auto-mixing to mixing", () => {
+    const { result } = renderHook(() => useBingoGameState());
+    act(() => result.current.setPhase("auto-mixing"));
+    act(() => result.current.startDraw());
+    expect(result.current.phase).toBe("mixing");
+  });
+
+  it("startDraw does nothing during animating phase", () => {
+    const { result } = renderHook(() => useBingoGameState());
+    act(() => result.current.startDraw());
+    act(() => result.current.selectBall(1, [0, 0, 0], [0, 0, 0, 1]));
+    expect(result.current.phase).toBe("animating");
+    act(() => result.current.startDraw());
+    expect(result.current.phase).toBe("animating");
+  });
+
+  it("changePattern works during auto-mixing", () => {
+    const { result } = renderHook(() => useBingoGameState());
+    act(() => result.current.setPhase("auto-mixing"));
+    act(() => result.current.changePattern("full-card"));
+    expect(result.current.patternId).toBe("full-card");
+  });
+
+  it("newGame works during auto-mixing", () => {
+    const { result } = renderHook(() => useBingoGameState());
+    act(() => result.current.setPhase("auto-mixing"));
+    act(() => result.current.newGame("full-card"));
+    expect(result.current.drawnBalls).toHaveLength(0);
+    expect(result.current.activeBallNumbers).toHaveLength(75);
+  });
+
+  it("loadGame works during auto-mixing", () => {
+    const { result } = renderHook(() => useBingoGameState());
+    act(() => result.current.setPhase("auto-mixing"));
+    act(() => result.current.loadGame({
+      id: "test-id",
+      drawnBalls: [1, 2, 3],
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      patternId: "any-line",
+    }));
+    expect(result.current.drawnBalls).toEqual([1, 2, 3]);
+  });
+
   it("startDraw does nothing when no balls remain", () => {
     const { result } = renderHook(() => useBingoGameState());
     // Draw all 75 balls

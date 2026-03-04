@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useBingoGameState } from "../hooks/useBingoGameState";
 import { useViewportScale } from "../hooks/useViewportScale";
-import { BingoScene } from "../components/bingo/BingoScene";
+import { BingoScene, AUTO_SPIN_SPEED } from "../components/bingo/BingoScene";
 import { GetABallButton } from "../components/bingo/GetABallButton";
 import { DrawnBallsList } from "../components/bingo/DrawnBallsList";
 import { SpinStyleSelector } from "../components/bingo/SpinStyleSelector";
@@ -42,16 +42,25 @@ export function BingoPage() {
     try { const v = localStorage.getItem("bingo_spin_time"); return v ? Number(v) : 5; } catch { return 5; }
   });
   const [spinSpeed, setSpinSpeed] = useState(() => {
-    try { const v = localStorage.getItem("bingo_spin_speed"); return v ? Number(v) : 3; } catch { return 3; }
+    try {
+      const mode = localStorage.getItem("bingo_spin_mode");
+      if (mode !== "manual") return AUTO_SPIN_SPEED;
+      const v = localStorage.getItem("bingo_spin_speed");
+      return v ? Number(v) : 3;
+    } catch { return AUTO_SPIN_SPEED; }
   });
 
   const [paddleEnabled, setPaddleEnabled] = useState(() => {
     try { return localStorage.getItem("bingo_paddle") === "true"; } catch { return false; }
   });
+  const [spinMode, setSpinMode] = useState<"manual" | "auto">(() => {
+    try { const v = localStorage.getItem("bingo_spin_mode"); return v === "manual" ? "manual" : "auto"; } catch { return "auto"; }
+  });
 
   useEffect(() => { try { localStorage.setItem("bingo_spin_time", String(spinTime)); } catch {} }, [spinTime]);
-  useEffect(() => { try { localStorage.setItem("bingo_spin_speed", String(spinSpeed)); } catch {} }, [spinSpeed]);
+  useEffect(() => { if (spinMode === "manual") { try { localStorage.setItem("bingo_spin_speed", String(spinSpeed)); } catch {} } }, [spinSpeed, spinMode]);
   useEffect(() => { try { localStorage.setItem("bingo_paddle", String(paddleEnabled)); } catch {} }, [paddleEnabled]);
+  useEffect(() => { try { localStorage.setItem("bingo_spin_mode", spinMode); } catch {} }, [spinMode]);
   const [customLogo, setCustomLogoState] = useState(() => getCustomLogo());
   const handleLogoChange = useCallback((logo: CustomLogo | null) => {
     if (logo) {
@@ -113,7 +122,7 @@ export function BingoPage() {
       )}
 
       {/* Logo edit button */}
-      <LogoEditButton onLogoChange={handleLogoChange} />
+      <LogoEditButton onLogoChange={handleLogoChange} disabled={game.phase !== "idle" && game.phase !== "auto-mixing"} />
 
       {/* 3D Scene */}
       <BingoScene
@@ -133,6 +142,8 @@ export function BingoPage() {
         logoUrl={customLogo?.dataUrl}
         logoAspect={customLogo?.aspect}
         paddleEnabled={paddleEnabled}
+        spinMode={spinMode}
+
       />
 
       {/* Bottom-right: drawn balls board */}
@@ -158,15 +169,15 @@ export function BingoPage() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: 70,
+          gap: 50,
           pointerEvents: "none",
         }}
       >
         <CurrentPatternDisplay
           patternId={game.patternId}
-          editDisabled={game.phase !== "idle"}
+          editDisabled={game.phase !== "idle" && game.phase !== "auto-mixing"}
           onEdit={() => {
-            if (game.phase !== "idle") return;
+            if (game.phase !== "idle" && game.phase !== "auto-mixing") return;
             soundManager.playButtonClick();
             setPatternPickerMode("edit");
             setShowPatternPicker(true);
@@ -176,7 +187,7 @@ export function BingoPage() {
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20, pointerEvents: "auto" }}>
           <GetABallButton
             onClick={() => { soundManager.playBallDraw(); game.startDraw(); }}
-            disabled={game.phase !== "idle" || game.activeBallNumbers.length === 0}
+            disabled={(game.phase !== "idle" && game.phase !== "auto-mixing") || game.activeBallNumbers.length === 0}
             phase={game.phase}
           />
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -185,22 +196,31 @@ export function BingoPage() {
               setSpinSpeed={setSpinSpeed}
               spinTime={spinTime}
               setSpinTime={setSpinTime}
+              spinMode={spinMode}
+              setSpinMode={(v) => {
+                setSpinMode(v);
+                if (v === "auto") {
+                  setSpinSpeed(AUTO_SPIN_SPEED);
+                } else {
+                  try { const saved = localStorage.getItem("bingo_spin_speed"); if (saved) setSpinSpeed(Number(saved)); } catch {}
+                }
+              }}
             />
-            <VolumeControl paddleEnabled={paddleEnabled} onPaddleToggle={setPaddleEnabled} />
+            <VolumeControl paddleEnabled={paddleEnabled} onPaddleToggle={setPaddleEnabled} spinMode={spinMode} />
           </div>
         </div>
 
         <div style={{ display: "flex", gap: 14, pointerEvents: "auto" }}>
           <button
             onClick={() => { soundManager.playButtonClick(); setPatternPickerMode("new"); setShowPatternPicker(true); }}
-            disabled={game.phase !== "idle"}
+            disabled={game.phase !== "idle" && game.phase !== "auto-mixing"}
             style={gameActionButtonStyle}
           >
             New Game
           </button>
           <button
             onClick={() => { soundManager.playButtonClick(); purgeEmptyGames(); setShowHistory(true); }}
-            disabled={game.phase !== "idle"}
+            disabled={game.phase !== "idle" && game.phase !== "auto-mixing"}
             style={gameActionButtonStyle}
           >
             History

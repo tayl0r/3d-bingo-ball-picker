@@ -5,6 +5,8 @@ interface SpinStyleSelectorProps {
   setSpinSpeed: (v: number) => void;
   spinTime: number;
   setSpinTime: (v: number) => void;
+  spinMode: "manual" | "auto";
+  setSpinMode: (v: "manual" | "auto") => void;
 }
 
 const STRENGTHS = [
@@ -18,19 +20,26 @@ const DURATIONS = [
   { label: "Long", value: 10 },
 ] as const;
 
-function ToggleGroup({
+const SPIN_MODES = [
+  { label: "Manual", value: "manual" as const },
+  { label: "Auto", value: "auto" as const },
+] as const;
+
+function ToggleGroup<T extends string | number>({
   label,
   options,
   value,
   onChange,
+  disabled,
 }: {
   label: string;
-  options: readonly { label: string; value: number }[];
-  value: number;
-  onChange: (v: number) => void;
+  options: readonly { label: string; value: T }[];
+  value: T;
+  onChange: (v: T) => void;
+  disabled?: boolean;
 }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 6, opacity: disabled ? 0.35 : 1 }}>
       <span
         style={{
           fontSize: 11,
@@ -55,6 +64,7 @@ function ToggleGroup({
           return (
             <button
               key={opt.value}
+              disabled={disabled}
               onClick={() => { soundManager.playToggleSwitch(i / (options.length - 1)); onChange(opt.value); }}
               style={{
                 flex: 1,
@@ -72,7 +82,7 @@ function ToggleGroup({
                   i < options.length - 1
                     ? "1px solid var(--border)"
                     : "none",
-                cursor: "pointer",
+                cursor: disabled ? "not-allowed" : "pointer",
                 transition: "all 0.15s",
                 fontWeight: selected ? 600 : 400,
               }}
@@ -91,6 +101,8 @@ export function SpinStyleSelector({
   setSpinSpeed,
   spinTime,
   setSpinTime,
+  spinMode,
+  setSpinMode,
 }: SpinStyleSelectorProps) {
   return (
     <div
@@ -108,13 +120,20 @@ export function SpinStyleSelector({
       }}
     >
       <ToggleGroup
+        label="Spin Mode"
+        options={SPIN_MODES}
+        value={spinMode}
+        onChange={setSpinMode}
+      />
+      <ToggleGroup
         label="Strength"
         options={STRENGTHS}
         value={spinSpeed}
         onChange={setSpinSpeed}
+        disabled={spinMode === "auto"}
       />
       <ToggleGroup
-        label="Duration"
+        label={spinMode === "auto" ? "Auto Spin Delay" : "Duration"}
         options={DURATIONS}
         value={spinTime}
         onChange={setSpinTime}

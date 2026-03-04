@@ -4,9 +4,10 @@ import { trimTransparentPixels } from "../../utils/trimTransparentPixels";
 
 interface LogoEditButtonProps {
   onLogoChange: (logo: CustomLogo | null) => void;
+  disabled?: boolean;
 }
 
-export function LogoEditButton({ onLogoChange }: LogoEditButtonProps) {
+export function LogoEditButton({ onLogoChange, disabled }: LogoEditButtonProps) {
   const [open, setOpen] = useState(false);
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
@@ -76,17 +77,18 @@ export function LogoEditButton({ onLogoChange }: LogoEditButtonProps) {
   return (
     <div ref={popoverRef} style={{ position: "absolute", top: 16, left: 16, zIndex: 20 }}>
       <button
+        disabled={disabled}
         onClick={() => setOpen((v) => !v)}
         style={{
           background: "none",
           border: "none",
-          cursor: "pointer",
+          cursor: disabled ? "not-allowed" : "pointer",
           padding: 6,
-          opacity: open ? 1 : 0.3,
+          opacity: disabled ? 0.15 : open ? 1 : 0.3,
           transition: "opacity 0.2s",
         }}
-        onMouseEnter={(e) => { e.currentTarget.style.opacity = "1"; }}
-        onMouseLeave={(e) => { if (!open) e.currentTarget.style.opacity = "0.3"; }}
+        onMouseEnter={(e) => { if (!disabled) e.currentTarget.style.opacity = "1"; }}
+        onMouseLeave={(e) => { if (!open && !disabled) e.currentTarget.style.opacity = "0.3"; }}
         title="Edit logo"
         aria-label="Edit logo"
       >

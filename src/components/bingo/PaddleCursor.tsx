@@ -12,19 +12,44 @@ const HIDDEN_POS = { x: 0, y: -100, z: 0 };
 const _rayOrigin = new THREE.Vector3();
 const _rayDir = new THREE.Vector3();
 const _unprojectTarget = new THREE.Vector3();
+const _inverseQuat = new THREE.Quaternion();
 
 interface PaddleCursorProps {
   isDraggingRef: React.RefObject<boolean>;
   groupPosition: [number, number, number];
+  quaternionRef: React.RefObject<THREE.Quaternion>;
+  fixed?: boolean;
 }
 
-export function PaddleCursor({ isDraggingRef, groupPosition }: PaddleCursorProps) {
+export function PaddleCursor({ isDraggingRef, groupPosition, quaternionRef, fixed }: PaddleCursorProps) {
   const bodyRef = useRef<RapierRigidBody>(null);
   const wasActiveRef = useRef(false);
 
   useFrame((state) => {
     const body = bodyRef.current;
     if (!body) return;
+
+    // Counter-rotate against the sphere (like a gear)
+    _inverseQuat.copy(quaternionRef.current).invert();
+    const spinRot = { x: _inverseQuat.x, y: _inverseQuat.y, z: _inverseQuat.z, w: _inverseQuat.w };
+
+    // Fixed mode: place paddle at the bottom of the sphere
+    if (fixed) {
+      const bottomPos = {
+        x: groupPosition[0],
+        y: groupPosition[1] - MAX_OFFSET,
+        z: groupPosition[2],
+      };
+      if (!wasActiveRef.current) {
+        body.setTranslation(bottomPos, true);
+        body.setRotation(spinRot, true);
+        wasActiveRef.current = true;
+      } else {
+        body.setNextKinematicTranslation(bottomPos);
+        body.setNextKinematicRotation(spinRot);
+      }
+      return;
+    }
 
     if (isDraggingRef.current) {
       if (wasActiveRef.current) {
@@ -90,9 +115,11 @@ export function PaddleCursor({ isDraggingRef, groupPosition }: PaddleCursorProps
 
     if (!wasActiveRef.current) {
       body.setTranslation(worldPos, true);
+      body.setRotation(spinRot, true);
       wasActiveRef.current = true;
     } else {
       body.setNextKinematicTranslation(worldPos);
+      body.setNextKinematicRotation(spinRot);
     }
   });
 
@@ -105,10 +132,6 @@ export function PaddleCursor({ isDraggingRef, groupPosition }: PaddleCursorProps
       ccd
     >
       <BallCollider args={[PADDLE_RADIUS]} />
-      <mesh>
-        <sphereGeometry args={[PADDLE_RADIUS, 16, 16]} />
-        <meshStandardMaterial color="#c8b832" transparent opacity={0.6} wireframe />
-      </mesh>
     </RigidBody>
   );
 }
