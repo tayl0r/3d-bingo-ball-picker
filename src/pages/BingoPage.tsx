@@ -151,6 +151,7 @@ export function BingoPage() {
             </button>
             <button
               onClick={() => { purgeEmptyGames(); setShowHistory(true); }}
+              disabled={game.phase !== "idle"}
               style={{
                 padding: "14px 32px",
                 fontSize: 20,
@@ -163,8 +164,8 @@ export function BingoPage() {
                 background: "rgba(10, 10, 20, 0.8)",
                 backdropFilter: "blur(8px)",
                 WebkitBackdropFilter: "blur(8px)",
-                color: "var(--text)",
-                cursor: "pointer",
+                color: game.phase !== "idle" ? "var(--text-dim)" : "var(--text)",
+                cursor: game.phase !== "idle" ? "not-allowed" : "pointer",
                 transition: "all 0.2s",
               }}
             >
