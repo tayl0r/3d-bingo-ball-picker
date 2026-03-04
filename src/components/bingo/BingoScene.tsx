@@ -210,6 +210,7 @@ interface BingoSceneProps {
   spinSpeed: number;
   logoUrl?: string;
   logoAspect?: number;
+  paddleEnabled?: boolean;
 }
 
 interface SceneContentProps extends BingoSceneProps {
@@ -235,6 +236,7 @@ function SceneContent({
   isDraggingRef,
   logoUrl,
   logoAspect,
+  paddleEnabled,
 }: SceneContentProps) {
   const layout = useFrustumLayout();
   const lookAtTargetRef = useRef<THREE.Object3D>(null!);
@@ -315,10 +317,12 @@ function SceneContent({
                 registerMesh={registerMesh}
               />
             ))}
-            <PaddleCursor
-              isDraggingRef={isDraggingRef}
-              groupPosition={layout.spherePosition}
-            />
+            {paddleEnabled && phase !== "settling" && (
+              <PaddleCursor
+                isDraggingRef={isDraggingRef}
+                groupPosition={layout.spherePosition}
+              />
+            )}
           </group>
         </Physics>
       </Suspense>

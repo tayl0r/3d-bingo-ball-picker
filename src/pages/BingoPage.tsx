@@ -45,8 +45,13 @@ export function BingoPage() {
     try { const v = localStorage.getItem("bingo_spin_speed"); return v ? Number(v) : 3; } catch { return 3; }
   });
 
+  const [paddleEnabled, setPaddleEnabled] = useState(() => {
+    try { return localStorage.getItem("bingo_paddle") === "true"; } catch { return false; }
+  });
+
   useEffect(() => { try { localStorage.setItem("bingo_spin_time", String(spinTime)); } catch {} }, [spinTime]);
   useEffect(() => { try { localStorage.setItem("bingo_spin_speed", String(spinSpeed)); } catch {} }, [spinSpeed]);
+  useEffect(() => { try { localStorage.setItem("bingo_paddle", String(paddleEnabled)); } catch {} }, [paddleEnabled]);
   const [customLogo, setCustomLogoState] = useState(() => getCustomLogo());
   const handleLogoChange = useCallback((logo: CustomLogo | null) => {
     if (logo) {
@@ -127,6 +132,7 @@ export function BingoPage() {
         spinSpeed={spinSpeed}
         logoUrl={customLogo?.dataUrl}
         logoAspect={customLogo?.aspect}
+        paddleEnabled={paddleEnabled}
       />
 
       {/* Bottom-right: drawn balls board */}
@@ -173,13 +179,15 @@ export function BingoPage() {
             disabled={game.phase !== "idle" || game.activeBallNumbers.length === 0}
             phase={game.phase}
           />
-          <SpinStyleSelector
-            spinSpeed={spinSpeed}
-            setSpinSpeed={setSpinSpeed}
-            spinTime={spinTime}
-            setSpinTime={setSpinTime}
-          />
-          <VolumeControl />
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <SpinStyleSelector
+              spinSpeed={spinSpeed}
+              setSpinSpeed={setSpinSpeed}
+              spinTime={spinTime}
+              setSpinTime={setSpinTime}
+            />
+            <VolumeControl paddleEnabled={paddleEnabled} onPaddleToggle={setPaddleEnabled} />
+          </div>
         </div>
 
         <div style={{ display: "flex", gap: 14, pointerEvents: "auto" }}>

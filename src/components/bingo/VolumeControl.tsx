@@ -1,6 +1,11 @@
 import { useSoundSettings } from "../../hooks/useSoundSettings";
 
-export function VolumeControl() {
+interface VolumeControlProps {
+  paddleEnabled: boolean;
+  onPaddleToggle: (enabled: boolean) => void;
+}
+
+export function VolumeControl({ paddleEnabled, onPaddleToggle }: VolumeControlProps) {
   const { volume, muted, setVolume, setMuted } = useSoundSettings();
 
   return (
@@ -44,11 +49,50 @@ export function VolumeControl() {
           setVolume(v);
         }}
         style={{
-          width: 80,
+          flex: 1,
           accentColor: "var(--cyan)",
           cursor: "pointer",
         }}
       />
+      <div
+        style={{
+          width: 1,
+          height: 20,
+          background: "var(--border-light)",
+          flexShrink: 0,
+        }}
+      />
+      <button
+        onClick={() => onPaddleToggle(!paddleEnabled)}
+        style={{
+          background: "none",
+          border: "none",
+          color: paddleEnabled ? "var(--cyan)" : "var(--text-dim)",
+          fontSize: 16,
+          cursor: "pointer",
+          padding: "2px 4px",
+          lineHeight: 1,
+          display: "flex",
+          alignItems: "center",
+          gap: 4,
+        }}
+        title={paddleEnabled ? "Disable ball paddle" : "Enable ball paddle"}
+      >
+        <span style={{ fontSize: 18 }}>{paddleEnabled ? "🏓" : "🏓"}</span>
+        <span
+          style={{
+            fontSize: 10,
+            fontFamily: "var(--font-mono)",
+            letterSpacing: 1,
+            textTransform: "uppercase",
+            opacity: paddleEnabled ? 1 : 0.5,
+            width: 24,
+            textAlign: "center",
+          }}
+        >
+          {paddleEnabled ? "on" : "off"}
+        </span>
+      </button>
     </div>
   );
 }
