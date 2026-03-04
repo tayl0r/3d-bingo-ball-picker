@@ -45,6 +45,7 @@ interface PhaseControllerProps {
   quaternionRef: React.MutableRefObject<THREE.Quaternion>;
   spinTime: number;
   spinSpeed: number;
+  spinMode: "manual" | "auto";
 }
 
 function PhaseController({
@@ -57,6 +58,7 @@ function PhaseController({
   quaternionRef,
   spinTime,
   spinSpeed,
+  spinMode,
 }: PhaseControllerProps) {
   const mixStartRef = useRef<number | null>(null);
   const spinAxisRef = useRef(new THREE.Vector3(1, 0.2, 0).normalize());
@@ -67,11 +69,38 @@ function PhaseController({
   const settledAtRef = useRef<number | null>(null);
   const transitionedRef = useRef(false);
   const spinDistanceRef = useRef(0);
+  const autoMixStartRef = useRef<number | null>(null);
+  const fromAutoMixRef = useRef(false);
+  const autoMixElapsedRef = useRef(0);
 
   useEffect(() => {
     transitionedRef.current = false;
     settledAtRef.current = null;
+    if (phase === "mixing" && autoMixStartRef.current !== null) {
+      fromAutoMixRef.current = true;
+    }
+    if (phase !== "auto-mixing") {
+      autoMixStartRef.current = null;
+    }
   }, [phase]);
+
+  useEffect(() => {
+    if (phase !== "idle" || spinMode !== "auto") return;
+    const timer = setTimeout(() => {
+      setPhase("auto-mixing");
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [phase, spinMode, setPhase]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (spinMode === "auto" && phase === "idle") {
+      setPhase("auto-mixing");
+    }
+    if (spinMode === "manual" && phase === "auto-mixing") {
+      setPhase("idle");
+    }
+  }, [spinMode]);
 
   useFrame(({ clock, camera }, delta) => {
     if (transitionedRef.current) return;
@@ -79,13 +108,60 @@ function PhaseController({
     const now = clock.elapsedTime;
     const bodies = ballBodiesRef.current;
 
+    if (phase === "auto-mixing") {
+      if (autoMixStartRef.current === null) {
+        autoMixStartRef.current = now;
+        spinSpeedSnapshotRef.current = spinSpeed;
+        const theta = Math.random() * Math.PI * 2;
+        spinAxisRef.current.set(Math.cos(theta), 0.2, Math.sin(theta)).normalize();
+        spinDistanceRef.current = 0;
+      }
+
+      const elapsed = now - autoMixStartRef.current;
+      autoMixElapsedRef.current = elapsed;
+
+      // Ease-in over 0.5s
+      const easeInDuration = 0.5;
+      const factor = elapsed < easeInDuration
+        ? Math.pow(elapsed / easeInDuration, 3)
+        : 1;
+
+      const baseSpeed = 3;
+      const angle = factor * baseSpeed * spinSpeedSnapshotRef.current * delta;
+
+      const TICK_INTERVAL = 1.2;
+      spinDistanceRef.current += angle;
+      if (spinDistanceRef.current >= TICK_INTERVAL) {
+        spinDistanceRef.current -= TICK_INTERVAL;
+        soundManager.playSpinTick();
+      }
+
+      spinQuatRef.current.setFromAxisAngle(spinAxisRef.current, angle);
+      quaternionRef.current.premultiply(spinQuatRef.current);
+      return;
+    }
+
     if (phase === "mixing") {
       if (mixStartRef.current === null) {
         mixStartRef.current = now;
         spinTimeSnapshotRef.current = spinTime;
         spinSpeedSnapshotRef.current = spinSpeed;
-        const theta = Math.random() * Math.PI * 2;
-        spinAxisRef.current.set(Math.cos(theta), 0.2, Math.sin(theta)).normalize();
+
+        if (fromAutoMixRef.current) {
+          // Coming from auto-mixing: inherit axis, calculate time offset
+          const autoElapsed = autoMixElapsedRef.current;
+          if (autoElapsed >= spinTimeSnapshotRef.current) {
+            // Min time met: start at beginning of ease-down (t=0.8)
+            mixStartRef.current = now - (0.8 * spinTimeSnapshotRef.current);
+          } else {
+            // Min time not met: continue from where we are
+            mixStartRef.current = now - autoElapsed;
+          }
+          fromAutoMixRef.current = false;
+        } else {
+          const theta = Math.random() * Math.PI * 2;
+          spinAxisRef.current.set(Math.cos(theta), 0.2, Math.sin(theta)).normalize();
+        }
         spinDistanceRef.current = 0;
       }
 
@@ -208,6 +284,7 @@ interface BingoSceneProps {
   onAnimationComplete: () => void;
   spinTime: number;
   spinSpeed: number;
+  spinMode: "manual" | "auto";
   logoUrl?: string;
   logoAspect?: number;
   paddleEnabled?: boolean;
@@ -232,6 +309,7 @@ function SceneContent({
   onAnimationComplete,
   spinTime,
   spinSpeed,
+  spinMode,
   quaternionRef,
   isDraggingRef,
   logoUrl,
@@ -306,6 +384,7 @@ function SceneContent({
               quaternionRef={quaternionRef}
               spinTime={spinTime}
               spinSpeed={spinSpeed}
+              spinMode={spinMode}
             />
             <BingoMachine quaternionRef={quaternionRef} />
             {activeBallNumbers.map((num) => (
