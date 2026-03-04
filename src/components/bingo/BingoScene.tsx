@@ -212,6 +212,8 @@ interface BingoSceneProps {
   onAnimationComplete: () => void;
   spinTime: number;
   spinSpeed: number;
+  logoUrl?: string;
+  logoAspect?: number;
 }
 
 interface SceneContentProps extends BingoSceneProps {
@@ -235,6 +237,8 @@ function SceneContent({
   spinSpeed,
   quaternionRef,
   isDraggingRef,
+  logoUrl,
+  logoAspect,
 }: SceneContentProps) {
   const layout = useFrustumLayout();
   const lookAtTargetRef = useRef<THREE.Object3D>(null!);
@@ -285,13 +289,13 @@ function SceneContent({
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 5, 5]} intensity={1} />
       <OrbitingLookAtTarget targetRef={lookAtTargetRef} />
-      <Suspense fallback={null}>
-        <HoloLogo
-          position={layout.logoPosition}
-          scale={layout.logoScale}
-          targetRef={lookAtTargetRef}
-        />
-      </Suspense>
+      <HoloLogo
+        position={layout.logoPosition}
+        scale={layout.logoScale}
+        targetRef={lookAtTargetRef}
+        logoUrl={logoUrl}
+        logoAspect={logoAspect}
+      />
       <Suspense fallback={null}>
         <Physics gravity={[0, -9.81, 0]}>
           <group position={layout.spherePosition}>

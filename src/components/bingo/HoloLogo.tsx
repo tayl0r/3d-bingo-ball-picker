@@ -1,7 +1,6 @@
-import { useRef, useMemo } from "react";
-import { useFrame, useLoader } from "@react-three/fiber";
+import { useRef, useMemo, useState, useEffect } from "react";
+import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { TextureLoader } from "three";
 
 const BASE_URL = import.meta.env.BASE_URL;
 
@@ -99,23 +98,58 @@ interface HoloLogoProps {
   position?: [number, number, number];
   scale?: number;
   targetRef: React.RefObject<THREE.Object3D>;
+  logoUrl?: string;
+  logoAspect?: number;
 }
 
 export function HoloLogo({
   position = [0, 2.5, -3.5],
   scale = 1,
   targetRef,
+  logoUrl,
+  logoAspect,
 }: HoloLogoProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
-  const logoTexture = useLoader(TextureLoader, `${BASE_URL}well80_logo.png`);
+  const src = logoUrl ?? `${BASE_URL}well80_logo.png`;
+  const [texture, setTexture] = useState<THREE.Texture | null>(null);
+
+  useEffect(() => {
+    let disposed = false;
+    let loadedTex: THREE.Texture | null = null;
+    const loader = new THREE.TextureLoader();
+    loader.load(
+      src,
+      (tex) => {
+        if (disposed) { tex.dispose(); return; }
+        tex.colorSpace = THREE.SRGBColorSpace;
+        loadedTex = tex;
+        setTexture(tex);
+      },
+      undefined,
+      (err) => { console.warn("Failed to load logo texture:", err); },
+    );
+    return () => {
+      disposed = true;
+      loadedTex?.dispose();
+    };
+  }, [src]);
+
+  useEffect(() => {
+    if (materialRef.current && texture) {
+      materialRef.current.uniforms.uTexture.value = texture;
+      materialRef.current.needsUpdate = true;
+    }
+  }, [texture]);
 
   const uniforms = useMemo(
     () => ({
-      uTexture: { value: logoTexture },
+      uTexture: { value: texture },
       uTime: { value: 0 },
     }),
-    [logoTexture]
+    // only create once — texture updates go through the effect above
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   );
 
   useFrame(({ clock }) => {
@@ -127,13 +161,14 @@ export function HoloLogo({
     }
   });
 
-  // Logo is 744x267, aspect ratio ~2.786
-  const aspect = 744 / 267;
+  const aspect = logoAspect ?? 744 / 267;
   const height = 1.8 * scale;
   const width = height * aspect;
 
+  if (!texture) return null;
+
   return (
-    <mesh ref={meshRef} position={position}>
+    <mesh ref={meshRef} position={position} key={`${width}-${height}`}>
       <planeGeometry args={[width, height]} />
       <shaderMaterial
         ref={materialRef}
