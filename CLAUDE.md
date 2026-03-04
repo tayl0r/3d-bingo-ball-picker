@@ -40,6 +40,12 @@ In Catalyst Agent, use `./start.local.sh` instead of `pnpm run dev`.
   - `GetABallButton.tsx` — Button to draw next ball
   - `SpinControls.tsx` — Machine spin speed controls
   - `GameHistoryModal.tsx` — Past game history modal
+  - `PatternPickerModal.tsx` — Full-screen pattern selection modal
+  - `PatternGrid.tsx` — Reusable 5x5 pattern grid display
+  - `CurrentPatternDisplay.tsx` — In-game current pattern indicator
+- `src/data/` — Static data:
+  - `bingoPatterns.json` — Bingo win pattern definitions (14 patterns)
+  - `bingoPatterns.types.ts` — TypeScript type for BingoPattern
 - `src/components/Scene.tsx` — Original test scene with rotating primitives
 - `src/hooks/` — Custom hooks:
   - `useBingoGameState.ts` — Game state management (draw, reset, history)
@@ -50,6 +56,7 @@ In Catalyst Agent, use `./start.local.sh` instead of `pnpm run dev`.
   - `ballTexture.ts` — Canvas-based ball number texture generation
   - `sphereContainerGeometry.ts` — Sphere container mesh geometry
   - `gameStorage.ts` — localStorage persistence for game state
+  - `patternFavorites.ts` — localStorage favorites for patterns
 
 ## Key Patterns
 
@@ -59,3 +66,4 @@ In Catalyst Agent, use `./start.local.sh` instead of `pnpm run dev`.
 - **Physics**: `@react-three/rapier` handles ball physics inside the bingo machine
 - **Test setup**: vitest + jsdom + `vitest-canvas-mock`; setup file at `src/test/setup.ts`
 - **Tests**: Co-located in `__tests__/` directories next to source files
+- **Win patterns**: Players choose a bingo pattern (winning formation) when starting a game. Pattern data in JSON, favorites in localStorage.
