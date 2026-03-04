@@ -13,7 +13,17 @@ const patterns = bingoPatterns as BingoPattern[];
 
 export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [activeTag, setActiveTagState] = useState<string | null>(() => {
+    return localStorage.getItem("bingo_pattern_active_tag") ?? null;
+  });
+  const setActiveTag = (tag: string | null) => {
+    setActiveTagState(tag);
+    if (tag === null) {
+      localStorage.removeItem("bingo_pattern_active_tag");
+    } else {
+      localStorage.setItem("bingo_pattern_active_tag", tag);
+    }
+  };
   const [favorites, setFavorites] = useState<Set<string>>(() => getFavorites());
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
