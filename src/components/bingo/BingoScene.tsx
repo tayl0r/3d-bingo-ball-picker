@@ -32,6 +32,10 @@ function generateBallPositions(count: number, maxRadius: number): [number, numbe
 
 const BALL_SPAWN_RADIUS = 2.0;
 const INITIAL_POSITIONS = generateBallPositions(75, BALL_SPAWN_RADIUS);
+const BASE_SPIN_SPEED = 3;
+const TICK_INTERVAL = 1.2;
+const AUTO_RESTART_DELAY_MS = 3000;
+const EASE_IN_DURATION = 0.5;
 
 const _worldPos = new THREE.Vector3();
 
@@ -84,23 +88,21 @@ function PhaseController({
     }
   }, [phase]);
 
+  // Auto-spin phase management: handles both auto-restart (3s after draw)
+  // and live spinMode toggling. When auto+idle, delays 3s then spins.
+  // When manual+auto-mixing, snaps to idle immediately.
   useEffect(() => {
-    if (phase !== "idle" || spinMode !== "auto") return;
-    const timer = setTimeout(() => {
-      setPhase("auto-mixing");
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, [phase, spinMode, setPhase]);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    if (spinMode === "auto" && phase === "idle") {
-      setPhase("auto-mixing");
-    }
     if (spinMode === "manual" && phase === "auto-mixing") {
       setPhase("idle");
+      return;
     }
-  }, [spinMode]);
+    if (spinMode === "auto" && phase === "idle") {
+      const timer = setTimeout(() => {
+        setPhase("auto-mixing");
+      }, AUTO_RESTART_DELAY_MS);
+      return () => clearTimeout(timer);
+    }
+  }, [phase, spinMode, setPhase]);
 
   useFrame(({ clock, camera }, delta) => {
     if (transitionedRef.current) return;
@@ -120,16 +122,12 @@ function PhaseController({
       const elapsed = now - autoMixStartRef.current;
       autoMixElapsedRef.current = elapsed;
 
-      // Ease-in over 0.5s
-      const easeInDuration = 0.5;
-      const factor = elapsed < easeInDuration
-        ? Math.pow(elapsed / easeInDuration, 3)
+      const factor = elapsed < EASE_IN_DURATION
+        ? Math.pow(elapsed / EASE_IN_DURATION, 3)
         : 1;
 
-      const baseSpeed = 3;
-      const angle = factor * baseSpeed * spinSpeedSnapshotRef.current * delta;
+      const angle = factor * BASE_SPIN_SPEED * spinSpeedSnapshotRef.current * delta;
 
-      const TICK_INTERVAL = 1.2;
       spinDistanceRef.current += angle;
       if (spinDistanceRef.current >= TICK_INTERVAL) {
         spinDistanceRef.current -= TICK_INTERVAL;
@@ -186,10 +184,8 @@ function PhaseController({
         factor = s * s * s;
       }
 
-      const baseSpeed = 3;
-      const angle = factor * baseSpeed * spinSpeedSnapshotRef.current * delta;
+      const angle = factor * BASE_SPIN_SPEED * spinSpeedSnapshotRef.current * delta;
 
-      const TICK_INTERVAL = 1.2;
       spinDistanceRef.current += angle;
       if (spinDistanceRef.current >= TICK_INTERVAL) {
         spinDistanceRef.current -= TICK_INTERVAL;
