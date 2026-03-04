@@ -44,6 +44,9 @@ In Catalyst Agent, use `./start.local.sh` instead of `pnpm run dev`.
   - `PatternGrid.tsx` — Reusable 5x5 pattern grid display
   - `CurrentPatternDisplay.tsx` — In-game current pattern indicator
   - `VolumeControl.tsx` — Mute toggle + volume slider + ball paddle on/off toggle
+  - `NicknameSheen.tsx` — Animated nickname display for last drawn ball
+  - `LogoEditButton.tsx` — Custom logo upload/clear button
+  - `PaddleCursor.tsx` — Mouse-controlled physics paddle inside bingo machine
 - `src/audio/` — Sound system:
   - `sounds.ts` — zzfx parameter arrays for all sound effects
   - `soundManager.ts` — Central audio module (play functions, volume/mute, localStorage)
@@ -63,6 +66,8 @@ In Catalyst Agent, use `./start.local.sh` instead of `pnpm run dev`.
   - `sphereContainerGeometry.ts` — Sphere container mesh geometry
   - `gameStorage.ts` — localStorage persistence for game state
   - `patternFavorites.ts` — localStorage favorites for patterns
+  - `logoStorage.ts` — localStorage persistence for custom logo
+  - `trimTransparentPixels.ts` — Canvas pixel trimming utility
 
 ## Key Patterns
 
