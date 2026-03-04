@@ -10,7 +10,7 @@
       [0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0]
     ],
-    "tags": ["basic"]
+    "tags": ["basic", "popular", "fast"]
   },
   {
     "id": "four-corners",
@@ -23,7 +23,7 @@
       [0, 0, 0, 0, 0],
       [1, 0, 0, 0, 1]
     ],
-    "tags": ["basic"]
+    "tags": ["basic", "popular", "fast"]
   },
   {
     "id": "blackout",
@@ -36,7 +36,7 @@
       [1, 1, 1, 1, 1],
       [1, 1, 1, 1, 1]
     ],
-    "tags": ["basic"]
+    "tags": ["basic", "popular", "long"]
   },
   {
     "id": "postage-stamp",
@@ -49,7 +49,7 @@
       [0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0]
     ],
-    "tags": ["basic"]
+    "tags": ["basic", "fast"]
   },
   {
     "id": "letter-t",
@@ -62,7 +62,7 @@
       [0, 0, 1, 0, 0],
       [0, 0, 1, 0, 0]
     ],
-    "tags": ["letter"]
+    "tags": ["letter", "popular"]
   },
   {
     "id": "letter-l",
@@ -88,7 +88,7 @@
       [1, 0, 0, 0, 1],
       [1, 0, 0, 0, 1]
     ],
-    "tags": ["letter"]
+    "tags": ["letter", "long"]
   },
   {
     "id": "letter-x",
@@ -101,7 +101,59 @@
       [0, 1, 0, 1, 0],
       [1, 0, 0, 0, 1]
     ],
-    "tags": ["letter", "shape"]
+    "tags": ["letter", "shape", "popular"]
+  },
+  {
+    "id": "letter-e",
+    "name": "Letter E",
+    "description": "Three horizontal bars with left spine",
+    "grid": [
+      [1, 1, 1, 1, 1],
+      [1, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1],
+      [1, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1]
+    ],
+    "tags": ["letter", "long"]
+  },
+  {
+    "id": "letter-f",
+    "name": "Letter F",
+    "description": "Two horizontal bars with left spine",
+    "grid": [
+      [1, 1, 1, 1, 1],
+      [1, 0, 0, 0, 0],
+      [1, 1, 1, 1, 0],
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0]
+    ],
+    "tags": ["letter"]
+  },
+  {
+    "id": "letter-z",
+    "name": "Letter Z",
+    "description": "Top and bottom rows with diagonal",
+    "grid": [
+      [1, 1, 1, 1, 1],
+      [0, 0, 0, 1, 0],
+      [0, 0, 1, 0, 0],
+      [0, 1, 0, 0, 0],
+      [1, 1, 1, 1, 1]
+    ],
+    "tags": ["letter"]
+  },
+  {
+    "id": "letter-n",
+    "name": "Letter N",
+    "description": "Both side columns with diagonal",
+    "grid": [
+      [1, 0, 0, 0, 1],
+      [1, 1, 0, 0, 1],
+      [1, 0, 1, 0, 1],
+      [1, 0, 0, 1, 1],
+      [1, 0, 0, 0, 1]
+    ],
+    "tags": ["letter", "long"]
   },
   {
     "id": "diamond",
@@ -114,7 +166,7 @@
       [0, 1, 0, 1, 0],
       [0, 0, 1, 0, 0]
     ],
-    "tags": ["shape"]
+    "tags": ["shape", "popular"]
   },
   {
     "id": "plus-sign",
@@ -127,7 +179,7 @@
       [0, 0, 1, 0, 0],
       [0, 0, 1, 0, 0]
     ],
-    "tags": ["shape"]
+    "tags": ["shape", "popular"]
   },
   {
     "id": "arrow",
@@ -153,6 +205,58 @@
       [0, 1, 1, 1, 0],
       [0, 0, 1, 0, 0]
     ],
+    "tags": ["shape", "popular", "long"]
+  },
+  {
+    "id": "bowtie",
+    "name": "Bowtie",
+    "description": "Two triangles meeting at center",
+    "grid": [
+      [1, 1, 1, 1, 1],
+      [0, 1, 1, 1, 0],
+      [0, 0, 1, 0, 0],
+      [0, 1, 1, 1, 0],
+      [1, 1, 1, 1, 1]
+    ],
+    "tags": ["shape", "popular", "long"]
+  },
+  {
+    "id": "wine-glass",
+    "name": "Wine Glass",
+    "description": "Glass bowl with stem and base",
+    "grid": [
+      [1, 1, 1, 1, 1],
+      [0, 1, 1, 1, 0],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0],
+      [0, 1, 1, 1, 0]
+    ],
+    "tags": ["shape"]
+  },
+  {
+    "id": "clock",
+    "name": "Clock",
+    "description": "Circle with center point",
+    "grid": [
+      [0, 1, 1, 1, 0],
+      [1, 0, 0, 0, 1],
+      [1, 0, 1, 0, 1],
+      [1, 0, 0, 0, 1],
+      [0, 1, 1, 1, 0]
+    ],
+    "tags": ["shape", "long"]
+  },
+  {
+    "id": "inner-frame",
+    "name": "Inner Frame",
+    "description": "Small square around the center",
+    "grid": [
+      [0, 0, 0, 0, 0],
+      [0, 1, 1, 1, 0],
+      [0, 1, 0, 1, 0],
+      [0, 1, 1, 1, 0],
+      [0, 0, 0, 0, 0]
+    ],
     "tags": ["shape"]
   },
   {
@@ -166,12 +270,12 @@
       [1, 0, 0, 0, 1],
       [1, 1, 1, 1, 1]
     ],
-    "tags": ["advanced"]
+    "tags": ["advanced", "long"]
   },
   {
     "id": "checkerboard",
     "name": "Checkerboard",
-    "description": "Alternating squares like a checkerboard",
+    "description": "Alternating squares",
     "grid": [
       [1, 0, 1, 0, 1],
       [0, 1, 0, 1, 0],
@@ -179,6 +283,123 @@
       [0, 1, 0, 1, 0],
       [1, 0, 1, 0, 1]
     ],
-    "tags": ["advanced"]
+    "tags": ["advanced", "long"]
+  },
+  {
+    "id": "railroad-tracks",
+    "name": "Railroad Tracks",
+    "description": "Two parallel vertical lines",
+    "grid": [
+      [0, 1, 0, 1, 0],
+      [0, 1, 0, 1, 0],
+      [0, 1, 0, 1, 0],
+      [0, 1, 0, 1, 0],
+      [0, 1, 0, 1, 0]
+    ],
+    "tags": ["shape"]
+  },
+  {
+    "id": "equal-sign",
+    "name": "Equal Sign",
+    "description": "Two horizontal parallel lines",
+    "grid": [
+      [0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1],
+      [0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1],
+      [0, 0, 0, 0, 0]
+    ],
+    "tags": ["shape"]
+  },
+  {
+    "id": "top-hat",
+    "name": "Top Hat",
+    "description": "Hat crown with wide brim",
+    "grid": [
+      [0, 1, 1, 1, 0],
+      [0, 1, 1, 1, 0],
+      [0, 0, 1, 0, 0],
+      [1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1]
+    ],
+    "tags": ["shape", "long"]
+  },
+  {
+    "id": "windmill",
+    "name": "Windmill",
+    "description": "Spinning blades from center",
+    "grid": [
+      [1, 1, 0, 0, 0],
+      [1, 1, 0, 0, 0],
+      [0, 0, 1, 0, 0],
+      [0, 0, 0, 1, 1],
+      [0, 0, 0, 1, 1]
+    ],
+    "tags": ["shape", "popular"]
+  },
+  {
+    "id": "cloverleaf",
+    "name": "Cloverleaf",
+    "description": "Four leaf clover in the corners",
+    "grid": [
+      [1, 1, 0, 1, 1],
+      [1, 1, 0, 1, 1],
+      [0, 0, 0, 0, 0],
+      [1, 1, 0, 1, 1],
+      [1, 1, 0, 1, 1]
+    ],
+    "tags": ["shape", "popular", "long"]
+  },
+  {
+    "id": "christmas-tree",
+    "name": "Christmas Tree",
+    "description": "Tree shape with trunk",
+    "grid": [
+      [0, 0, 1, 0, 0],
+      [0, 1, 1, 1, 0],
+      [0, 1, 1, 1, 0],
+      [1, 1, 1, 1, 1],
+      [0, 0, 1, 0, 0]
+    ],
+    "tags": ["holiday"]
+  },
+  {
+    "id": "candy-cane",
+    "name": "Candy Cane",
+    "description": "Cane with curved hook at top",
+    "grid": [
+      [0, 1, 1, 1, 0],
+      [0, 0, 0, 1, 0],
+      [0, 0, 0, 1, 0],
+      [0, 0, 0, 1, 0],
+      [0, 0, 0, 1, 0]
+    ],
+    "tags": ["holiday", "fast"]
+  },
+  {
+    "id": "bell",
+    "name": "Bell",
+    "description": "Holiday bell shape",
+    "grid": [
+      [0, 0, 1, 0, 0],
+      [0, 1, 1, 1, 0],
+      [1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1],
+      [0, 0, 1, 0, 0]
+    ],
+    "tags": ["holiday", "long"]
+  },
+  {
+    "id": "cross",
+    "name": "Cross",
+    "description": "Easter cross shape",
+    "grid": [
+      [0, 0, 1, 0, 0],
+      [1, 1, 1, 1, 1],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0]
+    ],
+    "tags": ["holiday"]
   }
 ]
