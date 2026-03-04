@@ -160,7 +160,7 @@ export function GameHistoryModal({ onClose, onLoadGame, currentGameId }: GameHis
                     )}
                     {(() => {
                       const pattern = (patterns as BingoPattern[]).find(
-                        (p) => p.id === ((game as SavedGame & { patternId?: string }).patternId ?? "any-line")
+                        (p) => p.id === (game.patternId ?? "any-line")
                       );
                       if (!pattern) return null;
                       return (

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import bingoPatterns from "../../data/bingoPatterns.json";
 import type { BingoPattern } from "../../data/bingoPatterns.types";
 import { PatternGrid } from "./PatternGrid";
@@ -24,9 +24,12 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
 
   // Filter patterns
   const filtered = patterns.filter((p) => {
-    // Search filter
-    if (searchQuery && !p.name.toLowerCase().includes(searchQuery.toLowerCase())) {
-      return false;
+    // Search filter (matches name or description)
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      if (!p.name.toLowerCase().includes(q) && !p.description.toLowerCase().includes(q)) {
+        return false;
+      }
     }
     // Tag filter
     if (activeTag === "favorites") {
@@ -45,6 +48,16 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
   };
 
   const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+  const chipStyle = (isActive: boolean): CSSProperties => ({
+    background: isActive ? "rgba(245, 158, 11, 0.2)" : "rgba(255, 255, 255, 0.06)",
+    color: isActive ? "rgba(245, 158, 11, 0.9)" : "rgba(255, 255, 255, 0.5)",
+    border: isActive ? "1px solid rgba(245, 158, 11, 0.4)" : "1px solid transparent",
+    padding: "6px 14px",
+    borderRadius: 16,
+    fontSize: 12,
+    cursor: "pointer",
+  });
 
   return (
     <div
@@ -155,72 +168,15 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
               margin: "16px 0",
             }}
           >
-            {/* "All" chip */}
-            <button
-              onClick={() => setActiveTag(null)}
-              style={{
-                background: activeTag === null
-                  ? "rgba(245, 158, 11, 0.2)"
-                  : "rgba(255, 255, 255, 0.06)",
-                color: activeTag === null
-                  ? "rgba(245, 158, 11, 0.9)"
-                  : "rgba(255, 255, 255, 0.5)",
-                border: activeTag === null
-                  ? "1px solid rgba(245, 158, 11, 0.4)"
-                  : "1px solid transparent",
-                padding: "6px 14px",
-                borderRadius: 16,
-                fontSize: 12,
-                cursor: "pointer",
-              }}
-            >
+            <button onClick={() => setActiveTag(null)} style={chipStyle(activeTag === null)}>
               All
             </button>
-
-            {/* Tag chips */}
             {uniqueTags.map((tag) => (
-              <button
-                key={tag}
-                onClick={() => setActiveTag(tag)}
-                style={{
-                  background: activeTag === tag
-                    ? "rgba(245, 158, 11, 0.2)"
-                    : "rgba(255, 255, 255, 0.06)",
-                  color: activeTag === tag
-                    ? "rgba(245, 158, 11, 0.9)"
-                    : "rgba(255, 255, 255, 0.5)",
-                  border: activeTag === tag
-                    ? "1px solid rgba(245, 158, 11, 0.4)"
-                    : "1px solid transparent",
-                  padding: "6px 14px",
-                  borderRadius: 16,
-                  fontSize: 12,
-                  cursor: "pointer",
-                }}
-              >
+              <button key={tag} onClick={() => setActiveTag(tag)} style={chipStyle(activeTag === tag)}>
                 {capitalize(tag)}
               </button>
             ))}
-
-            {/* Favorites chip */}
-            <button
-              onClick={() => setActiveTag("favorites")}
-              style={{
-                background: activeTag === "favorites"
-                  ? "rgba(245, 158, 11, 0.2)"
-                  : "rgba(255, 255, 255, 0.06)",
-                color: activeTag === "favorites"
-                  ? "rgba(245, 158, 11, 0.9)"
-                  : "rgba(255, 255, 255, 0.5)",
-                border: activeTag === "favorites"
-                  ? "1px solid rgba(245, 158, 11, 0.4)"
-                  : "1px solid transparent",
-                padding: "6px 14px",
-                borderRadius: 16,
-                fontSize: 12,
-                cursor: "pointer",
-              }}
-            >
+            <button onClick={() => setActiveTag("favorites")} style={chipStyle(activeTag === "favorites")}>
               ♥ Favorites
             </button>
           </div>

@@ -1,9 +1,13 @@
 const STORAGE_KEY = "bingo_pattern_favorites";
 
 export function getFavorites(): Set<string> {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return new Set();
-  return new Set(JSON.parse(raw));
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return new Set();
+    return new Set(JSON.parse(raw));
+  } catch {
+    return new Set();
+  }
 }
 
 function saveFavorites(favs: Set<string>): void {
