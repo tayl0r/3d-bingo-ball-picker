@@ -15,8 +15,15 @@ import bingoNicknames from "../data/bingoNicknames.json";
 export function BingoPage() {
   const game = useBingoGameState();
   const { scale, width, height } = useViewportScale();
-  const [spinTime, setSpinTime] = useState(5);
-  const [spinSpeed, setSpinSpeed] = useState(3);
+  const [spinTime, setSpinTime] = useState(() => {
+    try { const v = localStorage.getItem("bingo_spin_time"); return v ? Number(v) : 5; } catch { return 5; }
+  });
+  const [spinSpeed, setSpinSpeed] = useState(() => {
+    try { const v = localStorage.getItem("bingo_spin_speed"); return v ? Number(v) : 3; } catch { return 3; }
+  });
+
+  useEffect(() => { try { localStorage.setItem("bingo_spin_time", String(spinTime)); } catch {} }, [spinTime]);
+  useEffect(() => { try { localStorage.setItem("bingo_spin_speed", String(spinSpeed)); } catch {} }, [spinSpeed]);
   const [showHistory, setShowHistory] = useState(false);
   const [showPatternPicker, setShowPatternPicker] = useState(false);
 
