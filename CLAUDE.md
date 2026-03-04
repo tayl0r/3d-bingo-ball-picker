@@ -38,7 +38,7 @@ In Catalyst Agent, use `./start.local.sh` instead of `pnpm run dev`.
   - `HoloLogo.tsx` — Holographic logo display
   - `DrawnBallsList.tsx` — HTML overlay listing drawn balls
   - `GetABallButton.tsx` — Button to draw next ball
-  - `SpinControls.tsx` — Machine spin speed controls
+  - `SpinStyleSelector.tsx` — Machine spin style selector (strength + duration toggles)
   - `GameHistoryModal.tsx` — Past game history modal
   - `PatternPickerModal.tsx` — Full-screen pattern selection modal
   - `PatternGrid.tsx` — Reusable 5x5 pattern grid display
