@@ -5,6 +5,8 @@ interface SpinStyleSelectorProps {
   setSpinSpeed: (v: number) => void;
   spinTime: number;
   setSpinTime: (v: number) => void;
+  spinMode: "manual" | "auto";
+  setSpinMode: (v: "manual" | "auto") => void;
 }
 
 const STRENGTHS = [
@@ -18,16 +20,21 @@ const DURATIONS = [
   { label: "Long", value: 10 },
 ] as const;
 
-function ToggleGroup({
+const SPIN_MODES = [
+  { label: "Manual", value: "manual" as const },
+  { label: "Auto", value: "auto" as const },
+] as const;
+
+function ToggleGroup<T extends string | number>({
   label,
   options,
   value,
   onChange,
 }: {
   label: string;
-  options: readonly { label: string; value: number }[];
-  value: number;
-  onChange: (v: number) => void;
+  options: readonly { label: string; value: T }[];
+  value: T;
+  onChange: (v: T) => void;
 }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -91,6 +98,8 @@ export function SpinStyleSelector({
   setSpinSpeed,
   spinTime,
   setSpinTime,
+  spinMode,
+  setSpinMode,
 }: SpinStyleSelectorProps) {
   return (
     <div
@@ -107,6 +116,12 @@ export function SpinStyleSelector({
         minWidth: 260,
       }}
     >
+      <ToggleGroup
+        label="Spin Mode"
+        options={SPIN_MODES}
+        value={spinMode}
+        onChange={setSpinMode}
+      />
       <ToggleGroup
         label="Strength"
         options={STRENGTHS}
