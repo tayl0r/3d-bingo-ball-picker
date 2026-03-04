@@ -87,7 +87,7 @@ export function BingoPage() {
       <div
         style={{
           position: "absolute",
-          bottom: 360,
+          bottom: 460,
           left: 40,
           zIndex: 10,
           pointerEvents: "auto",
