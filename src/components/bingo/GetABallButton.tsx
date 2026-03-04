@@ -8,6 +8,7 @@ interface GetABallButtonProps {
 
 const phaseText: Record<GamePhase, string> = {
   idle: "GET A BALL",
+  "auto-mixing": "AUTO...",
   mixing: "MIXING...",
   settling: "SETTLING...",
   selecting: "SETTLING...",

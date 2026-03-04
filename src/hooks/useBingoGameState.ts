@@ -10,7 +10,7 @@ import {
   type SavedGame,
 } from "../utils/gameStorage";
 
-export type GamePhase = "idle" | "mixing" | "settling" | "selecting" | "animating";
+export type GamePhase = "idle" | "auto-mixing" | "mixing" | "settling" | "selecting" | "animating";
 
 export interface SelectedBall {
   number: number;
@@ -60,7 +60,7 @@ export function useBingoGameState() {
   }, []);
 
   const startDraw = useCallback(() => {
-    if (phase !== "idle" || activeBallNumbers.length === 0) return;
+    if ((phase !== "idle" && phase !== "auto-mixing") || activeBallNumbers.length === 0) return;
     setPhaseTracked("mixing");
   }, [phase, activeBallNumbers.length, setPhaseTracked]);
 

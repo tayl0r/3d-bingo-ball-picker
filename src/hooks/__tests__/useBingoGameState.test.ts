@@ -94,6 +94,22 @@ describe("useBingoGameState", () => {
     expect(result.current.ballMeshesRef.current.has(1)).toBe(false);
   });
 
+  it("startDraw transitions from auto-mixing to mixing", () => {
+    const { result } = renderHook(() => useBingoGameState());
+    act(() => result.current.setPhase("auto-mixing"));
+    act(() => result.current.startDraw());
+    expect(result.current.phase).toBe("mixing");
+  });
+
+  it("startDraw does nothing during animating phase", () => {
+    const { result } = renderHook(() => useBingoGameState());
+    act(() => result.current.startDraw());
+    act(() => result.current.selectBall(1, [0, 0, 0], [0, 0, 0, 1]));
+    expect(result.current.phase).toBe("animating");
+    act(() => result.current.startDraw());
+    expect(result.current.phase).toBe("animating");
+  });
+
   it("startDraw does nothing when no balls remain", () => {
     const { result } = renderHook(() => useBingoGameState());
     // Draw all 75 balls
