@@ -11,6 +11,7 @@ import { CurrentPatternDisplay } from "../components/bingo/CurrentPatternDisplay
 import { VolumeControl } from "../components/bingo/VolumeControl";
 import { disposeBallTextures } from "../utils/ballTexture";
 import { purgeEmptyGames } from "../utils/gameStorage";
+import { soundManager } from "../audio/soundManager";
 
 export function BingoPage() {
   const game = useBingoGameState();
@@ -101,7 +102,7 @@ export function BingoPage() {
 
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20, pointerEvents: "auto" }}>
           <GetABallButton
-            onClick={game.startDraw}
+            onClick={() => { soundManager.playBallDraw(); game.startDraw(); }}
             disabled={game.phase !== "idle" || game.activeBallNumbers.length === 0}
             phase={game.phase}
           />
@@ -116,7 +117,7 @@ export function BingoPage() {
 
         <div style={{ display: "flex", gap: 14, pointerEvents: "auto" }}>
           <button
-            onClick={() => setShowPatternPicker(true)}
+            onClick={() => { soundManager.playButtonClick(); setShowPatternPicker(true); }}
             disabled={game.phase !== "idle"}
             style={{
               padding: "14px 32px",
@@ -138,7 +139,7 @@ export function BingoPage() {
             New Game
           </button>
           <button
-            onClick={() => { purgeEmptyGames(); setShowHistory(true); }}
+            onClick={() => { soundManager.playButtonClick(); purgeEmptyGames(); setShowHistory(true); }}
             disabled={game.phase !== "idle"}
             style={{
               padding: "14px 32px",

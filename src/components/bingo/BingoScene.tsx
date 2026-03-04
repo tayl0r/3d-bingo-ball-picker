@@ -11,6 +11,7 @@ import { HoloLogo, OrbitingLookAtTarget } from "./HoloLogo";
 import type { GamePhase, SelectedBall } from "../../hooks/useBingoGameState";
 import { useSphereRotation } from "../../hooks/useSphereRotation";
 import { useFrustumLayout } from "../../hooks/useFrustumLayout";
+import { soundManager } from "../../audio/soundManager";
 
 function generateBallPositions(count: number, maxRadius: number): [number, number, number][] {
   const positions: [number, number, number][] = [];
@@ -84,6 +85,7 @@ function PhaseController({
         spinSpeedSnapshotRef.current = spinSpeed;
         const theta = Math.random() * Math.PI * 2;
         spinAxisRef.current.set(Math.cos(theta), 0.2, Math.sin(theta)).normalize();
+        soundManager.playMixing();
       }
 
       const elapsed = now - mixStartRef.current;
@@ -234,6 +236,7 @@ function SceneContent({
   const prevSelectedRef = useRef<SelectedBall | null>(null);
   useEffect(() => {
     if (selectedBall && !prevSelectedRef.current) {
+      soundManager.playBallLaunch();
       // New ball animation starting — old resting ball departs
       if (restingBallNumber !== null) {
         setDepartingBallNumber(restingBallNumber);
@@ -245,6 +248,7 @@ function SceneContent({
 
   // Wrap onAnimationComplete to also set the new resting ball
   const handleAnimationComplete = useCallback(() => {
+    soundManager.playBallLand();
     if (selectedBall) {
       setRestingBallNumber(selectedBall.number);
     }
