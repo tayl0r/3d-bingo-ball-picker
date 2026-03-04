@@ -115,7 +115,7 @@ function PhaseController({
       const angle = factor * baseSpeed * spinSpeedSnapshotRef.current * delta;
 
       // Tick sound every ~0.5 radians of sphere travel (like a clicker hitting pegs)
-      const TICK_INTERVAL = 0.5;
+      const TICK_INTERVAL = 1.2;
       spinDistanceRef.current += angle;
       if (spinDistanceRef.current >= TICK_INTERVAL) {
         spinDistanceRef.current -= TICK_INTERVAL;
