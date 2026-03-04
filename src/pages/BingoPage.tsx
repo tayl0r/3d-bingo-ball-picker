@@ -170,7 +170,7 @@ export function BingoPage() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: 90,
+          gap: 70,
           pointerEvents: "none",
         }}
       >
