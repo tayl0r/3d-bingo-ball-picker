@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getAllGames, deleteGame, type SavedGame } from "../../utils/gameStorage";
 import { getBallColor } from "../../utils/ballTexture";
 import patterns from "../../data/bingoPatterns.json";
 import type { BingoPattern } from "../../data/bingoPatterns.types";
 import { PatternGrid } from "./PatternGrid";
+import { soundManager } from "../../audio/soundManager";
 
 function getBallLetter(num: number): string {
   if (num <= 15) return "B";
@@ -38,9 +39,13 @@ export function GameHistoryModal({ onClose, onLoadGame, currentGameId }: GameHis
     setConfirmDeleteId(null);
   };
 
+  useEffect(() => {
+    soundManager.playModalOpen();
+  }, []);
+
   return (
     <div
-      onClick={onClose}
+      onClick={() => { soundManager.playModalClose(); onClose(); }}
       style={{
         position: "fixed",
         inset: 0,
@@ -89,7 +94,7 @@ export function GameHistoryModal({ onClose, onLoadGame, currentGameId }: GameHis
             GAME HISTORY
           </h2>
           <button
-            onClick={onClose}
+            onClick={() => { soundManager.playModalClose(); onClose(); }}
             style={{
               background: "none",
               border: "none",
@@ -179,7 +184,7 @@ export function GameHistoryModal({ onClose, onLoadGame, currentGameId }: GameHis
                   <div style={{ display: "flex", gap: 6 }}>
                     {!isCurrent && (
                       <button
-                        onClick={() => { onLoadGame(game); onClose(); }}
+                        onClick={() => { soundManager.playButtonClick(); onLoadGame(game); onClose(); }}
                         style={{
                           padding: "8px 20px",
                           fontSize: 16,

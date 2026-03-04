@@ -1,3 +1,5 @@
+import { soundManager } from "../../audio/soundManager";
+
 interface SpinStyleSelectorProps {
   spinSpeed: number;
   setSpinSpeed: (v: number) => void;
@@ -54,7 +56,7 @@ function ToggleGroup({
           return (
             <button
               key={opt.value}
-              onClick={() => onChange(opt.value)}
+              onClick={() => { soundManager.playToggleSwitch(); onChange(opt.value); }}
               style={{
                 flex: 1,
                 padding: "6px 14px",

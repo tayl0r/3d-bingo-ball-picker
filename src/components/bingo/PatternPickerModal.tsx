@@ -3,6 +3,7 @@ import bingoPatterns from "../../data/bingoPatterns.json";
 import type { BingoPattern } from "../../data/bingoPatterns.types";
 import { PatternGrid } from "./PatternGrid";
 import { getFavorites, toggleFavorite, getActiveTag, setActiveTag as saveActiveTag } from "../../utils/patternFavorites";
+import { soundManager } from "../../audio/soundManager";
 
 interface PatternPickerModalProps {
   onSelect: (patternId: string) => void;
@@ -24,11 +25,15 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") { soundManager.playModalClose(); onClose(); }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
+
+  useEffect(() => {
+    soundManager.playModalOpen();
+  }, []);
 
   // Filter patterns
   const filtered = patterns.filter((p) => {
@@ -69,7 +74,7 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
 
   return (
     <div
-      onClick={onClose}
+      onClick={() => { soundManager.playModalClose(); onClose(); }}
       style={{
         position: "fixed",
         inset: 0,
@@ -119,7 +124,7 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
             Choose a Pattern
           </h2>
           <button
-            onClick={onClose}
+            onClick={() => { soundManager.playModalClose(); onClose(); }}
             style={{
               background: "none",
               border: "none",
@@ -216,7 +221,7 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
                 return (
                   <div
                     key={pattern.id}
-                    onClick={() => onSelect(pattern.id)}
+                    onClick={() => { soundManager.playPatternSelect(); onSelect(pattern.id); }}
                     onMouseEnter={() => setHoveredCard(pattern.id)}
                     onMouseLeave={() => setHoveredCard(null)}
                     style={{
