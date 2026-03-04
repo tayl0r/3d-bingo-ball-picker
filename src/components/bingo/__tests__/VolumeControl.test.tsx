@@ -56,4 +56,28 @@ describe("VolumeControl", () => {
     fireEvent.change(slider, { target: { value: "0.5" } });
     expect(soundManager.getVolume()).toBeCloseTo(0.5);
   });
+
+  it("renders paddle toggle button", () => {
+    render(<VolumeControl paddleEnabled={false} onPaddleToggle={() => {}} />);
+    expect(screen.getByTitle("Enable ball paddle")).toBeInTheDocument();
+  });
+
+  it("paddle button title reflects enabled state", () => {
+    render(<VolumeControl paddleEnabled={true} onPaddleToggle={() => {}} />);
+    expect(screen.getByTitle("Disable ball paddle")).toBeInTheDocument();
+  });
+
+  it("clicking paddle button calls onPaddleToggle with toggled value", () => {
+    const onToggle = vi.fn();
+    render(<VolumeControl paddleEnabled={false} onPaddleToggle={onToggle} />);
+    fireEvent.click(screen.getByTitle("Enable ball paddle"));
+    expect(onToggle).toHaveBeenCalledWith(true);
+  });
+
+  it("clicking enabled paddle button calls onPaddleToggle with false", () => {
+    const onToggle = vi.fn();
+    render(<VolumeControl paddleEnabled={true} onPaddleToggle={onToggle} />);
+    fireEvent.click(screen.getByTitle("Disable ball paddle"));
+    expect(onToggle).toHaveBeenCalledWith(false);
+  });
 });

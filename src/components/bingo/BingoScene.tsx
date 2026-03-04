@@ -317,7 +317,7 @@ function SceneContent({
                 registerMesh={registerMesh}
               />
             ))}
-            {paddleEnabled && phase !== "settling" && (
+            {paddleEnabled && phase !== "settling" && phase !== "selecting" && (
               <PaddleCursor
                 isDraggingRef={isDraggingRef}
                 groupPosition={layout.spherePosition}

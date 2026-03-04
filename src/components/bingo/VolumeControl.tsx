@@ -78,7 +78,11 @@ export function VolumeControl({ paddleEnabled, onPaddleToggle }: VolumeControlPr
         }}
         title={paddleEnabled ? "Disable ball paddle" : "Enable ball paddle"}
       >
-        <span style={{ fontSize: 18 }}>{paddleEnabled ? "🏓" : "🏓"}</span>
+        <span style={{
+          fontSize: 18,
+          filter: paddleEnabled ? "none" : "grayscale(1)",
+          opacity: paddleEnabled ? 1 : 0.5,
+        }}>🏓</span>
         <span
           style={{
             fontSize: 10,

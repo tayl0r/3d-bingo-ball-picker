@@ -43,7 +43,7 @@ In Catalyst Agent, use `./start.local.sh` instead of `pnpm run dev`.
   - `PatternPickerModal.tsx` — Full-screen pattern selection modal
   - `PatternGrid.tsx` — Reusable 5x5 pattern grid display
   - `CurrentPatternDisplay.tsx` — In-game current pattern indicator
-  - `VolumeControl.tsx` — Mute toggle + volume slider for sound effects
+  - `VolumeControl.tsx` — Mute toggle + volume slider + ball paddle on/off toggle
 - `src/audio/` — Sound system:
   - `sounds.ts` — zzfx parameter arrays for all sound effects
   - `soundManager.ts` — Central audio module (play functions, volume/mute, localStorage)
