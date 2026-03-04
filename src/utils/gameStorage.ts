@@ -53,6 +53,16 @@ export function updateGame(id: string, drawnBalls: number[]): void {
   }
 }
 
+export function updateGamePattern(id: string, patternId: string): void {
+  const games = getAllGames();
+  const idx = games.findIndex((g) => g.id === id);
+  if (idx !== -1) {
+    games[idx].patternId = patternId;
+    games[idx].updatedAt = Date.now();
+    saveAllGames(games);
+  }
+}
+
 export function deleteGame(id: string): void {
   const games = getAllGames().filter((g) => g.id !== id);
   saveAllGames(games);

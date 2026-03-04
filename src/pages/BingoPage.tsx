@@ -29,6 +29,7 @@ export function BingoPage() {
   useEffect(() => { try { localStorage.setItem("bingo_spin_speed", String(spinSpeed)); } catch {} }, [spinSpeed]);
   const [showHistory, setShowHistory] = useState(false);
   const [showPatternPicker, setShowPatternPicker] = useState(false);
+  const [patternPickerMode, setPatternPickerMode] = useState<"new" | "edit">("new");
 
   const displayBall = game.phase !== "settling"
     ? (game.selectedBall?.number ?? game.drawnBalls[game.drawnBalls.length - 1])
@@ -120,7 +121,16 @@ export function BingoPage() {
           pointerEvents: "none",
         }}
       >
-        <CurrentPatternDisplay patternId={game.patternId} />
+        <CurrentPatternDisplay
+          patternId={game.patternId}
+          editDisabled={game.phase !== "idle"}
+          onEdit={() => {
+            if (game.phase !== "idle") return;
+            soundManager.playButtonClick();
+            setPatternPickerMode("edit");
+            setShowPatternPicker(true);
+          }}
+        />
 
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20, pointerEvents: "auto" }}>
           <GetABallButton
@@ -139,7 +149,7 @@ export function BingoPage() {
 
         <div style={{ display: "flex", gap: 14, pointerEvents: "auto" }}>
           <button
-            onClick={() => { soundManager.playButtonClick(); setShowPatternPicker(true); }}
+            onClick={() => { soundManager.playButtonClick(); setPatternPickerMode("new"); setShowPatternPicker(true); }}
             disabled={game.phase !== "idle"}
             style={{
               padding: "14px 32px",
@@ -198,10 +208,14 @@ export function BingoPage() {
       {showPatternPicker && (
         <PatternPickerModal
           onSelect={(patternId) => {
-            game.newGame(patternId);
+            if (patternPickerMode === "edit") {
+              game.changePattern(patternId);
+            } else {
+              game.newGame(patternId);
+            }
             setShowPatternPicker(false);
           }}
-          onClose={() => setShowPatternPicker(false)}
+          onClose={() => { setShowPatternPicker(false); setPatternPickerMode("new"); }}
         />
       )}
     </div>
