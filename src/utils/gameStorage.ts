@@ -4,6 +4,7 @@ const ACTIVE_GAME_KEY = "bingo_active_game";
 export interface SavedGame {
   id: string;
   drawnBalls: number[];
+  patternId: string;
   createdAt: number;
   updatedAt: number;
 }
@@ -27,10 +28,11 @@ function saveAllGames(games: SavedGame[]): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(games));
 }
 
-export function createGame(): SavedGame {
+export function createGame(patternId: string): SavedGame {
   const game: SavedGame = {
     id: generateId(),
     drawnBalls: [],
+    patternId,
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };
@@ -87,5 +89,5 @@ export function getOrCreateActiveGame(): SavedGame {
     const game = getGameById(activeId);
     if (game) return game;
   }
-  return createGame();
+  return createGame("any-line");
 }
