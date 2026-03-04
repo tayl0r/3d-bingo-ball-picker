@@ -8,6 +8,7 @@ import { SpinStyleSelector } from "../components/bingo/SpinStyleSelector";
 import { GameHistoryModal } from "../components/bingo/GameHistoryModal";
 import { PatternPickerModal } from "../components/bingo/PatternPickerModal";
 import { CurrentPatternDisplay } from "../components/bingo/CurrentPatternDisplay";
+import { VolumeControl } from "../components/bingo/VolumeControl";
 import { disposeBallTextures } from "../utils/ballTexture";
 import { purgeEmptyGames } from "../utils/gameStorage";
 
@@ -110,6 +111,7 @@ export function BingoPage() {
             spinTime={spinTime}
             setSpinTime={setSpinTime}
           />
+          <VolumeControl />
         </div>
 
         <div style={{ display: "flex", gap: 14, pointerEvents: "auto" }}>
