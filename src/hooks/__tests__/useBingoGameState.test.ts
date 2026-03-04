@@ -110,6 +110,33 @@ describe("useBingoGameState", () => {
     expect(result.current.phase).toBe("animating");
   });
 
+  it("changePattern works during auto-mixing", () => {
+    const { result } = renderHook(() => useBingoGameState());
+    act(() => result.current.setPhase("auto-mixing"));
+    act(() => result.current.changePattern("full-card"));
+    expect(result.current.patternId).toBe("full-card");
+  });
+
+  it("newGame works during auto-mixing", () => {
+    const { result } = renderHook(() => useBingoGameState());
+    act(() => result.current.setPhase("auto-mixing"));
+    act(() => result.current.newGame("full-card"));
+    expect(result.current.drawnBalls).toHaveLength(0);
+    expect(result.current.activeBallNumbers).toHaveLength(75);
+  });
+
+  it("loadGame works during auto-mixing", () => {
+    const { result } = renderHook(() => useBingoGameState());
+    act(() => result.current.setPhase("auto-mixing"));
+    act(() => result.current.loadGame({
+      id: "test-id",
+      drawnBalls: [1, 2, 3],
+      timestamp: Date.now(),
+      patternId: "any-line",
+    }));
+    expect(result.current.drawnBalls).toEqual([1, 2, 3]);
+  });
+
   it("startDraw does nothing when no balls remain", () => {
     const { result } = renderHook(() => useBingoGameState());
     // Draw all 75 balls

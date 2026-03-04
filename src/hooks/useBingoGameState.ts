@@ -88,13 +88,13 @@ export function useBingoGameState() {
   }, [setPhaseTracked, currentGameId]);
 
   const changePattern = useCallback((newPatternId: string) => {
-    if (phase !== "idle") return;
+    if (phase !== "idle" && phase !== "auto-mixing") return;
     updateGamePattern(currentGameId, newPatternId);
     setPatternId(newPatternId);
   }, [phase, currentGameId]);
 
   const newGame = useCallback((selectedPatternId: string) => {
-    if (phase !== "idle") return;
+    if (phase !== "idle" && phase !== "auto-mixing") return;
     const game = createGame(selectedPatternId);
     setCurrentGameId(game.id);
     setDrawnBalls([]);
@@ -103,7 +103,7 @@ export function useBingoGameState() {
   }, [phase]);
 
   const loadGame = useCallback((game: SavedGame) => {
-    if (phase !== "idle") return;
+    if (phase !== "idle" && phase !== "auto-mixing") return;
     setActiveGameId(game.id);
     setCurrentGameId(game.id);
     setDrawnBalls(game.drawnBalls);
