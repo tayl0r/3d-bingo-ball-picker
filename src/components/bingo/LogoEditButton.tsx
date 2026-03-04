@@ -96,6 +96,7 @@ export function LogoEditButton({ onLogoChange }: LogoEditButtonProps) {
         </svg>
       </button>
 
+      {/* Popover */}
       {open && (
         <div
           style={{

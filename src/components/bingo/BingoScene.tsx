@@ -323,6 +323,7 @@ function SceneContent({
         </Physics>
       </Suspense>
 
+      {/* Resting "last ball" 3D display */}
       {restingBallNumber !== null && (
         <LastBallResting
           number={restingBallNumber}
@@ -332,6 +333,7 @@ function SceneContent({
         />
       )}
 
+      {/* Departing old ball flying off screen */}
       {departingBallNumber !== null && (
         <LastBallDeparting
           number={departingBallNumber}
@@ -342,6 +344,7 @@ function SceneContent({
         />
       )}
 
+      {/* New ball flying to rest position */}
       {selectedBall && (
         <BingoBallAnimated
           number={selectedBall.number}

@@ -92,6 +92,7 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
           boxShadow: "0 0 60px rgba(0,0,0,0.5), 0 0 20px rgba(245,158,11,0.1)",
         }}
       >
+        {/* Header */}
         <div
           style={{
             padding: "24px 32px",
@@ -129,6 +130,7 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
           </button>
         </div>
 
+        {/* Search + Filters + Grid */}
         <div
           style={{
             flex: 1,

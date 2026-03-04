@@ -60,6 +60,7 @@ export function GameHistoryModal({ onClose, onLoadGame, currentGameId }: GameHis
           boxShadow: "0 0 60px rgba(0,0,0,0.5), 0 0 20px var(--amber-glow)",
         }}
       >
+        {/* Header */}
         <div
           style={{
             padding: "28px 32px",
@@ -96,6 +97,7 @@ export function GameHistoryModal({ onClose, onLoadGame, currentGameId }: GameHis
           </button>
         </div>
 
+        {/* Games list */}
         <div
           style={{
             flex: 1,
@@ -240,6 +242,7 @@ export function GameHistoryModal({ onClose, onLoadGame, currentGameId }: GameHis
                   </div>
                 </div>
 
+                {/* Ball preview strip */}
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
                   {game.drawnBalls.length === 0 ? (
                     <span style={{ fontSize: 16, color: "var(--text-dim)", fontStyle: "italic" }}>

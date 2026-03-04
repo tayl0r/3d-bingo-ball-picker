@@ -107,8 +107,10 @@ export function BingoPage() {
         <NicknameSheen key={displayBall} displayBall={displayBall} nicknameText={nicknameText} />
       )}
 
+      {/* Logo edit button */}
       <LogoEditButton onLogoChange={handleLogoChange} />
 
+      {/* 3D Scene */}
       <BingoScene
         phase={game.phase}
         setPhase={game.setPhase}
@@ -127,6 +129,7 @@ export function BingoPage() {
         logoAspect={customLogo?.aspect}
       />
 
+      {/* Bottom-right: drawn balls board */}
       <div
         style={{
           position: "absolute",
@@ -197,6 +200,7 @@ export function BingoPage() {
         </div>
       </div>
 
+      {/* Game History Modal */}
       {showHistory && (
         <GameHistoryModal
           onClose={() => setShowHistory(false)}
@@ -205,6 +209,7 @@ export function BingoPage() {
         />
       )}
 
+      {/* Pattern Picker Modal */}
       {showPatternPicker && (
         <PatternPickerModal
           onSelect={(patternId) => {
