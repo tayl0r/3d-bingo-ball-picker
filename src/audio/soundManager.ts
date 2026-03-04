@@ -38,6 +38,7 @@ function createSoundManager() {
     playMixing: () => play(GAME_SOUNDS.mixing),
     playBallLaunch: () => play(GAME_SOUNDS.ballLaunch),
     playBallLand: () => play(GAME_SOUNDS.ballLand),
+    playSpinTick: () => play(GAME_SOUNDS.spinTick),
     playButtonClick: () => play(UI_SOUNDS.buttonClick),
     playModalOpen: () => play(UI_SOUNDS.modalOpen),
     playModalClose: () => play(UI_SOUNDS.modalClose),

@@ -17,6 +17,9 @@ export const GAME_SOUNDS = {
 
   /** Satisfying thud when ball lands at rest position (~150ms) */
   ballLand: [, , 925, .04, .3, .6, 1, .3, , 6.27, -184, .09, .17] as SoundParams,
+
+  /** Short metallic "dink" for spinning tick (~30ms, Wheel of Fortune clicker) */
+  spinTick: [.3, , 1800, , .01, .005, , 1.5, , , , , , , , , , , .2] as SoundParams,
 } as const;
 
 export const UI_SOUNDS = {

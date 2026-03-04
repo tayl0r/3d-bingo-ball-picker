@@ -66,6 +66,7 @@ function PhaseController({
   const settleStartRef = useRef<number | null>(null);
   const settledAtRef = useRef<number | null>(null);
   const transitionedRef = useRef(false);
+  const spinDistanceRef = useRef(0);
 
   useEffect(() => {
     transitionedRef.current = false;
@@ -86,6 +87,7 @@ function PhaseController({
         const theta = Math.random() * Math.PI * 2;
         spinAxisRef.current.set(Math.cos(theta), 0.2, Math.sin(theta)).normalize();
         soundManager.playMixing();
+        spinDistanceRef.current = 0;
       }
 
       const elapsed = now - mixStartRef.current;
@@ -111,6 +113,15 @@ function PhaseController({
 
       const baseSpeed = 3;
       const angle = factor * baseSpeed * spinSpeedSnapshotRef.current * delta;
+
+      // Tick sound every ~0.5 radians of sphere travel (like a clicker hitting pegs)
+      const TICK_INTERVAL = 0.5;
+      spinDistanceRef.current += angle;
+      if (spinDistanceRef.current >= TICK_INTERVAL) {
+        spinDistanceRef.current -= TICK_INTERVAL;
+        soundManager.playSpinTick();
+      }
+
       spinQuatRef.current.setFromAxisAngle(spinAxisRef.current, angle);
       quaternionRef.current.premultiply(spinQuatRef.current);
     }
