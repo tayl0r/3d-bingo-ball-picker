@@ -89,6 +89,20 @@ export function BingoPage() {
   const nicknameText = nickname ? `${displayBall} \u2014 ${nickname}` : "";
 
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === "Space" && !e.repeat) {
+        e.preventDefault();
+        if ((game.phase === "idle" || game.phase === "auto-mixing") && game.activeBallNumbers.length > 0) {
+          soundManager.playBallDraw();
+          game.startDraw();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [game.phase, game.activeBallNumbers.length, game.startDraw]);
+
+  useEffect(() => {
     return () => disposeBallTextures();
   }, []);
 
