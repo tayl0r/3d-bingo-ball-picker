@@ -4,7 +4,7 @@ import { useViewportScale } from "../hooks/useViewportScale";
 import { BingoScene, AUTO_SPIN_SPEED } from "../components/bingo/BingoScene";
 import { GetABallButton } from "../components/bingo/GetABallButton";
 import { DrawnBallsList } from "../components/bingo/DrawnBallsList";
-import { SpinStyleSelector } from "../components/bingo/SpinStyleSelector";
+import { SpinStyleSelector, DEFAULT_STRENGTH, DEFAULT_DURATION } from "../components/bingo/SpinStyleSelector";
 import { GameHistoryModal } from "../components/bingo/GameHistoryModal";
 import { PatternPickerModal } from "../components/bingo/PatternPickerModal";
 import { CurrentPatternDisplay } from "../components/bingo/CurrentPatternDisplay";
@@ -39,15 +39,15 @@ export function BingoPage() {
   const game = useBingoGameState();
   const { scale, width, height } = useViewportScale();
   const [spinTime, setSpinTime] = useState(() => {
-    try { const v = localStorage.getItem("bingo_spin_time"); return v ? Number(v) : 5; } catch { return 5; }
+    try { const v = localStorage.getItem("bingo_spin_time"); return v ? Number(v) : DEFAULT_DURATION; } catch { return DEFAULT_DURATION; }
   });
   const [spinSpeed, setSpinSpeed] = useState(() => {
     try {
       const mode = localStorage.getItem("bingo_spin_mode");
       if (mode === "auto") return AUTO_SPIN_SPEED;
       const v = localStorage.getItem("bingo_spin_speed");
-      return v ? Number(v) : 1.5;
-    } catch { return 1.5; }
+      return v ? Number(v) : DEFAULT_STRENGTH;
+    } catch { return DEFAULT_STRENGTH; }
   });
 
   const [paddleEnabled, setPaddleEnabled] = useState(() => {

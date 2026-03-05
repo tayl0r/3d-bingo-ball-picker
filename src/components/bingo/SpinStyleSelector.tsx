@@ -10,16 +10,20 @@ interface SpinStyleSelectorProps {
   setSpinMode: (v: SpinMode) => void;
 }
 
-const STRENGTHS = [
+export const STRENGTHS = [
   { label: "Soft", value: 1.5 },
   { label: "Hard", value: 3 },
 ] as const;
 
-const DURATIONS = [
+export const DEFAULT_STRENGTH = STRENGTHS[0].value;
+
+export const DURATIONS = [
   { label: "Quick", value: 2 },
   { label: "Medium", value: 5 },
   { label: "Long", value: 10 },
 ] as const;
+
+export const DEFAULT_DURATION = DURATIONS[1].value;
 
 const SPIN_MODES: readonly { label: string; value: SpinMode }[] = [
   { label: "Manual", value: "manual" },

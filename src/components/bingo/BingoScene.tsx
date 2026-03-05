@@ -13,6 +13,7 @@ import type { GamePhase, SelectedBall, SpinMode } from "../../hooks/useBingoGame
 import { useSphereRotation } from "../../hooks/useSphereRotation";
 import { useFrustumLayout } from "../../hooks/useFrustumLayout";
 import { soundManager } from "../../audio/soundManager";
+import { DEFAULT_STRENGTH } from "./SpinStyleSelector";
 import { mulberry32 } from "../../utils/seededRng";
 
 function generateBallPositions(count: number, maxRadius: number): [number, number, number][] {
@@ -34,7 +35,7 @@ function generateBallPositions(count: number, maxRadius: number): [number, numbe
 const BALL_SPAWN_RADIUS = 2.0;
 const INITIAL_POSITIONS = generateBallPositions(75, BALL_SPAWN_RADIUS);
 const BASE_SPIN_SPEED = 3;
-export const AUTO_SPIN_SPEED = 1.5;
+export const AUTO_SPIN_SPEED = DEFAULT_STRENGTH;
 const TICK_INTERVAL = 1.2;
 const AUTO_SPIN_SOUND_DURATION = 3;       // seconds of spin tick sound after auto-mix starts
 const AUTO_RESTART_DELAY_FACTOR = 500;    // ms per spinTime unit (Quick=2→1s, Medium=5→2.5s, Long=10→5s)
