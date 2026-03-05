@@ -1,9 +1,10 @@
+import type { SpinMode } from "../../hooks/useBingoGameState";
 import { useSoundSettings } from "../../hooks/useSoundSettings";
 
 interface VolumeControlProps {
   paddleEnabled: boolean;
   onPaddleToggle: (enabled: boolean) => void;
-  spinMode?: "manual" | "auto";
+  spinMode?: SpinMode;
 }
 
 export function VolumeControl({ paddleEnabled, onPaddleToggle, spinMode }: VolumeControlProps) {

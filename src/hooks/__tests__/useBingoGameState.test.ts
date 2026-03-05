@@ -134,6 +134,7 @@ describe("useBingoGameState", () => {
       createdAt: Date.now(),
       updatedAt: Date.now(),
       patternId: "any-line",
+      seed: 12345,
     }));
     expect(result.current.drawnBalls).toEqual([1, 2, 3]);
   });

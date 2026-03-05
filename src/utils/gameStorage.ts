@@ -5,6 +5,7 @@ export interface SavedGame {
   id: string;
   drawnBalls: number[];
   patternId: string;
+  seed: number;
   createdAt: number;
   updatedAt: number;
 }
@@ -18,6 +19,14 @@ export function getAllGames(): SavedGame[] {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     const games: SavedGame[] = JSON.parse(raw);
+    let migrated = false;
+    for (const g of games) {
+      if (g.seed == null) {
+        g.seed = Math.random() * 2**32 >>> 0;
+        migrated = true;
+      }
+    }
+    if (migrated) saveAllGames(games);
     return games.sort((a, b) => b.updatedAt - a.updatedAt);
   } catch {
     return [];
@@ -33,6 +42,7 @@ export function createGame(patternId: string): SavedGame {
     id: generateId(),
     drawnBalls: [],
     patternId,
+    seed: Math.random() * 2**32 >>> 0,
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };

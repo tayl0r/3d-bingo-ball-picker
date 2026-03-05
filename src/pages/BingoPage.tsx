@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useBingoGameState } from "../hooks/useBingoGameState";
+import { useBingoGameState, type SpinMode } from "../hooks/useBingoGameState";
 import { useViewportScale } from "../hooks/useViewportScale";
 import { BingoScene, AUTO_SPIN_SPEED } from "../components/bingo/BingoScene";
 import { GetABallButton } from "../components/bingo/GetABallButton";
@@ -44,21 +44,25 @@ export function BingoPage() {
   const [spinSpeed, setSpinSpeed] = useState(() => {
     try {
       const mode = localStorage.getItem("bingo_spin_mode");
-      if (mode !== "manual") return AUTO_SPIN_SPEED;
+      if (mode === "auto") return AUTO_SPIN_SPEED;
       const v = localStorage.getItem("bingo_spin_speed");
       return v ? Number(v) : 3;
-    } catch { return AUTO_SPIN_SPEED; }
+    } catch { return 3; }
   });
 
   const [paddleEnabled, setPaddleEnabled] = useState(() => {
     try { return localStorage.getItem("bingo_paddle") === "true"; } catch { return false; }
   });
-  const [spinMode, setSpinMode] = useState<"manual" | "auto">(() => {
-    try { const v = localStorage.getItem("bingo_spin_mode"); return v === "manual" ? "manual" : "auto"; } catch { return "auto"; }
+  const [spinMode, setSpinMode] = useState<SpinMode>(() => {
+    try {
+      const v = localStorage.getItem("bingo_spin_mode");
+      if (v === "manual" || v === "auto") return v;
+      return "auto-random";
+    } catch { return "auto-random"; }
   });
 
   useEffect(() => { try { localStorage.setItem("bingo_spin_time", String(spinTime)); } catch {} }, [spinTime]);
-  useEffect(() => { if (spinMode === "manual") { try { localStorage.setItem("bingo_spin_speed", String(spinSpeed)); } catch {} } }, [spinSpeed, spinMode]);
+  useEffect(() => { if (spinMode !== "auto") { try { localStorage.setItem("bingo_spin_speed", String(spinSpeed)); } catch {} } }, [spinSpeed, spinMode]);
   useEffect(() => { try { localStorage.setItem("bingo_paddle", String(paddleEnabled)); } catch {} }, [paddleEnabled]);
   useEffect(() => { try { localStorage.setItem("bingo_spin_mode", spinMode); } catch {} }, [spinMode]);
   const [customLogo, setCustomLogoState] = useState(() => getCustomLogo());
@@ -143,7 +147,8 @@ export function BingoPage() {
         logoAspect={customLogo?.aspect}
         paddleEnabled={paddleEnabled}
         spinMode={spinMode}
-
+        gameSeed={game.gameSeed}
+        drawCount={game.drawCountRef.current}
       />
 
       {/* Bottom-right: drawn balls board */}
@@ -205,6 +210,7 @@ export function BingoPage() {
                   try { const saved = localStorage.getItem("bingo_spin_speed"); if (saved) setSpinSpeed(Number(saved)); } catch {}
                 }
               }}
+
             />
             <VolumeControl paddleEnabled={paddleEnabled} onPaddleToggle={setPaddleEnabled} spinMode={spinMode} />
           </div>
