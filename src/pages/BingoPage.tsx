@@ -11,12 +11,22 @@ import { CurrentPatternDisplay } from "../components/bingo/CurrentPatternDisplay
 import { VolumeControl } from "../components/bingo/VolumeControl";
 import { NicknameSheen } from "../components/bingo/NicknameSheen";
 import { LogoEditButton } from "../components/bingo/LogoEditButton";
+import { SponsorLogoDisplay, SponsorLogoEditButton } from "../components/bingo/SponsorLogo";
 import { disposeBallTextures } from "../utils/ballTexture";
 import { purgeEmptyGames } from "../utils/gameStorage";
 import type { CustomLogo } from "../utils/logoStorage";
 import { getCustomLogo, setCustomLogo, clearCustomLogo } from "../utils/logoStorage";
+import { getSponsorLogo, setSponsorLogo, clearSponsorLogo, getSponsorLogoScale, setSponsorLogoScale, getSponsorLogoOffsetX, setSponsorLogoOffsetX } from "../utils/sponsorLogoStorage";
 import { soundManager } from "../audio/soundManager";
 import bingoNicknames from "../data/bingoNicknames.json";
+
+const ONES = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
+  "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
+const TENS = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy"];
+function numberToWords(n: number): string {
+  if (n < 20) return ONES[n];
+  return TENS[Math.floor(n / 10)] + (n % 10 ? "-" + ONES[n % 10] : "");
+}
 
 const gameActionButtonStyle: React.CSSProperties = {
   padding: "14px 32px",
@@ -76,7 +86,34 @@ export function BingoPage() {
     }
   }, []);
 
-  const [showControls, setShowControls] = useState(true);
+  const [sponsorLogo, setSponsorLogoState] = useState(() => getSponsorLogo());
+  const handleSponsorLogoChange = useCallback((logo: CustomLogo | null) => {
+    if (logo) {
+      if (!setSponsorLogo(logo.dataUrl, logo.aspect)) return;
+      setSponsorLogoState(logo);
+    } else {
+      clearSponsorLogo();
+      setSponsorLogoState(null);
+    }
+  }, []);
+  const [sponsorLogoScale, setSponsorLogoScaleState] = useState(() => getSponsorLogoScale());
+  const handleSponsorScaleChange = useCallback((scale: number) => {
+    setSponsorLogoScale(scale);
+    setSponsorLogoScaleState(scale);
+  }, []);
+  const [sponsorLogoOffsetX, setSponsorLogoOffsetXState] = useState(() => getSponsorLogoOffsetX());
+  const handleSponsorOffsetXChange = useCallback((offset: number) => {
+    setSponsorLogoOffsetX(offset);
+    setSponsorLogoOffsetXState(offset);
+  }, []);
+
+  const [sponsorEditOpen, setSponsorEditOpen] = useState(false);
+  const [sponsorHidden, setSponsorHidden] = useState(false);
+
+  const [showControls, setShowControls] = useState(() => {
+    const saved = localStorage.getItem("bingo_show_controls");
+    return saved === null ? false : saved === "true";
+  });
   const [showHistory, setShowHistory] = useState(false);
   const [showPatternPicker, setShowPatternPicker] = useState(false);
   const [patternPickerMode, setPatternPickerMode] = useState<"new" | "edit">("new");
@@ -87,7 +124,9 @@ export function BingoPage() {
   const nickname = displayBall != null
     ? bingoNicknames[String(displayBall) as keyof typeof bingoNicknames]
     : undefined;
-  const nicknameText = displayBall != null ? String(displayBall) : "";
+  const nicknameText = displayBall != null
+    ? `${"BINGO"[Math.floor((displayBall - 1) / 15)]} ${displayBall} - ${numberToWords(displayBall)}`
+    : "";
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -142,7 +181,7 @@ export function BingoPage() {
 
       {/* Controls toggle (hamburger) */}
       <button
-        onClick={() => setShowControls((v) => !v)}
+        onClick={() => setShowControls((v) => { const next = !v; localStorage.setItem("bingo_show_controls", String(next)); return next; })}
         title={showControls ? "Hide controls" : "Show controls"}
         style={{
           position: "absolute",
@@ -172,7 +211,9 @@ export function BingoPage() {
       </button>
 
       {/* Logo edit button */}
-      <LogoEditButton onLogoChange={handleLogoChange} disabled={game.phase !== "idle" && game.phase !== "auto-mixing"} />
+      <div style={{ position: "absolute", top: 4, left: 4, zIndex: 20 }}>
+        <LogoEditButton onLogoChange={handleLogoChange} disabled={game.phase !== "idle" && game.phase !== "auto-mixing"} />
+      </div>
 
       {/* 3D Scene */}
       <BingoScene
@@ -241,7 +282,9 @@ export function BingoPage() {
             disabled={(game.phase !== "idle" && game.phase !== "auto-mixing") || game.activeBallNumbers.length === 0}
             phase={game.phase}
           />
-          <div style={{ display: "flex", flexDirection: "column", gap: 10, visibility: showControls ? "visible" : "hidden" }}>
+          <div style={{ minHeight: 260, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+            {showControls ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 <SpinStyleSelector
                   spinSpeed={spinSpeed}
                   setSpinSpeed={setSpinSpeed}
@@ -259,6 +302,59 @@ export function BingoPage() {
                 />
                 <VolumeControl paddleEnabled={paddleEnabled} onPaddleToggle={setPaddleEnabled} spinMode={spinMode} />
               </div>
+            ) : (sponsorHidden && !sponsorLogo) ? null : (
+              <div style={{ position: "relative", pointerEvents: "auto" }}>
+                <SponsorLogoDisplay
+                  logo={sponsorLogo}
+                  scale={sponsorLogoScale}
+                  offsetX={sponsorLogoOffsetX}
+                  onClick={() => { if (game.phase === "idle" || game.phase === "auto-mixing") setSponsorEditOpen((v) => !v); }}
+                />
+                {!sponsorLogo && (
+                  <button
+                    onClick={() => setSponsorHidden(true)}
+                    style={{
+                      position: "absolute",
+                      top: -18,
+                      right: -18,
+                      zIndex: 20,
+                      background: "rgba(10, 10, 20, 0.8)",
+                      border: "1px solid rgba(255,255,255,0.15)",
+                      borderRadius: 6,
+                      cursor: "pointer",
+                      padding: 4,
+                      opacity: 0.3,
+                      transition: "opacity 0.2s",
+                      lineHeight: 0,
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.opacity = "1"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.opacity = "0.3"; }}
+                    title="Hide sponsor logo area"
+                    aria-label="Hide sponsor logo area"
+                  >
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M18 6 6 18" />
+                      <path d="m6 6 12 12" />
+                    </svg>
+                  </button>
+                )}
+                <div style={{ position: "absolute", top: -14, left: -14, zIndex: 20 }}>
+                  <SponsorLogoEditButton
+                    logo={sponsorLogo}
+                    onLogoChange={handleSponsorLogoChange}
+                    scale={sponsorLogoScale}
+                    onScaleChange={handleSponsorScaleChange}
+                    offsetX={sponsorLogoOffsetX}
+                    onOffsetXChange={handleSponsorOffsetXChange}
+                    disabled={game.phase !== "idle" && game.phase !== "auto-mixing"}
+                    open={sponsorEditOpen}
+                    onOpenChange={setSponsorEditOpen}
+                    hidePencil
+                  />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         <div style={{ display: "flex", gap: 14, pointerEvents: "auto" }}>

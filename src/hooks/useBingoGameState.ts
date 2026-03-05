@@ -10,6 +10,8 @@ import {
   type SavedGame,
 } from "../utils/gameStorage";
 
+export const TOTAL_BALLS = 75;
+
 export type SpinMode = "manual" | "auto" | "auto-random";
 export type GamePhase = "idle" | "auto-mixing" | "mixing" | "settling" | "selecting" | "animating";
 
@@ -21,7 +23,7 @@ export interface SelectedBall {
 
 function ballsFromDrawn(drawn: number[]): number[] {
   const drawnSet = new Set(drawn);
-  return Array.from({ length: 75 }, (_, i) => i + 1).filter((n) => !drawnSet.has(n));
+  return Array.from({ length: TOTAL_BALLS }, (_, i) => i + 1).filter((n) => !drawnSet.has(n));
 }
 
 export function useBingoGameState() {
@@ -102,7 +104,7 @@ export function useBingoGameState() {
     const game = createGame(selectedPatternId);
     setCurrentGameId(game.id);
     setDrawnBalls([]);
-    setActiveBallNumbers(Array.from({ length: 75 }, (_, i) => i + 1));
+    setActiveBallNumbers(Array.from({ length: TOTAL_BALLS }, (_, i) => i + 1));
     setPatternId(selectedPatternId);
     setGameSeed(game.seed);
     drawCountRef.current = 0;

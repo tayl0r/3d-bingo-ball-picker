@@ -1,4 +1,5 @@
 import { soundManager } from "../../audio/soundManager";
+import { TOTAL_BALLS } from "../../hooks/useBingoGameState";
 
 const COLUMNS = [
   { letter: "B", range: [1, 15], color: "#1E90FF" },
@@ -96,7 +97,7 @@ export function DrawnBallsList({ balls }: { balls: number[] }) {
           letterSpacing: 1,
         }}
       >
-        {balls.length}/75
+        {balls.length}/{TOTAL_BALLS} &mdash; {TOTAL_BALLS - balls.length} balls left
       </div>
     </div>
   );

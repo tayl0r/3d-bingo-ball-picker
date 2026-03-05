@@ -2,35 +2,99 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import type { CustomLogo } from "../../utils/logoStorage";
 import { trimTransparentPixels } from "../../utils/trimTransparentPixels";
 
-interface LogoEditButtonProps {
-  onLogoChange: (logo: CustomLogo | null) => void;
-  disabled?: boolean;
+interface SponsorLogoDisplayProps {
+  logo: CustomLogo | null;
+  scale: number;
+  offsetX: number;
+  onClick?: () => void;
 }
 
-export function LogoEditButton({ onLogoChange, disabled }: LogoEditButtonProps) {
-  const [open, setOpen] = useState(false);
+export function SponsorLogoDisplay({ logo, scale, offsetX, onClick }: SponsorLogoDisplayProps) {
+  return (
+    <div style={{ position: "relative", maxWidth: 260, width: "100%", overflow: "visible" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: 80,
+          borderRadius: 10,
+          border: logo ? "none" : "2px dashed rgba(255,255,255,0.15)",
+          background: logo ? "transparent" : "rgba(10, 10, 20, 0.5)",
+          backdropFilter: logo ? "none" : "blur(8px)",
+          WebkitBackdropFilter: logo ? "none" : "blur(8px)",
+          padding: logo ? 0 : 16,
+          overflow: "visible",
+          cursor: onClick ? "pointer" : "default",
+        }}
+        onClick={onClick}
+      >
+        {logo ? (
+          <img
+            src={logo.dataUrl}
+            alt="Sponsor logo"
+            style={{
+              width: "100%",
+              maxHeight: 220,
+              objectFit: "contain",
+              display: "block",
+              transform: `scale(${scale}) translateX(${offsetX}px)`,
+              transformOrigin: "center center",
+            }}
+          />
+        ) : (
+          <span
+            style={{
+              color: "rgba(255,255,255,0.25)",
+              fontSize: 13,
+              fontFamily: "var(--font-mono)",
+              letterSpacing: 1,
+              textTransform: "uppercase",
+            }}
+          >
+            Sponsor Logo
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+interface SponsorLogoEditButtonProps {
+  logo: CustomLogo | null;
+  onLogoChange: (logo: CustomLogo | null) => void;
+  scale: number;
+  onScaleChange: (scale: number) => void;
+  offsetX: number;
+  onOffsetXChange: (offset: number) => void;
+  disabled: boolean;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  hidePencil?: boolean;
+}
+
+export function SponsorLogoEditButton({ logo, onLogoChange, scale, onScaleChange, offsetX, onOffsetXChange, disabled, open, onOpenChange, hidePencil }: SponsorLogoEditButtonProps) {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const popoverRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Close on outside click
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
       if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
-        setOpen(false);
+        onOpenChange(false);
       }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, [open]);
+  }, [open, onOpenChange]);
 
   const handleResult = useCallback(
     (result: { dataUrl: string; aspect: number }) => {
       onLogoChange(result);
-      setOpen(false);
+      onOpenChange(false);
       setUrl("");
       setError("");
       setLoading(false);
@@ -69,42 +133,44 @@ export function LogoEditButton({ onLogoChange, disabled }: LogoEditButtonProps) 
 
   const handleReset = useCallback(() => {
     onLogoChange(null);
-    setOpen(false);
+    onOpenChange(false);
     setUrl("");
     setError("");
-  }, [onLogoChange]);
+  }, [onLogoChange, onOpenChange]);
 
   return (
-    <div ref={popoverRef} style={{ position: "relative", zIndex: 20 }}>
-      <button
+    <div ref={popoverRef} style={{ position: "relative" }}>
+      {!hidePencil && <button
         disabled={disabled}
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => onOpenChange(!open)}
         style={{
-          background: "none",
-          border: "none",
+          background: "rgba(10, 10, 20, 0.8)",
+          border: "1px solid rgba(255,255,255,0.15)",
+          borderRadius: 6,
           cursor: disabled ? "not-allowed" : "pointer",
-          padding: 6,
+          padding: 4,
           opacity: disabled ? 0.15 : open ? 1 : 0.3,
           transition: "opacity 0.2s",
+          lineHeight: 0,
         }}
         onMouseEnter={(e) => { if (!disabled) e.currentTarget.style.opacity = "1"; }}
         onMouseLeave={(e) => { if (!open && !disabled) e.currentTarget.style.opacity = "0.3"; }}
-        title="Edit logo"
-        aria-label="Edit logo"
+        title="Edit sponsor logo"
+        aria-label="Edit sponsor logo"
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
           <path d="m15 5 4 4" />
         </svg>
-      </button>
+      </button>}
 
-      {/* Popover */}
       {open && (
         <div
           style={{
             position: "absolute",
-            top: 36,
+            bottom: "100%",
             left: 0,
+            marginBottom: 8,
             background: "rgba(10, 10, 20, 0.95)",
             backdropFilter: "blur(12px)",
             WebkitBackdropFilter: "blur(12px)",
@@ -164,6 +230,35 @@ export function LogoEditButton({ onLogoChange, disabled }: LogoEditButtonProps) 
               Go
             </button>
           </div>
+
+          {logo && (
+            <>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.5)", letterSpacing: 1, textTransform: "uppercase", flexShrink: 0, width: 28 }}>Size</span>
+                <input
+                  type="range"
+                  min={0.5}
+                  max={3}
+                  step={0.1}
+                  value={scale}
+                  onChange={(e) => onScaleChange(parseFloat(e.target.value))}
+                  style={{ flex: 1, accentColor: "var(--cyan)", cursor: "pointer" }}
+                />
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.5)", letterSpacing: 1, textTransform: "uppercase", flexShrink: 0, width: 28 }}>Pos</span>
+                <input
+                  type="range"
+                  min={-200}
+                  max={200}
+                  step={1}
+                  value={offsetX}
+                  onChange={(e) => onOffsetXChange(parseFloat(e.target.value))}
+                  style={{ flex: 1, accentColor: "var(--cyan)", cursor: "pointer" }}
+                />
+              </div>
+            </>
+          )}
 
           <button
             onClick={handleReset}

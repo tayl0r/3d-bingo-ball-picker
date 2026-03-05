@@ -69,6 +69,10 @@ In Catalyst Agent, use `./start.local.sh` instead of `pnpm run dev`.
   - `logoStorage.ts` — localStorage persistence for custom logo
   - `trimTransparentPixels.ts` — Canvas pixel trimming utility
 
+## Code Style
+
+- **No magic numbers**: Extract repeated numeric values into named constants. Use existing constants (e.g., `TOTAL_BALLS` from `useBingoGameState`) rather than hardcoding values.
+
 ## Key Patterns
 
 - **Base path**: Vite `base` is `/3d-bingo-ball-picker/` — all assets deploy under this prefix

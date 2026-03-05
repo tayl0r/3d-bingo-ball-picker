@@ -9,7 +9,7 @@ import { BingoBallAnimated } from "./BingoBallAnimated";
 import { LastBallResting, LastBallDeparting } from "./LastBall3D";
 import { HoloLogo, OrbitingLookAtTarget } from "./HoloLogo";
 import { PaddleCursor } from "./PaddleCursor";
-import type { GamePhase, SelectedBall, SpinMode } from "../../hooks/useBingoGameState";
+import { TOTAL_BALLS, type GamePhase, type SelectedBall, type SpinMode } from "../../hooks/useBingoGameState";
 import { useSphereRotation } from "../../hooks/useSphereRotation";
 import { useFrustumLayout } from "../../hooks/useFrustumLayout";
 import { soundManager } from "../../audio/soundManager";
@@ -33,7 +33,7 @@ function generateBallPositions(count: number, maxRadius: number): [number, numbe
 }
 
 const BALL_SPAWN_RADIUS = 2.0;
-const INITIAL_POSITIONS = generateBallPositions(75, BALL_SPAWN_RADIUS);
+const INITIAL_POSITIONS = generateBallPositions(TOTAL_BALLS, BALL_SPAWN_RADIUS);
 const BASE_SPIN_SPEED = 3;
 export const AUTO_SPIN_SPEED = DEFAULT_STRENGTH;
 const TICK_INTERVAL = 1.2;
@@ -442,7 +442,7 @@ function SceneContent({
 
   const ballPositionMap = useMemo(() => {
     const map = new Map<number, [number, number, number]>();
-    for (let i = 0; i < 75; i++) {
+    for (let i = 0; i < TOTAL_BALLS; i++) {
       map.set(i + 1, INITIAL_POSITIONS[i]);
     }
     return map;

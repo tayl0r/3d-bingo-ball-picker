@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { getAllGames, deleteGame, type SavedGame } from "../../utils/gameStorage";
+import { TOTAL_BALLS } from "../../hooks/useBingoGameState";
 import { getBallColor, getBallLetter } from "../../utils/ballTexture";
 import patterns from "../../data/bingoPatterns.json";
 import type { BingoPattern } from "../../data/bingoPatterns.types";
@@ -165,7 +166,7 @@ export function GameHistoryModal({ onClose, onLoadGame, currentGameId }: GameHis
                       );
                     })()}
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: 18, color: "var(--text-dim)" }}>
-                      {game.drawnBalls.length}/75 drawn
+                      {game.drawnBalls.length}/{TOTAL_BALLS} drawn
                     </span>
                   </div>
                   <div style={{ display: "flex", gap: 6 }}>

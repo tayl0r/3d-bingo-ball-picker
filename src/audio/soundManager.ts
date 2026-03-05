@@ -1,10 +1,11 @@
 import { zzfx } from "zzfx";
 import { GAME_SOUNDS, UI_SOUNDS, type SoundParams } from "./sounds";
+import { TOTAL_BALLS } from "../hooks/useBingoGameState";
 
 const STORAGE_KEY = "bingo_sound_settings";
 const BALL_FREQ_MIN_HZ = 40;
 const BALL_FREQ_MAX_HZ = 2000;
-const MAX_BALL_INDEX = 74; // 75 balls, 0-indexed
+const MAX_BALL_INDEX = TOTAL_BALLS - 1;
 
 interface SoundSettings {
   volume: number;
