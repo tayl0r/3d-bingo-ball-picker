@@ -46,8 +46,8 @@ export function BingoPage() {
       const mode = localStorage.getItem("bingo_spin_mode");
       if (mode === "auto") return AUTO_SPIN_SPEED;
       const v = localStorage.getItem("bingo_spin_speed");
-      return v ? Number(v) : 3;
-    } catch { return 3; }
+      return v ? Number(v) : 1.5;
+    } catch { return 1.5; }
   });
 
   const [paddleEnabled, setPaddleEnabled] = useState(() => {
