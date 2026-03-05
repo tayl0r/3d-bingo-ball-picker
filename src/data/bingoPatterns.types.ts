@@ -4,4 +4,5 @@ export interface BingoPattern {
   description: string;
   grid: number[][];
   tags: string[];
+  alternatives?: string[];
 }

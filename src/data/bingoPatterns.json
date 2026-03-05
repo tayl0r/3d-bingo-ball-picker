@@ -13,6 +13,100 @@
     "tags": ["basic", "popular", "fast"]
   },
   {
+    "id": "any-row",
+    "name": "Any Row",
+    "description": "Any complete horizontal row",
+    "grid": [
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0]
+    ],
+    "tags": ["basic", "fast"]
+  },
+  {
+    "id": "any-column",
+    "name": "Any Column",
+    "description": "Any complete vertical column",
+    "grid": [
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0]
+    ],
+    "tags": ["basic", "fast"]
+  },
+  {
+    "id": "diagonal-down",
+    "name": "Diagonal Down",
+    "description": "Diagonal line from top-left to bottom-right",
+    "grid": [
+      [1, 0, 0, 0, 0],
+      [0, 1, 0, 0, 0],
+      [0, 0, 1, 0, 0],
+      [0, 0, 0, 1, 0],
+      [0, 0, 0, 0, 1]
+    ],
+    "tags": ["basic", "fast"]
+  },
+  {
+    "id": "diagonal-up",
+    "name": "Diagonal Up",
+    "description": "Diagonal line from bottom-left to top-right",
+    "grid": [
+      [0, 0, 0, 0, 1],
+      [0, 0, 0, 1, 0],
+      [0, 0, 1, 0, 0],
+      [0, 1, 0, 0, 0],
+      [1, 0, 0, 0, 0]
+    ],
+    "tags": ["basic", "fast"]
+  },
+  {
+    "id": "any-row-or-column",
+    "name": "Any Row or Column",
+    "description": "Any complete row or column",
+    "grid": [
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0],
+      [1, 1, 1, 1, 1],
+      [0, 0, 1, 0, 0],
+      [0, 0, 1, 0, 0]
+    ],
+    "tags": ["basic", "popular", "fast"],
+    "alternatives": ["any-row", "any-column"]
+  },
+  {
+    "id": "any-diagonal",
+    "name": "Any Diagonal",
+    "description": "Either diagonal line across the card",
+    "grid": [
+      [1, 0, 0, 0, 1],
+      [0, 1, 0, 1, 0],
+      [0, 0, 1, 0, 0],
+      [0, 1, 0, 1, 0],
+      [1, 0, 0, 0, 1]
+    ],
+    "tags": ["basic", "fast"],
+    "alternatives": ["diagonal-down", "diagonal-up"]
+  },
+  {
+    "id": "any-square",
+    "name": "Any Square",
+    "description": "Either the inner frame or outer edge",
+    "grid": [
+      [1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1],
+      [1, 1, 0, 1, 1],
+      [1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1]
+    ],
+    "tags": ["shape"],
+    "alternatives": ["inner-frame", "outer-edge"]
+  },
+  {
     "id": "four-corners",
     "name": "Four Corners",
     "description": "Mark all four corner squares",
@@ -532,7 +626,7 @@
     ],
     "tags": ["shape"]
   },
-  {
+{
     "id": "outer-edge",
     "name": "Outer Edge",
     "description": "All squares along the border",

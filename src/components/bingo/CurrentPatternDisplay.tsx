@@ -2,6 +2,9 @@ import patterns from "../../data/bingoPatterns.json";
 import type { BingoPattern } from "../../data/bingoPatterns.types";
 import { PatternGrid } from "./PatternGrid";
 
+const allPatterns = patterns as BingoPattern[];
+const patternsById = new Map(allPatterns.map((p) => [p.id, p]));
+
 interface CurrentPatternDisplayProps {
   patternId: string;
   onEdit?: () => void;
@@ -9,8 +12,12 @@ interface CurrentPatternDisplayProps {
 }
 
 export function CurrentPatternDisplay({ patternId, onEdit, editDisabled }: CurrentPatternDisplayProps) {
-  const pattern = (patterns as BingoPattern[]).find((p) => p.id === patternId);
+  const pattern = allPatterns.find((p) => p.id === patternId);
   if (!pattern) return null;
+
+  const altGrids = pattern.alternatives
+    ?.map((id) => patternsById.get(id)?.grid)
+    .filter((g): g is number[][] => !!g);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
@@ -48,7 +55,27 @@ export function CurrentPatternDisplay({ patternId, onEdit, editDisabled }: Curre
           </button>
         )}
       </div>
-      <PatternGrid grid={pattern.grid} size={260} />
+      {altGrids && altGrids.length > 0 ? (
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {altGrids.map((g, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              {i > 0 && (
+                <span style={{
+                  color: "rgba(245, 158, 11, 0.6)",
+                  fontSize: 20,
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                }}>
+                  or
+                </span>
+              )}
+              <PatternGrid grid={g} size={altGrids.length > 2 ? 160 : 200} />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <PatternGrid grid={pattern.grid} size={260} />
+      )}
     </div>
   );
 }

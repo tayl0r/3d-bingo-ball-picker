@@ -43,8 +43,8 @@ const EASE_IN_DURATION = 0.5;             // seconds for cubic ease-in on auto-m
 const EASE_IN_RAMP = 0.2;                 // fraction of spin time for ease-in ramp
 const EASE_OUT_RAMP = 0.6;                // fraction of spin time for ease-out (slowdown) ramp
 const SETTLE_SPEED_THRESHOLD = 0.5;       // ball speed below which it's considered settled
-const SETTLE_TIMEOUT = 5;                 // seconds before forcing settle
-const SETTLE_CONFIRMATION_DELAY = 0.25;   // seconds balls must stay settled before selecting
+const SETTLE_TIMEOUT = 2;                 // seconds before forcing settle
+const SETTLE_CONFIRMATION_DELAY = 0;      // seconds balls must stay settled before selecting
 
 const SPIN_X_MAGNITUDE = 1.65;
 const SPIN_YZ_AMPLITUDE = 0.4;

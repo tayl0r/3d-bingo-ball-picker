@@ -15,8 +15,8 @@ import { disposeBallTextures } from "../utils/ballTexture";
 import { purgeEmptyGames } from "../utils/gameStorage";
 import type { CustomLogo } from "../utils/logoStorage";
 import { getCustomLogo, setCustomLogo, clearCustomLogo } from "../utils/logoStorage";
-import bingoNicknames from "../data/bingoNicknames.json";
 import { soundManager } from "../audio/soundManager";
+import bingoNicknames from "../data/bingoNicknames.json";
 
 const gameActionButtonStyle: React.CSSProperties = {
   padding: "14px 32px",
@@ -86,7 +86,7 @@ export function BingoPage() {
   const nickname = displayBall != null
     ? bingoNicknames[String(displayBall) as keyof typeof bingoNicknames]
     : undefined;
-  const nicknameText = nickname ? `${displayBall} \u2014 ${nickname}` : "";
+  const nicknameText = displayBall != null ? String(displayBall) : "";
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

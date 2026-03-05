@@ -9,6 +9,17 @@ interface PatternPickerModalProps {
 }
 
 const patterns = bingoPatterns as BingoPattern[];
+const patternsById = new Map(patterns.map((p) => [p.id, p]));
+
+function getAlternativeGrids(pattern: BingoPattern): number[][][] | null {
+  if (!pattern.alternatives || pattern.alternatives.length === 0) return null;
+  const grids: number[][][] = [];
+  for (const id of pattern.alternatives) {
+    const alt = patternsById.get(id);
+    if (alt) grids.push(alt.grid);
+  }
+  return grids.length > 0 ? grids : null;
+}
 
 export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProps) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -251,9 +262,29 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
                       style={{
                         display: "flex",
                         justifyContent: "center",
+                        alignItems: "center",
+                        gap: 12,
                       }}
                     >
-                      <PatternGrid grid={pattern.grid} size={240} />
+                      {(() => {
+                        const altGrids = getAlternativeGrids(pattern);
+                        if (!altGrids) return <PatternGrid grid={pattern.grid} size={240} />;
+                        return altGrids.map((g, i) => (
+                          <div key={i} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                            {i > 0 && (
+                              <span style={{
+                                color: "rgba(245, 158, 11, 0.6)",
+                                fontSize: 24,
+                                fontWeight: 700,
+                                textTransform: "uppercase",
+                              }}>
+                                or
+                              </span>
+                            )}
+                            <PatternGrid grid={g} size={altGrids.length > 2 ? 140 : 160} />
+                          </div>
+                        ));
+                      })()}
                     </div>
 
                     <div
