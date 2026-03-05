@@ -76,6 +76,7 @@ export function BingoPage() {
     }
   }, []);
 
+  const [showControls, setShowControls] = useState(true);
   const [showHistory, setShowHistory] = useState(false);
   const [showPatternPicker, setShowPatternPicker] = useState(false);
   const [patternPickerMode, setPatternPickerMode] = useState<"new" | "edit">("new");
@@ -138,6 +139,37 @@ export function BingoPage() {
       {nickname && displayBall != null && (
         <NicknameSheen key={displayBall} displayBall={displayBall} nicknameText={nicknameText} />
       )}
+
+      {/* Controls toggle (hamburger) */}
+      <button
+        onClick={() => setShowControls((v) => !v)}
+        title={showControls ? "Hide controls" : "Show controls"}
+        style={{
+          position: "absolute",
+          bottom: 16,
+          left: 16,
+          zIndex: 20,
+          background: "rgba(10, 10, 20, 0.8)",
+          border: "1px solid var(--border-light)",
+          borderRadius: 10,
+          color: "var(--text-muted)",
+          fontSize: 24,
+          cursor: "pointer",
+          padding: "8px 10px",
+          lineHeight: 1,
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+          transition: "all 0.2s",
+          display: "flex",
+          flexDirection: "column",
+          gap: 4,
+          alignItems: "center",
+        }}
+      >
+        <span style={{ display: "block", width: 20, height: 2, background: "currentColor", borderRadius: 1 }} />
+        <span style={{ display: "block", width: 20, height: 2, background: "currentColor", borderRadius: 1 }} />
+        <span style={{ display: "block", width: 20, height: 2, background: "currentColor", borderRadius: 1 }} />
+      </button>
 
       {/* Logo edit button */}
       <LogoEditButton onLogoChange={handleLogoChange} disabled={game.phase !== "idle" && game.phase !== "auto-mixing"} />
@@ -209,25 +241,24 @@ export function BingoPage() {
             disabled={(game.phase !== "idle" && game.phase !== "auto-mixing") || game.activeBallNumbers.length === 0}
             phase={game.phase}
           />
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <SpinStyleSelector
-              spinSpeed={spinSpeed}
-              setSpinSpeed={setSpinSpeed}
-              spinTime={spinTime}
-              setSpinTime={setSpinTime}
-              spinMode={spinMode}
-              setSpinMode={(v) => {
-                setSpinMode(v);
-                if (v === "auto") {
-                  setSpinSpeed(AUTO_SPIN_SPEED);
-                } else {
-                  try { const saved = localStorage.getItem("bingo_spin_speed"); if (saved) setSpinSpeed(Number(saved)); } catch {}
-                }
-              }}
-
-            />
-            <VolumeControl paddleEnabled={paddleEnabled} onPaddleToggle={setPaddleEnabled} spinMode={spinMode} />
-          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, visibility: showControls ? "visible" : "hidden" }}>
+                <SpinStyleSelector
+                  spinSpeed={spinSpeed}
+                  setSpinSpeed={setSpinSpeed}
+                  spinTime={spinTime}
+                  setSpinTime={setSpinTime}
+                  spinMode={spinMode}
+                  setSpinMode={(v) => {
+                    setSpinMode(v);
+                    if (v === "auto") {
+                      setSpinSpeed(AUTO_SPIN_SPEED);
+                    } else {
+                      try { const saved = localStorage.getItem("bingo_spin_speed"); if (saved) setSpinSpeed(Number(saved)); } catch {}
+                    }
+                  }}
+                />
+                <VolumeControl paddleEnabled={paddleEnabled} onPaddleToggle={setPaddleEnabled} spinMode={spinMode} />
+              </div>
         </div>
 
         <div style={{ display: "flex", gap: 14, pointerEvents: "auto" }}>
