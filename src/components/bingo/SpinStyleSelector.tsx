@@ -1,12 +1,13 @@
 import { soundManager } from "../../audio/soundManager";
+import type { SpinMode } from "../../hooks/useBingoGameState";
 
 interface SpinStyleSelectorProps {
   spinSpeed: number;
   setSpinSpeed: (v: number) => void;
   spinTime: number;
   setSpinTime: (v: number) => void;
-  spinMode: "manual" | "auto";
-  setSpinMode: (v: "manual" | "auto") => void;
+  spinMode: SpinMode;
+  setSpinMode: (v: SpinMode) => void;
 }
 
 const STRENGTHS = [
@@ -20,10 +21,11 @@ const DURATIONS = [
   { label: "Long", value: 10 },
 ] as const;
 
-const SPIN_MODES = [
-  { label: "Manual", value: "manual" as const },
-  { label: "Auto", value: "auto" as const },
-] as const;
+const SPIN_MODES: readonly { label: string; value: SpinMode }[] = [
+  { label: "Manual", value: "manual" },
+  { label: "Auto", value: "auto" },
+  { label: "AutoRandom", value: "auto-random" },
+];
 
 function ToggleGroup<T extends string | number>({
   label,
@@ -133,7 +135,7 @@ export function SpinStyleSelector({
         disabled={spinMode === "auto"}
       />
       <ToggleGroup
-        label={spinMode === "auto" ? "Auto Spin Delay" : "Duration"}
+        label={spinMode !== "manual" ? "Auto Spin Delay" : "Duration"}
         options={DURATIONS}
         value={spinTime}
         onChange={setSpinTime}

@@ -10,6 +10,7 @@ import {
   type SavedGame,
 } from "../utils/gameStorage";
 
+export type SpinMode = "manual" | "auto" | "auto-random";
 export type GamePhase = "idle" | "auto-mixing" | "mixing" | "settling" | "selecting" | "animating";
 
 export interface SelectedBall {
@@ -33,6 +34,8 @@ export function useBingoGameState() {
   );
   const [drawnBalls, setDrawnBalls] = useState<number[]>(initialGameRef.current.drawnBalls);
   const [patternId, setPatternId] = useState<string>(initialGameRef.current.patternId ?? "any-line");
+  const [gameSeed, setGameSeed] = useState<number>(initialGameRef.current.seed);
+  const drawCountRef = useRef(initialGameRef.current.drawnBalls.length);
   const [selectedBall, setSelectedBall] = useState<SelectedBall | null>(null);
   const selectedBallRef = useRef<SelectedBall | null>(null);
   const ballBodiesRef = useRef<Map<number, RapierRigidBody>>(new Map());
@@ -66,6 +69,7 @@ export function useBingoGameState() {
 
   const selectBall = useCallback((num: number, position: [number, number, number], rotation: [number, number, number, number]) => {
     if (phaseRef.current !== "mixing" && phaseRef.current !== "settling" && phaseRef.current !== "selecting") return;
+    drawCountRef.current += 1;
     const ball = { number: num, startPosition: position, startRotation: rotation };
     selectedBallRef.current = ball;
     setSelectedBall(ball);
@@ -100,6 +104,8 @@ export function useBingoGameState() {
     setDrawnBalls([]);
     setActiveBallNumbers(Array.from({ length: 75 }, (_, i) => i + 1));
     setPatternId(selectedPatternId);
+    setGameSeed(game.seed);
+    drawCountRef.current = 0;
   }, [phase]);
 
   const loadGame = useCallback((game: SavedGame) => {
@@ -109,6 +115,8 @@ export function useBingoGameState() {
     setDrawnBalls(game.drawnBalls);
     setActiveBallNumbers(ballsFromDrawn(game.drawnBalls));
     setPatternId(game.patternId ?? "any-line");
+    setGameSeed(game.seed);
+    drawCountRef.current = game.drawnBalls.length;
   }, [phase]);
 
   return {
@@ -129,5 +137,7 @@ export function useBingoGameState() {
     loadGame,
     currentGameId,
     patternId,
+    gameSeed,
+    drawCountRef,
   };
 }

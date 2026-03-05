@@ -9,10 +9,11 @@ import { BingoBallAnimated } from "./BingoBallAnimated";
 import { LastBallResting, LastBallDeparting } from "./LastBall3D";
 import { HoloLogo, OrbitingLookAtTarget } from "./HoloLogo";
 import { PaddleCursor } from "./PaddleCursor";
-import type { GamePhase, SelectedBall } from "../../hooks/useBingoGameState";
+import type { GamePhase, SelectedBall, SpinMode } from "../../hooks/useBingoGameState";
 import { useSphereRotation } from "../../hooks/useSphereRotation";
 import { useFrustumLayout } from "../../hooks/useFrustumLayout";
 import { soundManager } from "../../audio/soundManager";
+import { mulberry32 } from "../../utils/seededRng";
 
 function generateBallPositions(count: number, maxRadius: number): [number, number, number][] {
   const positions: [number, number, number][] = [];
@@ -38,7 +39,8 @@ const TICK_INTERVAL = 1.2;
 const AUTO_SPIN_SOUND_DURATION = 3;       // seconds of spin tick sound after auto-mix starts
 const AUTO_RESTART_DELAY_FACTOR = 500;    // ms per spinTime unit (Quick=2→1s, Medium=5→2.5s, Long=10→5s)
 const EASE_IN_DURATION = 0.5;             // seconds for cubic ease-in on auto-mix start
-const EASE_RAMP = 0.2;                    // fraction of spin time for ease-in/out ramps
+const EASE_IN_RAMP = 0.2;                 // fraction of spin time for ease-in ramp
+const EASE_OUT_RAMP = 0.6;                // fraction of spin time for ease-out (slowdown) ramp
 const SETTLE_SPEED_THRESHOLD = 0.5;       // ball speed below which it's considered settled
 const SETTLE_TIMEOUT = 5;                 // seconds before forcing settle
 const SETTLE_CONFIRMATION_DELAY = 0.25;   // seconds balls must stay settled before selecting
@@ -78,8 +80,10 @@ interface PhaseControllerProps {
   quaternionRef: React.MutableRefObject<THREE.Quaternion>;
   spinTime: number;
   spinSpeed: number;
-  spinMode: "manual" | "auto";
+  spinMode: SpinMode;
   spinDebugRef: React.MutableRefObject<THREE.Vector3>;
+  gameSeed: number;
+  drawCount: number;
 }
 
 function PhaseController({
@@ -94,6 +98,8 @@ function PhaseController({
   spinSpeed,
   spinMode,
   spinDebugRef,
+  gameSeed,
+  drawCount,
 }: PhaseControllerProps) {
   const mixStartRef = useRef<number | null>(null);
 
@@ -130,7 +136,7 @@ function PhaseController({
       setPhase("idle");
       return;
     }
-    if (spinMode === "auto" && phase === "idle") {
+    if ((spinMode === "auto" || spinMode === "auto-random") && phase === "idle") {
       const timer = setTimeout(() => {
         setPhase("auto-mixing");
       }, spinTime * AUTO_RESTART_DELAY_FACTOR);
@@ -164,7 +170,8 @@ function PhaseController({
         : 1;
 
       const sx = spinXSignRef.current * SPIN_X_MAGNITUDE;
-      const globalSpeed = factor * BASE_SPIN_SPEED * spinSpeed * delta;
+      const effectiveSpeed = spinMode === "auto-random" ? spinSpeed * 0.5 : spinSpeed;
+      const globalSpeed = factor * BASE_SPIN_SPEED * effectiveSpeed * delta;
       applySpinRotation(sx, sy, sz, globalSpeed, quaternionRef, spinDebugRef);
 
       // Only play spin sound for the first few seconds of auto-mixing
@@ -190,7 +197,7 @@ function PhaseController({
           // Coming from auto-mixing: inherit axis randomization, calculate time offset
           const autoElapsed = autoMixElapsedRef.current;
           if (autoElapsed >= spinTimeSnapshotRef.current) {
-            mixStartRef.current = now - ((1 - EASE_RAMP) * spinTimeSnapshotRef.current);
+            mixStartRef.current = now - ((1 - EASE_OUT_RAMP) * spinTimeSnapshotRef.current);
           } else {
             mixStartRef.current = now - autoElapsed;
           }
@@ -215,13 +222,13 @@ function PhaseController({
       }
 
       let factor: number;
-      if (t < EASE_RAMP) {
-        const s = t / EASE_RAMP;
+      if (t < EASE_IN_RAMP) {
+        const s = t / EASE_IN_RAMP;
         factor = s * s * s;
-      } else if (t < 1 - EASE_RAMP) {
+      } else if (t < 1 - EASE_OUT_RAMP) {
         factor = 1;
       } else {
-        const s = 1 - (t - (1 - EASE_RAMP)) / EASE_RAMP;
+        const s = 1 - (t - (1 - EASE_OUT_RAMP)) / EASE_OUT_RAMP;
         factor = s * s * s;
       }
 
@@ -272,24 +279,39 @@ function PhaseController({
     }
 
     if (phase === "selecting") {
-      const camPos = camera.position;
       const meshes = ballMeshesRef.current;
-      let closestDist = Infinity;
       let closestNum = -1;
       let closestPos: [number, number, number] = [0, 0, 0];
       let closestMesh: THREE.Mesh | null = null;
 
-      for (const num of activeBallNumbers) {
-        const mesh = meshes.get(num);
+      if (spinMode === "auto-random") {
+        // Seeded random selection
+        const rng = mulberry32(gameSeed);
+        for (let i = 0; i < drawCount; i++) rng(); // advance past previous draws
+        const idx = Math.floor(rng() * activeBallNumbers.length);
+        closestNum = activeBallNumbers[idx];
+        const mesh = meshes.get(closestNum);
         if (mesh) {
           mesh.getWorldPosition(_worldPos);
-          const dx = _worldPos.x - camPos.x, dy = _worldPos.y - camPos.y, dz = _worldPos.z - camPos.z;
-          const dist = dx * dx + dy * dy + dz * dz;
-          if (dist < closestDist) {
-            closestDist = dist;
-            closestNum = num;
-            closestPos = [_worldPos.x, _worldPos.y, _worldPos.z];
-            closestMesh = mesh;
+          closestPos = [_worldPos.x, _worldPos.y, _worldPos.z];
+          closestMesh = mesh;
+        }
+      } else {
+        // Closest-to-camera selection
+        const camPos = camera.position;
+        let closestDist = Infinity;
+        for (const num of activeBallNumbers) {
+          const mesh = meshes.get(num);
+          if (mesh) {
+            mesh.getWorldPosition(_worldPos);
+            const dx = _worldPos.x - camPos.x, dy = _worldPos.y - camPos.y, dz = _worldPos.z - camPos.z;
+            const dist = dx * dx + dy * dy + dz * dz;
+            if (dist < closestDist) {
+              closestDist = dist;
+              closestNum = num;
+              closestPos = [_worldPos.x, _worldPos.y, _worldPos.z];
+              closestMesh = mesh;
+            }
           }
         }
       }
@@ -345,10 +367,12 @@ interface BingoSceneProps {
   onAnimationComplete: () => void;
   spinTime: number;
   spinSpeed: number;
-  spinMode: "manual" | "auto";
+  spinMode: SpinMode;
   logoUrl?: string;
   logoAspect?: number;
   paddleEnabled?: boolean;
+  gameSeed: number;
+  drawCount: number;
 }
 
 interface SceneContentProps extends BingoSceneProps {
@@ -376,6 +400,8 @@ function SceneContent({
   logoUrl,
   logoAspect,
   paddleEnabled,
+  gameSeed,
+  drawCount,
 }: SceneContentProps) {
   const layout = useFrustumLayout();
   const lookAtTargetRef = useRef<THREE.Object3D>(null!);
@@ -448,6 +474,8 @@ function SceneContent({
               spinSpeed={spinSpeed}
               spinMode={spinMode}
               spinDebugRef={spinDebugRef}
+              gameSeed={gameSeed}
+              drawCount={drawCount}
             />
             <BingoMachine quaternionRef={quaternionRef} />
             <SpinAxisLine spinDebugRef={spinDebugRef} />
@@ -468,7 +496,7 @@ function SceneContent({
                 fixed
               />
             )}
-            {spinMode === "manual" && paddleEnabled && phase !== "settling" && phase !== "selecting" && (
+            {(spinMode === "manual" || spinMode === "auto-random") && paddleEnabled && phase !== "settling" && phase !== "selecting" && (
               <PaddleCursor
                 isDraggingRef={isDraggingRef}
                 groupPosition={layout.spherePosition}
