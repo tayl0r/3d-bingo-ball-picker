@@ -26,7 +26,7 @@ export function CreatePatternModal({ onSave, onClose }: CreatePatternModalProps)
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeWithSound();
+      if (e.key === "Escape") { e.stopImmediatePropagation(); closeWithSound(); }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -78,7 +78,7 @@ export function CreatePatternModal({ onSave, onClose }: CreatePatternModalProps)
 
   return (
     <div
-      onClick={closeWithSound}
+      onClick={(e) => { e.stopPropagation(); closeWithSound(); }}
       style={{
         position: "fixed",
         inset: 0,

@@ -50,14 +50,14 @@ export function PatternPickerModal({ onSelect, onClose, currentPatternId }: Patt
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (e.key === "Escape" && !showCreateModal) {
         soundManager.playDialogClose();
         onClose();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
+  }, [onClose, showCreateModal]);
 
   const filtered = patterns.filter((p) => {
     if (searchQuery) {
