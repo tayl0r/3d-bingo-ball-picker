@@ -60,6 +60,7 @@ function createSoundManager() {
       play(p);
     },
     playPatternSelect: () => play(UI_SOUNDS.patternSelect),
+    playDialogClose: () => play(UI_SOUNDS.dialogClose),
     isMuted: () => settings.muted,
     setMuted: (muted: boolean) => { settings.muted = muted; saveSettings(settings); },
     getVolume: () => settings.volume,

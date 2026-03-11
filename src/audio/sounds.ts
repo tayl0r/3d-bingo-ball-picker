@@ -28,6 +28,9 @@ export const UI_SOUNDS = {
 
   /** Bright confirmation ping when pattern is selected (~150ms) */
   patternSelect: [, , 880, .01, .06, .15, 1, 1, , , 150, .03, .04] as SoundParams,
+
+  /** Soft descending dismiss for closing dialogs (~80ms) */
+  dialogClose: [, , 600, , .03, .06, 1, 1.8, -8, , , , , , , , , , .3] as SoundParams,
 } as const;
 
 /* eslint-enable no-sparse-arrays */

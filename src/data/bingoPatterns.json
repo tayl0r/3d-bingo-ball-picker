@@ -1,16 +1,31 @@
 [
   {
     "id": "any-line",
-    "name": "Any Line",
+    "name": "Any Bingo",
     "description": "Any complete row, column, or diagonal",
     "grid": [
-      [0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0],
+      [1, 0, 1, 0, 1],
+      [0, 1, 1, 1, 0],
       [1, 1, 1, 1, 1],
-      [0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0]
+      [0, 1, 1, 1, 0],
+      [1, 0, 1, 0, 1]
     ],
-    "tags": ["basic", "popular", "fast"]
+    "tags": ["basic", "popular", "fast"],
+    "alternatives": ["any-row", "any-column", "diagonal-down", "diagonal-up"]
+  },
+  {
+    "id": "any-2-bingos",
+    "name": "Any 2 Bingos",
+    "description": "Any two complete rows, columns, or diagonals",
+    "grid": [
+      [1, 0, 1, 0, 1],
+      [0, 1, 1, 1, 0],
+      [1, 1, 1, 1, 1],
+      [0, 1, 1, 1, 0],
+      [1, 0, 1, 0, 1]
+    ],
+    "tags": ["basic", "popular"],
+    "alternatives": ["any-row", "any-column", "diagonal-down", "diagonal-up"]
   },
   {
     "id": "any-row",
@@ -626,7 +641,7 @@
     ],
     "tags": ["shape"]
   },
-{
+  {
     "id": "outer-edge",
     "name": "Outer Edge",
     "description": "All squares along the border",

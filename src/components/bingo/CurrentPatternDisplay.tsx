@@ -55,7 +55,19 @@ export function CurrentPatternDisplay({ patternId, onEdit, editDisabled }: Curre
           </button>
         )}
       </div>
-      {altGrids && altGrids.length > 0 ? (
+      {altGrids && altGrids.length > 2 ? (
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(2, auto)",
+          gap: 10,
+          justifyItems: "center",
+          alignItems: "center",
+        }}>
+          {altGrids.map((g, i) => (
+            <PatternGrid key={i} grid={g} size={120} />
+          ))}
+        </div>
+      ) : altGrids && altGrids.length > 0 ? (
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           {altGrids.map((g, i) => (
             <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -69,7 +81,7 @@ export function CurrentPatternDisplay({ patternId, onEdit, editDisabled }: Curre
                   or
                 </span>
               )}
-              <PatternGrid grid={g} size={altGrids.length > 2 ? 160 : 200} />
+              <PatternGrid grid={g} size={200} />
             </div>
           ))}
         </div>

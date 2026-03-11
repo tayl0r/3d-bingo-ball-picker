@@ -3,6 +3,7 @@ import bingoPatterns from "../../data/bingoPatterns.json";
 import type { BingoPattern } from "../../data/bingoPatterns.types";
 import { PatternGrid } from "./PatternGrid";
 import { getFavorites, toggleFavorite, getActiveTag, setActiveTag as saveActiveTag } from "../../utils/patternFavorites";
+import { soundManager } from "../../audio/soundManager";
 interface PatternPickerModalProps {
   onSelect: (patternId: string) => void;
   onClose: () => void;
@@ -22,6 +23,11 @@ function getAlternativeGrids(pattern: BingoPattern): number[][][] | null {
 }
 
 export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProps) {
+  const closeWithSound = () => {
+    soundManager.playDialogClose();
+    onClose();
+  };
+
   const [searchQuery, setSearchQuery] = useState("");
   const uniqueTags = Array.from(new Set(patterns.flatMap((p) => p.tags)));
   const [activeTag, setActiveTagState] = useState<string | null>(() => getActiveTag(uniqueTags));
@@ -34,7 +40,10 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        soundManager.playDialogClose();
+        onClose();
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -76,7 +85,7 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
 
   return (
     <div
-      onClick={onClose}
+      onClick={closeWithSound}
       style={{
         position: "fixed",
         inset: 0,
@@ -126,7 +135,7 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
             Choose a Pattern
           </h2>
           <button
-            onClick={onClose}
+            onClick={closeWithSound}
             style={{
               background: "none",
               border: "none",
@@ -269,6 +278,21 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
                       {(() => {
                         const altGrids = getAlternativeGrids(pattern);
                         if (!altGrids) return <PatternGrid grid={pattern.grid} size={240} />;
+                        if (altGrids.length > 2) {
+                          return (
+                            <div style={{
+                              display: "grid",
+                              gridTemplateColumns: "repeat(2, auto)",
+                              gap: 8,
+                              justifyItems: "center",
+                              alignItems: "center",
+                            }}>
+                              {altGrids.map((g, i) => (
+                                <PatternGrid key={i} grid={g} size={100} />
+                              ))}
+                            </div>
+                          );
+                        }
                         return altGrids.map((g, i) => (
                           <div key={i} style={{ display: "flex", alignItems: "center", gap: 12 }}>
                             {i > 0 && (
@@ -281,7 +305,7 @@ export function PatternPickerModal({ onSelect, onClose }: PatternPickerModalProp
                                 or
                               </span>
                             )}
-                            <PatternGrid grid={g} size={altGrids.length > 2 ? 140 : 160} />
+                            <PatternGrid grid={g} size={160} />
                           </div>
                         ));
                       })()}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getAllGames, deleteGame, type SavedGame } from "../../utils/gameStorage";
 import { TOTAL_BALLS } from "../../hooks/useBingoGameState";
 import { getBallColor, getBallLetter } from "../../utils/ballTexture";
@@ -26,6 +26,22 @@ export function GameHistoryModal({ onClose, onLoadGame, currentGameId }: GameHis
   const [games, setGames] = useState(getAllGames);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
+  const closeWithSound = () => {
+    soundManager.playDialogClose();
+    onClose();
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        soundManager.playDialogClose();
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
   const handleDelete = (id: string) => {
     deleteGame(id);
     setGames(getAllGames());
@@ -34,7 +50,7 @@ export function GameHistoryModal({ onClose, onLoadGame, currentGameId }: GameHis
 
   return (
     <div
-      onClick={onClose}
+      onClick={closeWithSound}
       style={{
         position: "fixed",
         inset: 0,
@@ -83,7 +99,7 @@ export function GameHistoryModal({ onClose, onLoadGame, currentGameId }: GameHis
             GAME HISTORY
           </h2>
           <button
-            onClick={onClose}
+            onClick={closeWithSound}
             style={{
               background: "none",
               border: "none",

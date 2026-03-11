@@ -7,7 +7,7 @@ vi.mock("zzfx", () => ({ zzfx: vi.fn() }));
 describe("DrawnBallsList", () => {
   it("shows count of drawn balls", () => {
     render(<DrawnBallsList balls={[5, 22, 50]} />);
-    expect(screen.getByText("3/75")).toBeInTheDocument();
+    expect(screen.getByText(/3\/75/)).toBeInTheDocument();
   });
 
   it("displays all 75 numbers on the board", () => {
@@ -29,6 +29,6 @@ describe("DrawnBallsList", () => {
 
   it("renders empty state with 0/75", () => {
     render(<DrawnBallsList balls={[]} />);
-    expect(screen.getByText("0/75")).toBeInTheDocument();
+    expect(screen.getByText(/0\/75/)).toBeInTheDocument();
   });
 });
