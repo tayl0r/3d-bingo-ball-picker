@@ -4,6 +4,7 @@ import { TOTAL_BALLS } from "../../hooks/useBingoGameState";
 import { getBallColor, getBallLetter } from "../../utils/ballTexture";
 import patterns from "../../data/bingoPatterns.json";
 import type { BingoPattern } from "../../data/bingoPatterns.types";
+import { getCustomPatterns } from "../../utils/customPatterns";
 import { PatternGrid } from "./PatternGrid";
 import { soundManager } from "../../audio/soundManager";
 
@@ -130,7 +131,9 @@ export function GameHistoryModal({ onClose, onLoadGame, currentGameId }: GameHis
               No saved games yet.
             </div>
           )}
-          {games.map((game) => {
+          {(() => {
+            const allPatterns = [...(patterns as BingoPattern[]), ...getCustomPatterns()];
+            return games.map((game) => {
             const isCurrent = game.id === currentGameId;
             const isConfirming = confirmDeleteId === game.id;
             return (
@@ -168,7 +171,7 @@ export function GameHistoryModal({ onClose, onLoadGame, currentGameId }: GameHis
                       </span>
                     )}
                     {(() => {
-                      const pattern = (patterns as BingoPattern[]).find(
+                      const pattern = allPatterns.find(
                         (p) => p.id === (game.patternId ?? "any-line")
                       );
                       if (!pattern) return null;
@@ -292,7 +295,8 @@ export function GameHistoryModal({ onClose, onLoadGame, currentGameId }: GameHis
                 </div>
               </div>
             );
-          })}
+          });
+          })()}
         </div>
       </div>
     </div>

@@ -1,9 +1,10 @@
+import { useMemo } from "react";
 import patterns from "../../data/bingoPatterns.json";
 import type { BingoPattern } from "../../data/bingoPatterns.types";
 import { PatternGrid } from "./PatternGrid";
+import { getCustomPatterns } from "../../utils/customPatterns";
 
-const allPatterns = patterns as BingoPattern[];
-const patternsById = new Map(allPatterns.map((p) => [p.id, p]));
+const builtInPatterns = patterns as BingoPattern[];
 
 interface CurrentPatternDisplayProps {
   patternId: string;
@@ -12,6 +13,9 @@ interface CurrentPatternDisplayProps {
 }
 
 export function CurrentPatternDisplay({ patternId, onEdit, editDisabled }: CurrentPatternDisplayProps) {
+  const allPatterns = useMemo(() => [...builtInPatterns, ...getCustomPatterns()], [patternId]);
+  const patternsById = useMemo(() => new Map(allPatterns.map((p) => [p.id, p])), [allPatterns]);
+
   const pattern = allPatterns.find((p) => p.id === patternId);
   if (!pattern) return null;
 
