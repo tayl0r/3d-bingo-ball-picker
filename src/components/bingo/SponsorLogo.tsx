@@ -2,14 +2,64 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import type { CustomLogo } from "../../utils/logoStorage";
 import { trimTransparentPixels } from "../../utils/trimTransparentPixels";
 
-interface SponsorLogoDisplayProps {
-  logo: CustomLogo | null;
+const SCALE_MIN = 0.5;
+const SCALE_MAX = 3;
+const SCALE_STEP = 0.1;
+const OFFSET_MIN = -200;
+const OFFSET_MAX = 200;
+const OFFSET_STEP = 1;
+const BRIGHTNESS_MIN = 0;
+const BRIGHTNESS_MAX = 3;
+const BRIGHTNESS_STEP = 0.05;
+const CONTRAST_MIN = 0;
+const CONTRAST_MAX = 3;
+const CONTRAST_STEP = 0.05;
+
+export interface SponsorLogoSettings {
   scale: number;
   offsetX: number;
+  brightness: number;
+  contrast: number;
+}
+
+export const DEFAULT_SPONSOR_SETTINGS: SponsorLogoSettings = {
+  scale: 1,
+  offsetX: 0,
+  brightness: 1,
+  contrast: 1,
+};
+
+function SliderRow({ label, min, max, step, value, onChange }: {
+  label: string;
+  min: number;
+  max: number;
+  step: number;
+  value: number;
+  onChange: (value: number) => void;
+}) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.5)", letterSpacing: 1, textTransform: "uppercase", flexShrink: 0, width: 28 }}>{label}</span>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(parseFloat(e.target.value))}
+        style={{ flex: 1, accentColor: "var(--cyan)", cursor: "pointer" }}
+      />
+    </div>
+  );
+}
+
+interface SponsorLogoDisplayProps {
+  logo: CustomLogo | null;
+  settings: SponsorLogoSettings;
   onClick?: () => void;
 }
 
-export function SponsorLogoDisplay({ logo, scale, offsetX, onClick }: SponsorLogoDisplayProps) {
+export function SponsorLogoDisplay({ logo, settings, onClick }: SponsorLogoDisplayProps) {
   return (
     <div style={{ position: "relative", maxWidth: 260, width: "100%", overflow: "visible" }}>
       <div
@@ -38,8 +88,9 @@ export function SponsorLogoDisplay({ logo, scale, offsetX, onClick }: SponsorLog
               maxHeight: 220,
               objectFit: "contain",
               display: "block",
-              transform: `scale(${scale}) translateX(${offsetX}px)`,
+              transform: `scale(${settings.scale}) translateX(${settings.offsetX}px)`,
               transformOrigin: "center center",
+              filter: `brightness(${settings.brightness}) contrast(${settings.contrast})`,
             }}
           />
         ) : (
@@ -63,17 +114,15 @@ export function SponsorLogoDisplay({ logo, scale, offsetX, onClick }: SponsorLog
 interface SponsorLogoEditButtonProps {
   logo: CustomLogo | null;
   onLogoChange: (logo: CustomLogo | null) => void;
-  scale: number;
-  onScaleChange: (scale: number) => void;
-  offsetX: number;
-  onOffsetXChange: (offset: number) => void;
+  settings: SponsorLogoSettings;
+  onSettingsChange: (settings: Partial<SponsorLogoSettings>) => void;
   disabled: boolean;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   hidePencil?: boolean;
 }
 
-export function SponsorLogoEditButton({ logo, onLogoChange, scale, onScaleChange, offsetX, onOffsetXChange, disabled, open, onOpenChange, hidePencil }: SponsorLogoEditButtonProps) {
+export function SponsorLogoEditButton({ logo, onLogoChange, settings, onSettingsChange, disabled, open, onOpenChange, hidePencil }: SponsorLogoEditButtonProps) {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -233,30 +282,10 @@ export function SponsorLogoEditButton({ logo, onLogoChange, scale, onScaleChange
 
           {logo && (
             <>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.5)", letterSpacing: 1, textTransform: "uppercase", flexShrink: 0, width: 28 }}>Size</span>
-                <input
-                  type="range"
-                  min={0.5}
-                  max={3}
-                  step={0.1}
-                  value={scale}
-                  onChange={(e) => onScaleChange(parseFloat(e.target.value))}
-                  style={{ flex: 1, accentColor: "var(--cyan)", cursor: "pointer" }}
-                />
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.5)", letterSpacing: 1, textTransform: "uppercase", flexShrink: 0, width: 28 }}>Pos</span>
-                <input
-                  type="range"
-                  min={-200}
-                  max={200}
-                  step={1}
-                  value={offsetX}
-                  onChange={(e) => onOffsetXChange(parseFloat(e.target.value))}
-                  style={{ flex: 1, accentColor: "var(--cyan)", cursor: "pointer" }}
-                />
-              </div>
+              <SliderRow label="Size" min={SCALE_MIN} max={SCALE_MAX} step={SCALE_STEP} value={settings.scale} onChange={(v) => onSettingsChange({ scale: v })} />
+              <SliderRow label="Pos" min={OFFSET_MIN} max={OFFSET_MAX} step={OFFSET_STEP} value={settings.offsetX} onChange={(v) => onSettingsChange({ offsetX: v })} />
+              <SliderRow label="Brt" min={BRIGHTNESS_MIN} max={BRIGHTNESS_MAX} step={BRIGHTNESS_STEP} value={settings.brightness} onChange={(v) => onSettingsChange({ brightness: v })} />
+              <SliderRow label="Con" min={CONTRAST_MIN} max={CONTRAST_MAX} step={CONTRAST_STEP} value={settings.contrast} onChange={(v) => onSettingsChange({ contrast: v })} />
             </>
           )}
 

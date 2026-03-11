@@ -11,12 +11,13 @@ import { CurrentPatternDisplay } from "../components/bingo/CurrentPatternDisplay
 import { VolumeControl } from "../components/bingo/VolumeControl";
 import { NicknameSheen } from "../components/bingo/NicknameSheen";
 import { LogoEditButton } from "../components/bingo/LogoEditButton";
-import { SponsorLogoDisplay, SponsorLogoEditButton } from "../components/bingo/SponsorLogo";
+import { SponsorLogoDisplay, SponsorLogoEditButton, DEFAULT_SPONSOR_SETTINGS } from "../components/bingo/SponsorLogo";
+import type { SponsorLogoSettings } from "../components/bingo/SponsorLogo";
 import { disposeBallTextures } from "../utils/ballTexture";
 import { purgeEmptyGames } from "../utils/gameStorage";
 import type { CustomLogo } from "../utils/logoStorage";
 import { getCustomLogo, setCustomLogo, clearCustomLogo } from "../utils/logoStorage";
-import { getSponsorLogo, setSponsorLogo, clearSponsorLogo, getSponsorLogoScale, setSponsorLogoScale, getSponsorLogoOffsetX, setSponsorLogoOffsetX } from "../utils/sponsorLogoStorage";
+import { getSponsorLogo, setSponsorLogo, clearSponsorLogo, getSponsorLogoScale, setSponsorLogoScale, getSponsorLogoOffsetX, setSponsorLogoOffsetX, getSponsorLogoBrightness, setSponsorLogoBrightness, getSponsorLogoContrast, setSponsorLogoContrast } from "../utils/sponsorLogoStorage";
 import { soundManager } from "../audio/soundManager";
 import bingoNicknames from "../data/bingoNicknames.json";
 
@@ -87,6 +88,12 @@ export function BingoPage() {
   }, []);
 
   const [sponsorLogo, setSponsorLogoState] = useState(() => getSponsorLogo());
+  const [sponsorSettings, setSponsorSettings] = useState<SponsorLogoSettings>(() => ({
+    scale: getSponsorLogoScale(),
+    offsetX: getSponsorLogoOffsetX(),
+    brightness: getSponsorLogoBrightness(),
+    contrast: getSponsorLogoContrast(),
+  }));
   const handleSponsorLogoChange = useCallback((logo: CustomLogo | null) => {
     if (logo) {
       if (!setSponsorLogo(logo.dataUrl, logo.aspect)) return;
@@ -94,17 +101,22 @@ export function BingoPage() {
     } else {
       clearSponsorLogo();
       setSponsorLogoState(null);
+      setSponsorLogoScale(1);
+      setSponsorLogoOffsetX(0);
+      setSponsorLogoBrightness(1);
+      setSponsorLogoContrast(1);
+      setSponsorSettings(DEFAULT_SPONSOR_SETTINGS);
     }
   }, []);
-  const [sponsorLogoScale, setSponsorLogoScaleState] = useState(() => getSponsorLogoScale());
-  const handleSponsorScaleChange = useCallback((scale: number) => {
-    setSponsorLogoScale(scale);
-    setSponsorLogoScaleState(scale);
-  }, []);
-  const [sponsorLogoOffsetX, setSponsorLogoOffsetXState] = useState(() => getSponsorLogoOffsetX());
-  const handleSponsorOffsetXChange = useCallback((offset: number) => {
-    setSponsorLogoOffsetX(offset);
-    setSponsorLogoOffsetXState(offset);
+  const handleSponsorSettingsChange = useCallback((patch: Partial<SponsorLogoSettings>) => {
+    setSponsorSettings((prev) => {
+      const next = { ...prev, ...patch };
+      if (patch.scale !== undefined) setSponsorLogoScale(patch.scale);
+      if (patch.offsetX !== undefined) setSponsorLogoOffsetX(patch.offsetX);
+      if (patch.brightness !== undefined) setSponsorLogoBrightness(patch.brightness);
+      if (patch.contrast !== undefined) setSponsorLogoContrast(patch.contrast);
+      return next;
+    });
   }, []);
 
   const [sponsorEditOpen, setSponsorEditOpen] = useState(false);
@@ -306,8 +318,7 @@ export function BingoPage() {
               <div style={{ position: "relative", pointerEvents: "auto" }}>
                 <SponsorLogoDisplay
                   logo={sponsorLogo}
-                  scale={sponsorLogoScale}
-                  offsetX={sponsorLogoOffsetX}
+                  settings={sponsorSettings}
                   onClick={() => { if (game.phase === "idle" || game.phase === "auto-mixing") setSponsorEditOpen((v) => !v); }}
                 />
                 {!sponsorLogo && (
@@ -342,10 +353,8 @@ export function BingoPage() {
                   <SponsorLogoEditButton
                     logo={sponsorLogo}
                     onLogoChange={handleSponsorLogoChange}
-                    scale={sponsorLogoScale}
-                    onScaleChange={handleSponsorScaleChange}
-                    offsetX={sponsorLogoOffsetX}
-                    onOffsetXChange={handleSponsorOffsetXChange}
+                    settings={sponsorSettings}
+                    onSettingsChange={handleSponsorSettingsChange}
                     disabled={game.phase !== "idle" && game.phase !== "auto-mixing"}
                     open={sponsorEditOpen}
                     onOpenChange={setSponsorEditOpen}
@@ -396,6 +405,7 @@ export function BingoPage() {
             setShowPatternPicker(false);
           }}
           onClose={() => { setShowPatternPicker(false); setPatternPickerMode("new"); }}
+          currentPatternId={game.patternId}
         />
       )}
     </div>
